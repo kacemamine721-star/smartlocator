@@ -13,10 +13,14 @@ debug-local.keystore
 *.apk
 *.aab
 
-# Django
+# Django backend
 backend/venv/
 backend/db.sqlite3
 backend/staticfiles/
 __pycache__/
 *.py[cod]
 .env
+
+# Documentation artifacts
+SmartLocator_Backend_Architecture.md
+SmartLocator_Team_Tasks.md

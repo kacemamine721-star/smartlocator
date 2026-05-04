@@ -3,10 +3,12 @@ package com.example.project_mobile.ui.common;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
-import android.view.LayoutInflater;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
 import com.example.project_mobile.ui.details.StationDetailsActivity;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -30,8 +33,97 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     @NonNull
     @Override
     public StationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_station_card, parent, false);
-        return new StationViewHolder(view);
+        Context context = parent.getContext();
+
+        MaterialCardView cardView = new MaterialCardView(context);
+        RecyclerView.LayoutParams cardParams = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.bottomMargin = dp(context, 14);
+        cardView.setLayoutParams(cardParams);
+        cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.surface_dark_card));
+        cardView.setRadius(dp(context, 26));
+        cardView.setStrokeColor(ContextCompat.getColor(context, R.color.blue_900));
+        cardView.setStrokeWidth(dp(context, 1));
+
+        LinearLayout row = new LinearLayout(context);
+        row.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        int cardPadding = dp(context, 18);
+        row.setPadding(cardPadding, cardPadding, cardPadding, cardPadding);
+
+        LinearLayout infoColumn = new LinearLayout(context);
+        LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        infoColumn.setLayoutParams(infoParams);
+        infoColumn.setOrientation(LinearLayout.VERTICAL);
+
+        TextView name = new TextView(context);
+        name.setTextColor(ContextCompat.getColor(context, R.color.white));
+        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        name.setTypeface(name.getTypeface(), android.graphics.Typeface.BOLD);
+
+        TextView meta = new TextView(context);
+        LinearLayout.LayoutParams metaParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        metaParams.topMargin = dp(context, 6);
+        meta.setLayoutParams(metaParams);
+        meta.setTextColor(0xFFB4C1CB);
+        meta.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
+        TextView connectors = new TextView(context);
+        LinearLayout.LayoutParams connectorsParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        connectorsParams.topMargin = dp(context, 6);
+        connectors.setLayoutParams(connectorsParams);
+        connectors.setTextColor(ContextCompat.getColor(context, R.color.teal_500));
+        connectors.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+
+        infoColumn.addView(name);
+        infoColumn.addView(meta);
+        infoColumn.addView(connectors);
+
+        LinearLayout actionsColumn = new LinearLayout(context);
+        actionsColumn.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        actionsColumn.setGravity(Gravity.END);
+        actionsColumn.setOrientation(LinearLayout.VERTICAL);
+
+        TextView status = new TextView(context);
+        status.setTextColor(ContextCompat.getColor(context, R.color.slate_950));
+        status.setTypeface(status.getTypeface(), android.graphics.Typeface.BOLD);
+        int statusHorizontal = dp(context, 12);
+        int statusVertical = dp(context, 8);
+        status.setPadding(statusHorizontal, statusVertical, statusHorizontal, statusVertical);
+
+        ImageButton openMapButton = new ImageButton(context);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(dp(context, 40), dp(context, 40));
+        buttonParams.topMargin = dp(context, 12);
+        buttonParams.gravity = Gravity.END;
+        openMapButton.setLayoutParams(buttonParams);
+        openMapButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_map_control));
+        openMapButton.setImageResource(android.R.drawable.ic_menu_directions);
+        openMapButton.setColorFilter(ContextCompat.getColor(context, R.color.white));
+        openMapButton.setContentDescription(context.getString(R.string.open_on_map));
+
+        actionsColumn.addView(status);
+        actionsColumn.addView(openMapButton);
+
+        row.addView(infoColumn);
+        row.addView(actionsColumn);
+        cardView.addView(row);
+
+        return new StationViewHolder(cardView, name, meta, connectors, status, openMapButton);
     }
 
     @Override
@@ -79,13 +171,28 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         final TextView status;
         final ImageButton openMapButton;
 
-        StationViewHolder(@NonNull View itemView) {
+        StationViewHolder(
+                @NonNull View itemView,
+                TextView name,
+                TextView meta,
+                TextView connectors,
+                TextView status,
+                ImageButton openMapButton
+        ) {
             super(itemView);
-            name = itemView.findViewById(R.id.station_name);
-            meta = itemView.findViewById(R.id.station_meta);
-            connectors = itemView.findViewById(R.id.station_connectors);
-            status = itemView.findViewById(R.id.station_status);
-            openMapButton = itemView.findViewById(R.id.station_open_button);
+            this.name = name;
+            this.meta = meta;
+            this.connectors = connectors;
+            this.status = status;
+            this.openMapButton = openMapButton;
         }
+    }
+
+    private static int dp(Context context, int value) {
+        return Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                value,
+                context.getResources().getDisplayMetrics()
+        ));
     }
 }
