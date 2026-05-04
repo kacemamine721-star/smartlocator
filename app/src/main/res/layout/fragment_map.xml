@@ -237,39 +237,48 @@
         android:id="@+id/station_preview_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="104dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="120dp"
         android:background="@drawable/bg_bottom_sheet_dark"
-        android:elevation="12dp"
+        android:elevation="24dp"
         android:orientation="vertical"
         android:paddingStart="22dp"
-        android:paddingTop="12dp"
+        android:paddingTop="18dp"
         android:paddingEnd="22dp"
-        android:paddingBottom="30dp"
-        app:behavior_hideable="false"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:paddingBottom="22dp"
+        android:visibility="gone">
 
-        <View
-            android:layout_width="72dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/bg_sheet_handle" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/preview_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_green_chip"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
-            android:textColor="@color/slate_950"
-            android:textStyle="bold"
-            tools:text="Available" />
+            <TextView
+                android:id="@+id/preview_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_green_chip"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp"
+                android:textColor="@color/slate_950"
+                android:textStyle="bold"
+                tools:text="Available" />
+
+            <ImageButton
+                android:id="@+id/btn_close_preview"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Close"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#8FA4B5" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/preview_title"

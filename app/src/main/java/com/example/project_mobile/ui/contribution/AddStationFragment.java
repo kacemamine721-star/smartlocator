@@ -1,5 +1,6 @@
 package com.example.project_mobile.ui.contribution;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,9 @@ public class AddStationFragment extends Fragment {
 
     private static final String ARG_LAT = "lat";
     private static final String ARG_LNG = "lng";
+    
+    private double selectedLat = 0.0;
+    private double selectedLng = 0.0;
 
     public static AddStationFragment newInstance(double lat, double lng) {
         AddStationFragment fragment = new AddStationFragment();
@@ -41,11 +45,27 @@ public class AddStationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        double lat = getArguments() != null ? getArguments().getDouble(ARG_LAT) : 0.0;
-        double lng = getArguments() != null ? getArguments().getDouble(ARG_LNG) : 0.0;
+        selectedLat = getArguments() != null ? getArguments().getDouble(ARG_LAT) : 0.0;
+        selectedLng = getArguments() != null ? getArguments().getDouble(ARG_LNG) : 0.0;
 
         TextView coordsView = view.findViewById(R.id.add_station_coords);
-        coordsView.setText(String.format("Lat: %.5f\nLng: %.5f", lat, lng));
+        coordsView.setText(String.format("Lat: %.5f\nLng: %.5f", selectedLat, selectedLng));
+
+        androidx.activity.result.ActivityResultLauncher<Intent> pickerLauncher = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                        selectedLat = result.getData().getDoubleExtra(MapPickerActivity.EXTRA_LAT, selectedLat);
+                        selectedLng = result.getData().getDoubleExtra(MapPickerActivity.EXTRA_LNG, selectedLng);
+                        coordsView.setText(String.format("Lat: %.5f\nLng: %.5f", selectedLat, selectedLng));
+                    }
+                }
+        );
+
+        view.findViewById(R.id.btn_select_on_map).setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), MapPickerActivity.class);
+            pickerLauncher.launch(intent);
+        });
 
         view.findViewById(R.id.add_station_toolbar).setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
@@ -78,7 +98,7 @@ public class AddStationFragment extends Fragment {
             if (name.isEmpty()) name = "User Contributed Station";
 
             StationRepository repository = new StationRepository(requireActivity().getApplication());
-            repository.submitContribution(lat, lng, name, speed, status, new StationRepository.Callback() {
+            repository.submitContribution(selectedLat, selectedLng, name, speed, status, new StationRepository.Callback() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(requireContext(), "Station submitted for review!", Toast.LENGTH_LONG).show();

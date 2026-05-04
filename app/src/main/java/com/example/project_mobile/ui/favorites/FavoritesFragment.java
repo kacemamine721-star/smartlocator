@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_mobile.R;
+import com.example.project_mobile.data.ChargingStation;
 import com.example.project_mobile.data.MockStationRepository;
 import com.example.project_mobile.ui.common.StationListAdapter;
 
@@ -40,6 +41,17 @@ public class FavoritesFragment extends Fragment {
         // Observe favorites from DB
         viewModel.getFavoriteStations().observe(getViewLifecycleOwner(), stations -> {
             adapter.updateStations(stations);
+        });
+
+        android.widget.TextView tvFast = view.findViewById(R.id.tv_fast_chargers_count);
+        android.widget.TextView tvTrusted = view.findViewById(R.id.tv_trusted_stops_count);
+
+        viewModel.getFastChargerCount().observe(getViewLifecycleOwner(), count -> {
+            tvFast.setText(count + " stations");
+        });
+
+        viewModel.getTrustedStopsCount().observe(getViewLifecycleOwner(), count -> {
+            tvTrusted.setText(count + " stations");
         });
 
         // Swipe to delete

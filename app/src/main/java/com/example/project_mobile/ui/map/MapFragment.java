@@ -72,11 +72,12 @@ public class MapFragment extends Fragment {
         });
 
         View bottomSheet = view.findViewById(R.id.station_preview_sheet);
-        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setPeekHeight(getResources().getDimensionPixelSize(R.dimen.map_sheet_peek_height));
-        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheet.setVisibility(View.GONE);
 
-        bindSelectedStation(view, selectedStation);
+        view.findViewById(R.id.btn_close_preview).setOnClickListener(v -> {
+            android.transition.TransitionManager.beginDelayedTransition((ViewGroup) view);
+            bottomSheet.setVisibility(View.GONE);
+        });
 
         view.findViewById(R.id.recenter_button).setOnClickListener(v -> updateMapSelection());
         view.findViewById(R.id.layers_button).setOnClickListener(v -> {
@@ -136,18 +137,36 @@ public class MapFragment extends Fragment {
             return false;
         });
 
+        mapLibreMap.addOnMapClickListener(point -> {
+            if (getView() != null) {
+                View sheet = getView().findViewById(R.id.station_preview_sheet);
+                if (sheet.getVisibility() == View.VISIBLE) {
+                    android.transition.TransitionManager.beginDelayedTransition((ViewGroup) getView());
+                    sheet.setVisibility(View.GONE);
+                }
+            }
+            return false;
+        });
+
         updateMapSelection();
     }
 
     private void bindSelectedStation(View root, ChargingStation station) {
         selectedStation = station;
         ((TextView) root.findViewById(R.id.preview_title)).setText(station.name);
-        ((TextView) root.findViewById(R.id.preview_subtitle)).setText(station.address);
+        String ratingText = station.ratingCount > 0 ? String.format(java.util.Locale.US, "★ %.1f (%d) • ", station.averageRating, station.ratingCount) : "New • ";
+        ((TextView) root.findViewById(R.id.preview_subtitle)).setText(ratingText + station.address);
         ((TextView) root.findViewById(R.id.preview_status)).setText(station.status);
         ((TextView) root.findViewById(R.id.preview_route)).setText(station.distance + " - " + station.eta + " away");
         ((TextView) root.findViewById(R.id.preview_power)).setText(station.power + " - " + station.ports);
         ((TextView) root.findViewById(R.id.preview_connectors)).setText(android.text.TextUtils.join(" - ", station.connectors));
         updateMapSelection();
+
+        View bottomSheet = root.findViewById(R.id.station_preview_sheet);
+        if (bottomSheet.getVisibility() != View.VISIBLE) {
+            android.transition.TransitionManager.beginDelayedTransition((ViewGroup) root);
+            bottomSheet.setVisibility(View.VISIBLE);
+        }
     }
 
     private void updateMapSelection() {

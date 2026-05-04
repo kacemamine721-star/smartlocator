@@ -23,6 +23,9 @@
             android:name=".ui.details.StationDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.contribution.MapPickerActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

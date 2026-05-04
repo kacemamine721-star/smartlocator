@@ -43,4 +43,10 @@
     <string name="settings_privacy">Privacy and language</string>
     <string name="details_availability_note">Live availability and charger fit for your vehicle</string>
     <string name="action_save">Save</string>
+
+    <string-array name="language_options">
+        <item>English</item>
+        <item>Français</item>
+        <item>العربية</item>
+    </string-array>
 </resources>

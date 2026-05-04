@@ -25,6 +25,26 @@ public class FavoritesViewModel extends AndroidViewModel {
         return favoriteStations;
     }
 
+    public LiveData<Integer> getFastChargerCount() {
+        return androidx.lifecycle.Transformations.map(favoriteStations, stations -> {
+            int count = 0;
+            if (stations != null) {
+                for (ChargingStation s : stations) {
+                    if (s.power != null && s.power.toUpperCase().contains("FAST")) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        });
+    }
+
+    public LiveData<Integer> getTrustedStopsCount() {
+        return androidx.lifecycle.Transformations.map(favoriteStations, stations -> {
+            return stations == null ? 0 : stations.size();
+        });
+    }
+
     public void removeFavorite(int stationId, StationRepository.Callback callback) {
         repository.removeFavorite(stationId, callback);
     }

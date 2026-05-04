@@ -28,7 +28,9 @@ public final class MockStationRepository {
                 true,
                 36.8489,
                 10.2723,
-                Arrays.asList("CCS2", "Type 2", "DC Fast")
+                Arrays.asList("CCS2", "Type 2", "DC Fast"),
+                4.8f,
+                124
         ));
         stations.add(new ChargingStation(
                 "marsa",
@@ -47,7 +49,9 @@ public final class MockStationRepository {
                 true,
                 36.8863,
                 10.3248,
-                Arrays.asList("Type 2", "AC", "CCS2")
+                Arrays.asList("Type 2", "AC", "CCS2"),
+                4.1f,
+                45
         ));
         stations.add(new ChargingStation(
                 "sousse",
@@ -66,7 +70,9 @@ public final class MockStationRepository {
                 false,
                 35.8256,
                 10.6369,
-                Arrays.asList("CCS2", "CHAdeMO", "Type 2")
+                Arrays.asList("CCS2", "CHAdeMO", "Type 2"),
+                3.2f,
+                12
         ));
         return stations;
     }

@@ -22,6 +22,8 @@ public class ChargingStation {
     public final double latitude;
     public final double longitude;
     public final List<String> connectors;
+    public final float averageRating;
+    public final int ratingCount;
 
     public ChargingStation(
             String id,
@@ -40,7 +42,9 @@ public class ChargingStation {
             boolean favorite,
             double latitude,
             double longitude,
-            List<String> connectors
+            List<String> connectors,
+            float averageRating,
+            int ratingCount
     ) {
         this.id = id;
         this.name = name;
@@ -59,5 +63,7 @@ public class ChargingStation {
         this.latitude = latitude;
         this.longitude = longitude;
         this.connectors = new ArrayList<>(connectors);
+        this.averageRating = averageRating;
+        this.ratingCount = ratingCount;
     }
 }

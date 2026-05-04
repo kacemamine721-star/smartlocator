@@ -224,7 +224,9 @@ public class StationRepository {
                     e.isFavorite,
                     e.latitude,
                     e.longitude,
-                    new ArrayList<>()));
+                    new ArrayList<>(),
+                    e.averageRating,
+                    e.ratingCount));
         }
         return result;
     }

@@ -23,4 +23,5 @@
     <color name="unknown_gray">#8B98A5</color>
     <color name="heatmap_orange">#FF824C</color>
     <color name="heatmap_yellow">#FFD166</color>
+    <color name="blue_500">#3B82F6</color>
 </resources>

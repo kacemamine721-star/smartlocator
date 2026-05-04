@@ -93,10 +93,11 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_fast_chargers_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="12 stations"
+                android:text="0 stations"
                 android:textColor="#8FA4B5" />
         </LinearLayout>
 
@@ -131,10 +132,11 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_trusted_stops_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="8 stations"
+                android:text="0 stations"
                 android:textColor="#8FA4B5" />
         </LinearLayout>
     </LinearLayout>

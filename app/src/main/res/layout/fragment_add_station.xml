@@ -33,16 +33,34 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/add_station_coords"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_panel_surface"
-                android:padding="16dp"
-                android:text="Lat: \nLng: "
-                android:textColor="#8FA4B5"
-                android:textSize="14sp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                
+                <TextView
+                    android:id="@+id/add_station_coords"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_surface"
+                    android:padding="16dp"
+                    android:text="Lat: \nLng: "
+                    android:textColor="#8FA4B5"
+                    android:textSize="14sp" />
+                    
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_select_on_map"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Locate"
+                    android:textColor="@color/white"
+                    app:strokeColor="@color/teal_300" />
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

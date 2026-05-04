@@ -140,7 +140,8 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     public void onBindViewHolder(@NonNull StationViewHolder holder, int position) {
         ChargingStation station = stations.get(position);
         holder.name.setText(station.name);
-        holder.meta.setText(station.city + " • " + station.distance + " • " + station.power);
+        String ratingText = station.ratingCount > 0 ? String.format(java.util.Locale.US, "★ %.1f (%d) • ", station.averageRating, station.ratingCount) : "New • ";
+        holder.meta.setText(ratingText + station.city + " • " + station.distance + " • " + station.power);
         holder.connectors.setText(android.text.TextUtils.join(" • ", station.connectors));
         holder.status.setText(station.status);
         holder.status.setBackground(buildStatusBackground(holder.itemView.getContext(), station.status));

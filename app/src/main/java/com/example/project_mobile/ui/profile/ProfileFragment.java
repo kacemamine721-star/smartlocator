@@ -49,6 +49,38 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        // Settings Logic
+        android.content.SharedPreferences prefs = requireActivity().getPreferences(android.content.Context.MODE_PRIVATE);
+
+        com.google.android.material.switchmaterial.SwitchMaterial ccs2Switch = view.findViewById(R.id.switch_ccs2);
+        com.google.android.material.switchmaterial.SwitchMaterial notifAvailSwitch = view.findViewById(R.id.switch_notif_availability);
+        com.google.android.material.switchmaterial.SwitchMaterial notifDemandSwitch = view.findViewById(R.id.switch_notif_demand);
+        android.widget.Spinner langSpinner = view.findViewById(R.id.spinner_language);
+
+        ccs2Switch.setChecked(prefs.getBoolean("pref_ccs2", false));
+        notifAvailSwitch.setChecked(prefs.getBoolean("pref_notif_avail", true));
+        notifDemandSwitch.setChecked(prefs.getBoolean("pref_notif_demand", true));
+        langSpinner.setSelection(prefs.getInt("pref_lang", 0));
+
+        ccs2Switch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_ccs2", isChecked).apply());
+        notifAvailSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_avail", isChecked).apply());
+        notifDemandSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_demand", isChecked).apply());
+        
+        langSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                if (prefs.getInt("pref_lang", 0) != position) {
+                    prefs.edit().putInt("pref_lang", position).apply();
+                    String langCode = position == 1 ? "fr" : (position == 2 ? "ar" : "en");
+                    androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
+                        androidx.core.os.LocaleListCompat.forLanguageTags(langCode)
+                    );
+                }
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+
         view.findViewById(R.id.btn_sign_out).setOnClickListener(v -> {
             viewModel.signOut();
             // TODO: Start LoginActivity and finish MainActivity
