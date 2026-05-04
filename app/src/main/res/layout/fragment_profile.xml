@@ -23,6 +23,7 @@
                 android:gravity="center">
 
                 <TextView
+                    android:id="@+id/profile_initials"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SL"
@@ -39,6 +40,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/profile_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/driver_profile"
@@ -73,6 +75,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/profile_stat_saved_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="14"
@@ -101,6 +104,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/profile_stat_routes_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="31"
@@ -129,6 +133,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/profile_stat_alerts_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3"
@@ -213,5 +218,28 @@
                 android:text="English / French / Arabic support with location controls"
                 android:textColor="#8FA4B5" />
         </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_contribute"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:text="Contribute a Station"
+            android:textColor="@color/slate_950"
+            app:backgroundTint="@color/teal_300"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sign_out"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
+            android:text="Sign Out"
+            android:textColor="#FF5252"
+            app:cornerRadius="12dp"
+            app:strokeColor="#FF5252" />
+
     </LinearLayout>
 </ScrollView>

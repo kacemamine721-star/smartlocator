@@ -24,10 +24,20 @@ import java.util.List;
 
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationViewHolder> {
 
-    private final List<ChargingStation> stations;
+    private List<ChargingStation> stations;
 
     public StationListAdapter(List<ChargingStation> stations) {
-        this.stations = stations;
+        this.stations = new java.util.ArrayList<>(stations);
+    }
+
+    public void updateStations(List<ChargingStation> newStations) {
+        this.stations.clear();
+        this.stations.addAll(newStations);
+        notifyDataSetChanged();
+    }
+
+    public ChargingStation getStationAt(int position) {
+        return stations.get(position);
     }
 
     @NonNull

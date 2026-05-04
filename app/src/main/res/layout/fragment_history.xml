@@ -22,12 +22,10 @@
         android:textColor="#8FA4B5"
         android:textSize="15sp" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
-        android:layout_weight="1"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="12dp" />
+        android:layout_weight="1" />
 </LinearLayout>

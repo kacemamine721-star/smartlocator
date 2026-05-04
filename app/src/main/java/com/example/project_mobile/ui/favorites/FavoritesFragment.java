@@ -23,10 +23,38 @@ public class FavoritesFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_favorites, container, false);
     }
 
+    private FavoritesViewModel viewModel;
+    private StationListAdapter adapter;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(FavoritesViewModel.class);
+        
         RecyclerView recyclerView = view.findViewById(R.id.favorites_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(new StationListAdapter(MockStationRepository.getFavorites()));
+        
+        // Initialize adapter with empty list
+        adapter = new StationListAdapter(new java.util.ArrayList<>());
+        recyclerView.setAdapter(adapter);
+
+        // Observe favorites from DB
+        viewModel.getFavoriteStations().observe(getViewLifecycleOwner(), stations -> {
+            adapter.updateStations(stations);
+        });
+
+        // Swipe to delete
+        new androidx.recyclerview.widget.ItemTouchHelper(new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT | androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                ChargingStation station = adapter.getStationAt(position);
+                viewModel.removeFavorite(Integer.parseInt(station.id), null);
+            }
+        }).attachToRecyclerView(recyclerView);
     }
 }
