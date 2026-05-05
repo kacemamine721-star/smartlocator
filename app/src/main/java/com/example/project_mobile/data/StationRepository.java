@@ -19,11 +19,15 @@ import com.example.project_mobile.data.local.HistoryDao;
 import com.example.project_mobile.data.local.HistoryEntity;
 import com.example.project_mobile.data.local.StationDao;
 import com.example.project_mobile.data.local.StationEntity;
+import com.example.project_mobile.data.remote.ApiService;
+import com.example.project_mobile.data.remote.RetrofitClient;
+import com.example.project_mobile.data.remote.StationDto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import retrofit2.Response;
 
 /**
  * Single source of truth for station data.
@@ -60,7 +64,49 @@ public class StationRepository {
         mainHandler = new Handler(Looper.getMainLooper());
 
         // Seed DB from GeoJSON on first launch (background thread)
-        executor.execute(() -> GeoJsonLoader.seedIfEmpty(app, stationDao));
+        executor.execute(() -> {
+            GeoJsonLoader.seedIfEmpty(app, stationDao);
+            syncWithBackend(); // Sync with API immediately after seeding
+        });
+    }
+
+    /**
+     * Fetches stations from the Django backend and updates the local database.
+     */
+    public void syncWithBackend() {
+        executor.execute(() -> {
+            try {
+                Log.d(TAG, "Syncing with backend...");
+                ApiService api = RetrofitClient.getApiService();
+                Response<List<StationDto>> response = api.getStations().execute();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<StationEntity> entities = new ArrayList<>();
+                    for (StationDto dto : response.body()) {
+                        StationEntity e = new StationEntity();
+                        e.id = Integer.parseInt(dto.stationId);
+                        e.name = dto.name;
+                        e.address = dto.address;
+                        e.city = dto.city;
+                        e.power = dto.power;
+                        e.network = dto.network;
+                        e.reliability = dto.reliability;
+                        e.status = dto.availability;
+                        e.latitude = dto.latitude;
+                        e.longitude = dto.longitude;
+                        e.isFavorite = dto.isFavorite;
+                        // Preserve some local state if needed, or just overwrite
+                        entities.add(e);
+                    }
+                    stationDao.insertAll(entities);
+                    Log.d(TAG, "Successfully synced " + entities.size() + " stations from backend.");
+                } else {
+                    Log.e(TAG, "Backend sync failed: " + response.code());
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error syncing with backend: " + e.getMessage());
+            }
+        });
     }
 
     /** All stations as LiveData — auto-updates when DB changes */
@@ -215,17 +261,17 @@ public class StationRepository {
             result.add(new ChargingStation(
                     String.valueOf(e.id),
                     e.name,
-                    "", // address — enriched later via API
-                    "", // city
+                    e.address,
+                    e.city,
                     "", // distance — computed from GPS
                     "", // eta
                     e.status,
-                    e.csSpeed,
+                    e.power, // Use power for speed if applicable
                     "", // ports
                     "", // hours
-                    e.origin,
+                    e.network,
                     "", // price
-                    "", // reliability
+                    e.reliability,
                     e.isFavorite,
                     e.latitude,
                     e.longitude,
