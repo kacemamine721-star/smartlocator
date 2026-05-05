@@ -30,7 +30,7 @@ public class FavoritesViewModel extends AndroidViewModel {
             int count = 0;
             if (stations != null) {
                 for (ChargingStation s : stations) {
-                    if (s.power != null && s.power.toUpperCase().contains("FAST")) {
+                    if (s.power != null && s.power.toUpperCase().contains("FAST (50-100 KW)")) {
                         count++;
                     }
                 }

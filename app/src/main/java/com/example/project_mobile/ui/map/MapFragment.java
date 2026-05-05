@@ -63,8 +63,14 @@ public class MapFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        stations = MockStationRepository.getStations();
-        selectedStation = stations.get(0);
+        com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(requireActivity().getApplication());
+        repo.getAllStations().observe(getViewLifecycleOwner(), newStations -> {
+            stations = newStations;
+            if (stations != null && !stations.isEmpty()) {
+                if (selectedStation == null) selectedStation = stations.get(0);
+                if (mapLibreMap != null) configureMap();
+            }
+        });
 
         mapView.getMapAsync(map -> {
             mapLibreMap = map;
@@ -91,8 +97,23 @@ public class MapFragment extends Fragment {
         });
 
         view.findViewById(R.id.preview_action).setOnClickListener(v -> {
-            Intent intent = StationDetailsActivity.createIntent(requireContext(), selectedStation);
-            startActivity(intent);
+            if (selectedStation != null) {
+                try {
+                    int id = Integer.parseInt(selectedStation.id);
+                    repo.addFavorite(id, new com.example.project_mobile.data.StationRepository.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            android.widget.Toast.makeText(requireContext(), "Saved to favorites!", android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onError(String message) {
+                            android.widget.Toast.makeText(requireContext(), "Error saving: " + message, android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (NumberFormatException e) {
+                    android.widget.Toast.makeText(requireContext(), "Invalid station ID", android.widget.Toast.LENGTH_SHORT).show();
+                }
+            }
         });
 
         view.findViewById(R.id.alert_button).setOnClickListener(v ->
@@ -113,13 +134,21 @@ public class MapFragment extends Fragment {
                 .zoom(10.8)
                 .build());
 
+        if (mapLibreMap.getMarkers() != null) {
+            java.util.List<org.maplibre.android.annotations.Marker> markers = new java.util.ArrayList<>(mapLibreMap.getMarkers());
+            for (org.maplibre.android.annotations.Marker m : markers) {
+                mapLibreMap.removeMarker(m);
+            }
+        }
         markerStationMap.clear();
-        for (ChargingStation station : stations) {
+        if (stations != null) {
+            for (ChargingStation station : stations) {
             Marker marker = mapLibreMap.addMarker(new MarkerOptions()
                     .position(new LatLng(station.latitude, station.longitude))
                     .title(station.name)
                     .snippet(station.status + " - " + station.power));
             markerStationMap.put(marker.getId(), station);
+        }
         }
 
         Marker userMarker = mapLibreMap.addMarker(new MarkerOptions()

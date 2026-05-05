@@ -85,9 +85,14 @@ public class StationRepository {
     public void addFavorite(int stationId, Callback callback) {
         executor.execute(() -> {
             try {
+                String uid = tokenManager.getUserId();
+                if (favoriteDao.isFavorite(stationId, uid)) {
+                    postSuccess(callback);
+                    return;
+                }
                 FavoriteEntity fav = new FavoriteEntity();
                 fav.stationId = stationId;
-                fav.userId = tokenManager.getUserId();
+                fav.userId = uid;
                 fav.savedAt = System.currentTimeMillis();
                 favoriteDao.insert(fav);
                 stationDao.markFavorite(stationId);

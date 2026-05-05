@@ -10,16 +10,13 @@ import com.example.project_mobile.data.StationRepository;
 public class ProfileViewModel extends AndroidViewModel {
 
     private final StationRepository repository;
-    private final LiveData<int[]> profileStats;
-
     public ProfileViewModel(Application application) {
         super(application);
         repository = new StationRepository(application);
-        profileStats = repository.getProfileStats();
     }
 
     public LiveData<int[]> getProfileStats() {
-        return profileStats;
+        return repository.getProfileStats();
     }
 
     public String getUserName() {

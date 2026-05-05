@@ -22,4 +22,7 @@ public interface FavoriteDao {
 
     @Query("SELECT COUNT(*) FROM favorites WHERE userId = :userId")
     int countForUser(String userId);
+
+    @Query("SELECT COUNT(*) > 0 FROM favorites WHERE stationId = :stationId AND userId = :userId")
+    boolean isFavorite(int stationId, String userId);
 }

@@ -354,7 +354,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_cta_gradient"
-            android:text="@string/navigate"
+            android:text="Save the Charging Station"
             android:textAllCaps="false"
             android:textColor="@color/slate_950"
             android:textSize="18sp"
