@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating
+from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert
 from .serializers import (
     ChargingStationSerializer,
     ContributedStationSerializer,
@@ -9,12 +9,20 @@ from .serializers import (
     HistorySessionSerializer,
     RegisterSerializer,
     StationRatingSerializer,
+    CommunityAlertSerializer,
 )
 
 class ChargingStationViewSet(viewsets.ModelViewSet):
-    queryset = ChargingStation.objects.all()
     serializer_class = ChargingStationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [] 
+
+    def get_queryset(self):
+        queryset = ChargingStation.objects.all()
+        city = self.request.query_params.get('city')
+        if city is not None:
+            queryset = queryset.filter(city__iexact=city)
+        return queryset
 
 
 class RegisterView(generics.CreateAPIView):
@@ -68,3 +76,22 @@ class ContributedStationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(submitted_by=self.request.user)
+
+
+class CommunityAlertViewSet(viewsets.ModelViewSet):
+    serializer_class = CommunityAlertSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_authenticators(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_authenticators()
+
+    def get_queryset(self):
+        # Admins see all, users see only active/validated alerts
+        if self.request.user.is_staff:
+            return CommunityAlert.objects.all()
+        return CommunityAlert.objects.filter(is_active=True)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

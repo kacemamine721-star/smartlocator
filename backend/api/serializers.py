@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating
+from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert
 
 class ChargingStationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,3 +61,11 @@ class ContributedStationSerializer(serializers.ModelSerializer):
         model = ContributedStation
         fields = ("id", "name", "latitude", "longitude", "speed", "status", "approved", "submitted_by", "submitted_at")
         read_only_fields = ("id", "approved", "submitted_by", "submitted_at")
+
+class CommunityAlertSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = CommunityAlert
+        fields = ("id", "alert_type", "description", "latitude", "longitude", "is_active", "is_validated", "user", "created_at")
+        read_only_fields = ("id", "is_validated", "user", "created_at")

@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <ripple android:color="#40000000">
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#FBBF24" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+    <item
+        android:drawable="@drawable/ic_alert_warning"
+        android:gravity="center"
+        android:top="12dp"
+        android:bottom="12dp"
+        android:left="12dp"
+        android:right="12dp" />
+</layer-list>

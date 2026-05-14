@@ -39,4 +39,7 @@ public class StationDto {
 
     @SerializedName("connectors")
     public List<String> connectors;
+
+    @SerializedName("cs_speed")
+    public String csSpeed;
 }

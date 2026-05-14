@@ -98,6 +98,7 @@ public class StationRepository {
                         e.status = dto.availability;
                         e.latitude = dto.latitude;
                         e.longitude = dto.longitude;
+                        e.csSpeed = dto.csSpeed;
                         
                         // IMPORTANT: Preserve local favorite status. 
                         // The backend 'is_favorite' is global/featured, not per-user.
@@ -297,6 +298,7 @@ public class StationRepository {
                     e.latitude,
                     e.longitude,
                     new ArrayList<>(),
+                    e.csSpeed,
                     e.averageRating,
                     e.ratingCount));
         }

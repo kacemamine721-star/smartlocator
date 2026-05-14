@@ -7,6 +7,8 @@
     <color name="teal_300">#72E6C5</color>
     <color name="blue_900">#12344D</color>
     <color name="slate_950">#07141F</color>
+    <color name="slate_900">#0F172A</color>
+    <color name="slate_800">#1E293B</color>
     <color name="surface_light">#F5F8FB</color>
     <color name="surface_card">#FFFFFF</color>
     <color name="surface_dark_card">#112433</color>

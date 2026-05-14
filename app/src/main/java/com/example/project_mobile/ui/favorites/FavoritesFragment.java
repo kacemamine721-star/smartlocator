@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
-import com.example.project_mobile.data.MockStationRepository;
 import com.example.project_mobile.ui.common.StationListAdapter;
 
 public class FavoritesFragment extends Fragment {
@@ -26,6 +25,7 @@ public class FavoritesFragment extends Fragment {
 
     private FavoritesViewModel viewModel;
     private StationListAdapter adapter;
+    private java.util.List<ChargingStation> fullList;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -40,8 +40,20 @@ public class FavoritesFragment extends Fragment {
 
         // Observe favorites from DB
         viewModel.getFavoriteStations().observe(getViewLifecycleOwner(), stations -> {
-            adapter.updateStations(stations);
+            this.fullList = stations;
+            performFiltering(""); // Initial load
         });
+
+        android.widget.EditText searchInput = view.findViewById(R.id.et_search_favorites);
+        if (searchInput != null) {
+            searchInput.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override public void afterTextChanged(android.text.Editable s) {
+                    performFiltering(s.toString());
+                }
+            });
+        }
 
         android.widget.TextView tvFast = view.findViewById(R.id.tv_fast_chargers_count);
         android.widget.TextView tvTrusted = view.findViewById(R.id.tv_trusted_stops_count);
@@ -68,5 +80,22 @@ public class FavoritesFragment extends Fragment {
                 viewModel.removeFavorite(Integer.parseInt(station.id), null);
             }
         }).attachToRecyclerView(recyclerView);
+    }
+
+    private void performFiltering(String query) {
+        if (fullList == null) return;
+        if (query == null || query.isEmpty()) {
+            adapter.updateStations(fullList);
+        } else {
+            String q = query.toLowerCase(java.util.Locale.US);
+            java.util.List<ChargingStation> filtered = new java.util.ArrayList<>();
+            for (ChargingStation s : fullList) {
+                if ((s.name != null && s.name.toLowerCase(java.util.Locale.US).contains(q)) ||
+                    (s.city != null && s.city.toLowerCase(java.util.Locale.US).contains(q))) {
+                    filtered.add(s);
+                }
+            }
+            adapter.updateStations(filtered);
+        }
     }
 }

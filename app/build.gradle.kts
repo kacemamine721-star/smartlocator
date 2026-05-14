@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.maplibre.android)
+    implementation(libs.maplibre.annotation)
 
     // Room — local database
     implementation("androidx.room:room-runtime:2.6.1")

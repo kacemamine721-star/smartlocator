@@ -23,9 +23,9 @@
     <string name="map_source_notice">MapLibre renderer with OpenStreetMap tiles</string>
     <string name="search_stations_prompt">Search stations, operators, or cities</string>
     <string name="filter_available">Available</string>
-    <string name="filter_dc_fast">DC Fast</string>
-    <string name="filter_type_2">Type 2</string>
-    <string name="filter_open_now">Open now</string>
+    <string name="filter_dc_fast">SLOW</string>
+    <string name="filter_type_2">SEMI-FAST</string>
+    <string name="filter_open_now">FAST</string>
     <string name="recenter_map">Recenter map</string>
     <string name="toggle_layers">Toggle layers</string>
     <string name="zoom_in">Zoom in</string>
@@ -43,6 +43,7 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_privacy">Privacy and language</string>
     <string name="details_availability_note">Live availability and charger fit for your vehicle</string>
+    <string name="action_ok">OK</string>
     <string name="action_save">Save</string>
     <string name="go_charge_there">Go charge there</string>
     <string name="pref_ccs2">Prioritize CCS2 fast charging</string>
@@ -89,6 +90,21 @@
     <string name="msg_auth_validation">Use a username and an 8+ character password</string>
     <string name="msg_account_created">Account created. Please log in.</string>
     <string name="msg_enter_credentials">Enter your username and password</string>
+    <string name="action_add_alert">Report Alert</string>
+    <string name="report_alert_title">Report an Issue</string>
+    <string name="report_alert_subtitle">Help the community by sharing live updates</string>
+    <string name="alert_type">Issue Type</string>
+    <string name="alert_description_hint">Describe the situation...</string>
+    <string name="action_report">Send Report</string>
+    <string name="msg_alert_reported">Reported! Thanks for helping.</string>
+
+    <string-array name="alert_types">
+        <item>Station Fault / Outage</item>
+        <item>Long Queue / Busy</item>
+        <item>Road Closure / Access Issue</item>
+        <item>Safety Concern</item>
+        <item>Other Issue</item>
+    </string-array>
 
     <string-array name="language_options">
         <item>English</item>

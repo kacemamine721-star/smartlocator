@@ -22,6 +22,7 @@ public class ChargingStation {
     public final double latitude;
     public final double longitude;
     public final List<String> connectors;
+    public final String csSpeed;
     public final float averageRating;
     public final int ratingCount;
 
@@ -43,6 +44,7 @@ public class ChargingStation {
             double latitude,
             double longitude,
             List<String> connectors,
+            String csSpeed,
             float averageRating,
             int ratingCount
     ) {
@@ -63,6 +65,7 @@ public class ChargingStation {
         this.latitude = latitude;
         this.longitude = longitude;
         this.connectors = new ArrayList<>(connectors);
+        this.csSpeed = csSpeed;
         this.averageRating = averageRating;
         this.ratingCount = ratingCount;
     }

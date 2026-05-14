@@ -9,6 +9,7 @@ activity = "1.12.4"
 constraintlayout = "2.2.1"
 recyclerview = "1.4.0"
 mapLibreAndroid = "12.3.1"
+mapLibreAnnotation = "3.0.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +21,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 maplibre-android = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "mapLibreAndroid" }
+maplibre-annotation = { group = "org.maplibre.gl", name = "android-plugin-annotation-v9", version.ref = "mapLibreAnnotation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

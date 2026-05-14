@@ -18,6 +18,7 @@ class ChargingStation(models.Model):
     is_favorite = models.BooleanField(default=False)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    cs_speed = models.CharField(max_length=100, blank=True, null=True) # e.g., FAST (50-100 KW)
     connectors = models.JSONField(default=list) # e.g., ["CCS2", "Type 2"]
     
     def __str__(self):
@@ -86,3 +87,45 @@ class ContributedStation(models.Model):
 
     def __str__(self):
         return f"{self.name} submitted by {self.submitted_by}"
+
+    def save(self, *args, **kwargs):
+        # Check if it was already approved
+        old_instance = ContributedStation.objects.filter(pk=self.pk).first()
+        is_new_approval = self.approved and (old_instance is None or not old_instance.approved)
+        
+        super().save(*args, **kwargs)
+        
+        if is_new_approval:
+            # Automatically create a real ChargingStation
+            # Use numeric ID to avoid mobile app parsing errors (Integer.parseInt)
+            ChargingStation.objects.create(
+                station_id=f"99{self.pk}", 
+                name=self.name,
+                address=f"Contribution {self.pk}",
+                city="Community",
+                availability="Available",
+                power=self.speed,
+                ports="1 port",
+                network="Community",
+                price="Free/Community",
+                reliability="New",
+                latitude=self.latitude,
+                longitude=self.longitude,
+                connectors=["Type 2"]
+            )
+
+class CommunityAlert(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="alerts")
+    alert_type = models.CharField(max_length=100)
+    description = models.TextField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    is_active = models.BooleanField(default=True)
+    is_validated = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.alert_type} alert by {self.user}"

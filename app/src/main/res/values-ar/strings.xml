@@ -42,6 +42,7 @@
     <string name="settings_notifications">الإشعارات</string>
     <string name="settings_privacy">الخصوصية واللغة</string>
     <string name="details_availability_note">التوفر المباشر وتوافق الشاحن مع مركبتك</string>
+    <string name="action_ok">موافق</string>
     <string name="action_save">حفظ</string>
     <string name="go_charge_there">اذهب للشحن هناك</string>
     <string name="pref_ccs2">إعطاء الأولوية لشحن CCS2 السريع</string>
@@ -88,6 +89,21 @@
     <string name="msg_auth_validation">استخدم اسم مستخدم وكلمة مرور مكونة من 8 أحرف على الأقل</string>
     <string name="msg_account_created">تم إنشاء الحساب. يرجى تسجيل الدخول.</string>
     <string name="msg_enter_credentials">أدخل اسم المستخدم وكلمة المرور</string>
+    <string name="action_add_alert">تبليغ عن تنبيه</string>
+    <string name="report_alert_title">تبليغ عن مشكلة</string>
+    <string name="report_alert_subtitle">ساعد المجتمع من خلال مشاركة التحديثات المباشرة</string>
+    <string name="alert_type">نوع المشكلة</string>
+    <string name="alert_description_hint">صف الموقف...</string>
+    <string name="action_report">إرسال التقرير</string>
+    <string name="msg_alert_reported">تم التبليغ! شكراً لمساعدتك.</string>
+
+    <string-array name="alert_types">
+        <item>عطل في المحطة / خارج الخدمة</item>
+        <item>طابور طويل / مزدحم</item>
+        <item>إغلاق طريق / مشكلة في الوصول</item>
+        <item>مشكلة تتعلق بالسلامة</item>
+        <item>مشكلة أخرى</item>
+    </string-array>
     <string-array name="language_options">
         <item>الإنجليزية</item>
         <item>الفرنسية</item>

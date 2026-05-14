@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.project_mobile.R;
-import com.example.project_mobile.data.MockStationRepository;
 
 public class AlertsActivity extends AppCompatActivity {
 
@@ -28,7 +27,8 @@ public class AlertsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         ListView listView = findViewById(android.R.id.list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, MockStationRepository.getAlerts()) {
+        java.util.List<String> alerts = new java.util.ArrayList<>(); 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, alerts) {
             @Override
             public android.view.View getView(int position, android.view.View convertView, ViewGroup parent) {
                 TextView textView = (TextView) super.getView(position, convertView, parent);

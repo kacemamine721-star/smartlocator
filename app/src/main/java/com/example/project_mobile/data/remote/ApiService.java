@@ -18,4 +18,7 @@ public interface ApiService {
 
     @POST("contributions/")
     Call<ContributionResponse> submitContribution(@Body ContributionRequest request);
+
+    @POST("alerts/")
+    Call<Void> submitAlert(@Body AlertRequest request);
 }

@@ -10,14 +10,16 @@ from .views import (
     LoginView,
     RegisterView,
     StationRatingViewSet,
+    CommunityAlertViewSet,
 )
 
 router = DefaultRouter()
-router.register(r'stations', ChargingStationViewSet)
+router.register(r'stations', ChargingStationViewSet, basename='station')
 router.register(r'favorites', FavoriteViewSet, basename='favorite')
 router.register(r'history', HistorySessionViewSet, basename='history')
 router.register(r'ratings', StationRatingViewSet, basename='rating')
 router.register(r'contributions', ContributedStationViewSet, basename='contribution')
+router.register(r'alerts', CommunityAlertViewSet, basename='alert')
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='auth-register'),

@@ -60,14 +60,19 @@
                     android:src="@android:drawable/ic_menu_search"
                     android:tint="#9DAFBC" />
 
-                <TextView
+                <EditText
+                    android:id="@+id/et_search_map"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:text="@string/search_stations_prompt"
-                    android:textColor="#9DAFBC"
-                    android:textSize="16sp" />
+                    android:background="@android:color/transparent"
+                    android:hint="@string/search_stations_prompt"
+                    android:textColor="@color/white"
+                    android:textColorHint="#9DAFBC"
+                    android:textSize="16sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text" />
 
                 <ImageButton
                     android:id="@+id/alert_button"
@@ -79,23 +84,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/simulated_alert_banner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bg_alert_banner"
-            android:elevation="12dp"
-            android:text="High demand near Les Berges du Lac. Nearby chargers are about 90% occupied."
-            android:textColor="@color/slate_950"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
         <HorizontalScrollView
             android:id="@+id/filter_scroll"
@@ -107,7 +95,7 @@
             android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/top_bar"
-            app:layout_constraintTop_toBottomOf="@id/simulated_alert_banner">
+            app:layout_constraintTop_toBottomOf="@id/top_bar">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -115,18 +103,20 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/chip_available"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_filter_chip_active"
+                    android:background="@drawable/bg_filter_chip"
                     android:paddingStart="16dp"
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
                     android:text="@string/filter_available"
-                    android:textColor="@color/chip_text_dark"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/chip_fast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -140,6 +130,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/chip_type2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -153,6 +144,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/chip_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -182,29 +174,46 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:background="@drawable/bg_map_control"
+                android:backgroundTint="@null"
+                android:elevation="4dp"
                 android:contentDescription="@string/recenter_map"
                 android:src="@android:drawable/ic_menu_mylocation"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
 
             <ImageButton
                 android:id="@+id/layers_button"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/bg_map_control"
+                android:backgroundTint="@null"
+                android:elevation="4dp"
                 android:contentDescription="@string/toggle_layers"
                 android:src="@android:drawable/ic_menu_mapmode"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
 
             <ImageButton
                 android:id="@+id/zoom_in_button"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/bg_map_control"
+                android:backgroundTint="@null"
+                android:elevation="4dp"
                 android:contentDescription="@string/zoom_in"
                 android:src="@android:drawable/ic_input_add"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
+
+            <ImageButton
+                android:id="@+id/add_alert_button"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_map_control_warning"
+                android:backgroundTint="@null"
+                android:elevation="6dp"
+                android:contentDescription="@string/action_add_alert"
+                android:scaleType="centerInside" />
         </LinearLayout>
 
         <LinearLayout
@@ -212,10 +221,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="190dp"
+            android:layout_marginBottom="210dp"
             android:background="@drawable/bg_legend_surface"
+            android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="14dp"
+            android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -332,9 +342,10 @@
             android:paddingTop="8dp"
             android:paddingEnd="12dp"
             android:paddingBottom="8dp"
-            android:text="Smart route - 18m - 14.7 km"
             android:textColor="@color/teal_300"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Smart route - 18m - 14.7 km" />
 
         <LinearLayout
             android:layout_width="match_parent"

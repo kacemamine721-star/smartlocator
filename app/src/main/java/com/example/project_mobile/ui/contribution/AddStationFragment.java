@@ -73,14 +73,14 @@ public class AddStationFragment extends Fragment {
 
         Spinner speedSpinner = view.findViewById(R.id.add_station_speed_spinner);
         String[] speeds = new String[]{"Select speed...", "FAST", "SEMI-FAST", "SLOW"};
-        ArrayAdapter<String> speedAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, speeds);
-        speedAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> speedAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item_white, speeds);
+        speedAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_white);
         speedSpinner.setAdapter(speedAdapter);
 
         Spinner statusSpinner = view.findViewById(R.id.add_station_status_spinner);
         String[] statuses = new String[]{"Select status...", "Available", "Busy", "Unknown"};
-        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, statuses);
-        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item_white, statuses);
+        statusAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_white);
         statusSpinner.setAdapter(statusAdapter);
 
         TextInputEditText nameInput = view.findViewById(R.id.add_station_name_input);
