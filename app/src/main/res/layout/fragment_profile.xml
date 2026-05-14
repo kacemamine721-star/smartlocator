@@ -3,13 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950">
+    android:background="@color/slate_950"
+    android:clipToPadding="false"
+    android:paddingBottom="120dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/zidcharge_logo"
+                android:contentDescription="@string/app_logo"
+                android:scaleType="centerInside" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -171,7 +188,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Prioritize CCS2 fast charging"
+                android:text="@string/pref_ccs2"
                 android:textColor="#8FA4B5"
                 app:useMaterialThemeColors="true" />
         </LinearLayout>
@@ -196,7 +213,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Availability changes"
+                android:text="@string/filter_available"
                 android:textColor="#8FA4B5"
                 app:useMaterialThemeColors="true" />
                 
@@ -205,7 +222,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Demand spikes &amp; pricing"
+                android:text="@string/pref_notif_demand"
                 android:textColor="#8FA4B5"
                 app:useMaterialThemeColors="true" />
         </LinearLayout>
@@ -229,7 +246,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Language"
+                android:text="@string/settings_language"
                 android:textColor="#8FA4B5" />
                 
             <Spinner
@@ -237,6 +254,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
+                android:theme="@style/DarkSpinnerTheme"
                 android:background="@drawable/bg_panel_surface"
                 android:entries="@array/language_options"
                 android:padding="8dp" />
@@ -247,7 +265,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="24dp"
-            android:text="Contribute a Station"
+            android:text="@string/action_contribute"
             android:textColor="@color/slate_950"
             app:backgroundTint="@color/teal_300"
             app:cornerRadius="12dp" />
@@ -259,7 +277,7 @@
             android:layout_height="56dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="24dp"
-            android:text="Sign Out"
+            android:text="@string/action_sign_out"
             android:textColor="#FF5252"
             app:cornerRadius="12dp"
             app:strokeColor="#FF5252" />

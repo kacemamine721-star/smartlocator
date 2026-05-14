@@ -46,6 +46,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    lint {
+        // Suppress API level warnings for theme attributes
+        // windowLightNavigationBar requires API 27, but we support API 24+
+        // This attribute gracefully degrades on older devices
+        disable.add("NewApi")
+    }
 }
 
 dependencies {

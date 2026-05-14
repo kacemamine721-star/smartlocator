@@ -32,6 +32,9 @@ public interface StationDao {
     @Query("SELECT * FROM stations WHERE isFavorite = 1")
     LiveData<List<StationEntity>> getFavorites();
 
+    @Query("SELECT s.* FROM stations s INNER JOIN favorites f ON s.id = f.stationId WHERE f.userId = :userId")
+    LiveData<List<StationEntity>> getFavoritesForUser(String userId);
+
     @Query("SELECT * FROM stations WHERE csSpeed LIKE :speedFilter")
     LiveData<List<StationEntity>> getBySpeed(String speedFilter);
 }

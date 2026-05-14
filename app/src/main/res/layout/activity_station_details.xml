@@ -154,7 +154,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Power"
+                    android:text="@string/power"
                     android:textColor="#8FA4B5" />
 
                 <TextView
@@ -179,7 +179,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ports"
+                    android:text="@string/ports"
                     android:textColor="#8FA4B5" />
 
                 <TextView
@@ -204,7 +204,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Provider"
+                android:text="@string/provider"
                 android:textColor="#8FA4B5" />
 
             <TextView
@@ -251,11 +251,12 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/btn_go_charge"
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_cta_gradient"
-            android:text="@string/navigate"
+            android:text="@string/go_charge_there"
             android:textAllCaps="false"
             android:textColor="@color/slate_950"
             android:textSize="18sp"

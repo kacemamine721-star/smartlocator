@@ -2,6 +2,8 @@ package com.example.project_mobile.ui.map;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import com.example.project_mobile.ui.details.StationDetailsActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.maplibre.android.MapLibre;
+import org.maplibre.android.annotations.IconFactory;
 import org.maplibre.android.annotations.Marker;
 import org.maplibre.android.annotations.MarkerOptions;
 import org.maplibre.android.annotations.Polyline;
@@ -44,6 +47,7 @@ public class MapFragment extends Fragment {
     private Polyline routePolyline;
     private ChargingStation selectedStation;
     private List<ChargingStation> stations;
+    private final Handler alertHandler = new Handler(Looper.getMainLooper());
     private final Map<Long, ChargingStation> markerStationMap = new HashMap<>();
 
     @Override
@@ -116,8 +120,10 @@ public class MapFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.alert_button).setOnClickListener(v ->
-                startActivity(new Intent(requireContext(), AlertsActivity.class)));
+        View alertBanner = view.findViewById(R.id.simulated_alert_banner);
+        alertHandler.postDelayed(() -> showAlertBanner(alertBanner), 3000);
+        alertBanner.setOnClickListener(v -> startActivity(new Intent(requireContext(), AlertsActivity.class)));
+        view.findViewById(R.id.alert_button).setOnClickListener(v -> showAlertBanner(alertBanner));
     }
 
     private void configureMap() {
@@ -143,12 +149,13 @@ public class MapFragment extends Fragment {
         markerStationMap.clear();
         if (stations != null) {
             for (ChargingStation station : stations) {
-            Marker marker = mapLibreMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(station.latitude, station.longitude))
-                    .title(station.name)
-                    .snippet(station.status + " - " + station.power));
-            markerStationMap.put(marker.getId(), station);
-        }
+                Marker marker = mapLibreMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(station.latitude, station.longitude))
+                        .icon(getIconFromVector(markerIconFor(station.status)))
+                        .title(station.name)
+                        .snippet(station.status + " - " + station.power));
+                markerStationMap.put(marker.getId(), station);
+            }
         }
 
         Marker userMarker = mapLibreMap.addMarker(new MarkerOptions()
@@ -196,6 +203,40 @@ public class MapFragment extends Fragment {
             android.transition.TransitionManager.beginDelayedTransition((ViewGroup) root);
             bottomSheet.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showAlertBanner(View alertBanner) {
+        if (alertBanner != null && alertBanner.getVisibility() != View.VISIBLE) {
+            alertBanner.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void selectStationAndRoute(String stationId) {
+        if (stations == null || stationId == null) return;
+        for (ChargingStation s : stations) {
+            if (stationId.equals(s.id)) {
+                if (getView() != null) {
+                    bindSelectedStation(getView(), s);
+                } else {
+                    selectedStation = s;
+                }
+                break;
+            }
+        }
+    }
+
+    private int markerIconFor(String status) {
+        if (status == null) {
+            return R.drawable.ic_ev_station_inactive;
+        }
+        String normalized = status.toLowerCase(java.util.Locale.US);
+        if (normalized.contains("available")) {
+            return R.drawable.ic_ev_station_available;
+        }
+        if (normalized.contains("busy")) {
+            return R.drawable.ic_ev_station_busy;
+        }
+        return R.drawable.ic_ev_station_inactive;
     }
 
     private void updateMapSelection() {
@@ -270,8 +311,23 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private org.maplibre.android.annotations.Icon getIconFromVector(int resId) {
+        android.graphics.drawable.Drawable vectorDrawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), resId);
+        if (vectorDrawable == null) {
+            return IconFactory.getInstance(requireContext()).defaultMarker();
+        }
+        int width = vectorDrawable.getIntrinsicWidth() > 0 ? vectorDrawable.getIntrinsicWidth() : 64;
+        int height = vectorDrawable.getIntrinsicHeight() > 0 ? vectorDrawable.getIntrinsicHeight() : 64;
+        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return IconFactory.getInstance(requireContext()).fromBitmap(bitmap);
+    }
+
     @Override
     public void onDestroyView() {
+        alertHandler.removeCallbacksAndMessages(null);
         if (mapView != null) {
             mapView.onDestroy();
             mapView = null;

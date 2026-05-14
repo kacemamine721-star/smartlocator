@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 class ChargingStation(models.Model):
@@ -21,3 +22,67 @@ class ChargingStation(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.city})"
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites")
+    station = models.ForeignKey(ChargingStation, on_delete=models.CASCADE, related_name="favorited_by")
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "station"], name="unique_user_station_favorite")
+        ]
+        ordering = ["-saved_at"]
+
+    def __str__(self):
+        return f"{self.user} -> {self.station}"
+
+
+class HistorySession(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="history_sessions")
+    station = models.ForeignKey(ChargingStation, on_delete=models.CASCADE, related_name="history_sessions")
+    route_only = models.BooleanField(default=True)
+    kwh_charged = models.FloatField(default=0)
+    duration_min = models.PositiveIntegerField(default=0)
+    visited_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-visited_at"]
+
+    def __str__(self):
+        return f"{self.user} visited {self.station}"
+
+
+class StationRating(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="station_ratings")
+    station = models.ForeignKey(ChargingStation, on_delete=models.CASCADE, related_name="ratings")
+    stars = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True)
+    rated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "station"], name="unique_user_station_rating")
+        ]
+        ordering = ["-rated_at"]
+
+    def __str__(self):
+        return f"{self.stars}/5 for {self.station} by {self.user}"
+
+
+class ContributedStation(models.Model):
+    submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="contributed_stations")
+    name = models.CharField(max_length=200)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    speed = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, default="Unknown")
+    approved = models.BooleanField(default=False)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-submitted_at"]
+
+    def __str__(self):
+        return f"{self.name} submitted by {self.submitted_by}"

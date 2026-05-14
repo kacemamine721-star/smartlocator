@@ -2,6 +2,9 @@ package com.example.project_mobile.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64;
+
+import org.json.JSONObject;
 
 /**
  * Stores and retrieves JWT tokens in SharedPreferences.
@@ -24,7 +27,9 @@ public class TokenManager {
 
     public void saveTokens(String access, String refresh) {
         prefs.edit().putString(KEY_ACCESS, access)
-                    .putString(KEY_REFRESH, refresh).apply();
+                    .putString(KEY_REFRESH, refresh)
+                    .putString(KEY_USER_ID, extractUserId(access))
+                    .apply();
     }
 
     public String getAccessToken() {
@@ -57,5 +62,20 @@ public class TokenManager {
 
     public void clear() {
         prefs.edit().clear().apply();
+    }
+
+    private String extractUserId(String access) {
+        try {
+            String[] parts = access.split("\\.");
+            if (parts.length < 2) {
+                return "local_user";
+            }
+            byte[] decoded = Base64.decode(parts[1], Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            JSONObject payload = new JSONObject(new String(decoded, java.nio.charset.StandardCharsets.UTF_8));
+            String userId = payload.optString("user_id", "");
+            return userId.isEmpty() ? "local_user" : userId;
+        } catch (Exception ignored) {
+            return "local_user";
+        }
     }
 }

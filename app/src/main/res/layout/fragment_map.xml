@@ -75,10 +75,27 @@
                     android:layout_height="40dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/alerts"
-                    android:src="@android:drawable/ic_dialog_info"
-                    app:tint="@color/teal_500" />
+                    android:src="@drawable/ic_alert_warning" />
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/simulated_alert_banner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_alert_banner"
+            android:elevation="12dp"
+            android:text="High demand near Les Berges du Lac. Nearby chargers are about 90% occupied."
+            android:textColor="@color/slate_950"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
         <HorizontalScrollView
             android:id="@+id/filter_scroll"
@@ -90,7 +107,7 @@
             android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/top_bar"
-            app:layout_constraintTop_toBottomOf="@id/top_bar">
+            app:layout_constraintTop_toBottomOf="@id/simulated_alert_banner">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -213,14 +230,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Green: available"
+                android:text="@string/legend_available"
                 android:textColor="@color/teal_500" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Orange: busy"
-                android:textColor="@color/busy_orange" />
+                android:text="@string/legend_busy"
+                android:textColor="@color/offline_red" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/legend_inactive"
+                android:textColor="@color/unknown_gray" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -354,7 +377,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_cta_gradient"
-            android:text="Save the Charging Station"
+            android:text="@string/action_save"
             android:textAllCaps="false"
             android:textColor="@color/slate_950"
             android:textSize="18sp"

@@ -20,6 +20,8 @@ import com.example.project_mobile.data.local.HistoryEntity;
 import com.example.project_mobile.data.local.StationDao;
 import com.example.project_mobile.data.local.StationEntity;
 import com.example.project_mobile.data.remote.ApiService;
+import com.example.project_mobile.data.remote.ContributionRequest;
+import com.example.project_mobile.data.remote.ContributionResponse;
 import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.data.remote.StationDto;
 
@@ -44,6 +46,7 @@ public class StationRepository {
     private final HistoryDao historyDao;
     private final ContributionDao contributionDao;
     private final TokenManager tokenManager;
+    private final Application app;
     private final ExecutorService executor;
     private final Handler mainHandler;
 
@@ -54,6 +57,7 @@ public class StationRepository {
     }
 
     public StationRepository(Application app) {
+        this.app = app;
         AppDatabase db = AppDatabase.getInstance(app);
         stationDao = db.stationDao();
         favoriteDao = db.favoriteDao();
@@ -77,7 +81,7 @@ public class StationRepository {
         executor.execute(() -> {
             try {
                 Log.d(TAG, "Syncing with backend...");
-                ApiService api = RetrofitClient.getApiService();
+                ApiService api = RetrofitClient.getApiService(app);
                 Response<List<StationDto>> response = api.getStations().execute();
 
                 if (response.isSuccessful() && response.body() != null) {
@@ -94,8 +98,16 @@ public class StationRepository {
                         e.status = dto.availability;
                         e.latitude = dto.latitude;
                         e.longitude = dto.longitude;
-                        e.isFavorite = dto.isFavorite;
-                        // Preserve some local state if needed, or just overwrite
+                        
+                        // IMPORTANT: Preserve local favorite status. 
+                        // The backend 'is_favorite' is global/featured, not per-user.
+                        StationEntity existing = stationDao.getById(e.id);
+                        if (existing != null) {
+                            e.isFavorite = existing.isFavorite;
+                        } else {
+                            e.isFavorite = dto.isFavorite;
+                        }
+                        
                         entities.add(e);
                     }
                     stationDao.insertAll(entities);
@@ -121,7 +133,7 @@ public class StationRepository {
     }
 
     public LiveData<List<ChargingStation>> getFavorites() {
-        return Transformations.map(stationDao.getFavorites(), this::mapEntitiesToModel);
+        return Transformations.map(stationDao.getFavoritesForUser(tokenManager.getUserId()), this::mapEntitiesToModel);
     }
 
     public LiveData<List<Integer>> getFavoriteIds() {
@@ -217,8 +229,17 @@ public class StationRepository {
                 c.userId = tokenManager.getUserId();
                 c.submittedAt = System.currentTimeMillis();
                 c.approved = false;
+                ApiService api = RetrofitClient.getApiService(app);
+                Response<ContributionResponse> response = api.submitContribution(
+                        new ContributionRequest(name, lat, lng, csSpeed, status)
+                ).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    c.remoteId = String.valueOf(response.body().id);
+                } else {
+                    postError(callback, "Backend rejected contribution: " + response.code());
+                    return;
+                }
                 contributionDao.insert(c);
-                // TODO (Student 4): POST to /api/contributions/ and save remoteId
                 postSuccess(callback);
             } catch (Exception e) {
                 postError(callback, e.getMessage());

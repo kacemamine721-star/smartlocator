@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.project_mobile.R;
+import com.example.project_mobile.ui.auth.WelcomeActivity;
 
 import android.widget.Button;
 import android.widget.TextView;
@@ -83,7 +84,9 @@ public class ProfileFragment extends Fragment {
 
         view.findViewById(R.id.btn_sign_out).setOnClickListener(v -> {
             viewModel.signOut();
-            // TODO: Start LoginActivity and finish MainActivity
+            Intent intent = new Intent(requireContext(), WelcomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
         view.findViewById(R.id.btn_contribute).setOnClickListener(v -> {
