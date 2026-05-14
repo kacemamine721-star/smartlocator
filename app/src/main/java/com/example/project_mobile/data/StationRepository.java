@@ -262,7 +262,9 @@ public class StationRepository {
             String uid = tokenManager.getUserId();
             int saved = favoriteDao.countForUser(uid);
             int routes = historyDao.countRoutes(uid);
-            mainHandler.post(() -> stats.setValue(new int[] { saved, routes, 0 }));
+            // Match the 2 markers currently hardcoded in MapFragment
+            int activeAlerts = 2; 
+            mainHandler.post(() -> stats.setValue(new int[] { saved, routes, activeAlerts }));
         });
         return stats;
     }

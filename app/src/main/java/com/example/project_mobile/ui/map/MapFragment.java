@@ -61,6 +61,7 @@ public class MapFragment extends Fragment {
     private boolean alertsVisible = true;
     private final Map<Long, ChargingStation> symbolStationMap = new HashMap<>();
     private final Map<Long, String> symbolAlertMap = new HashMap<>();
+    private final List<Marker> activeAlertMarkers = new java.util.ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -389,8 +390,16 @@ public class MapFragment extends Fragment {
     }
 
     private void refreshAlertMarkers() {
-        if (mapLibreMap == null || !alertsVisible)
-            return;
+        if (mapLibreMap == null) return;
+
+        // Remove existing markers
+        for (Marker m : activeAlertMarkers) {
+            mapLibreMap.removeMarker(m);
+        }
+        activeAlertMarkers.clear();
+        symbolAlertMap.clear();
+
+        if (!alertsVisible) return;
 
         IconFactory iconFactory = IconFactory.getInstance(requireContext());
         android.graphics.Bitmap alertBitmap = getBitmapFromVector(R.drawable.ic_alert_warning);
@@ -404,6 +413,7 @@ public class MapFragment extends Fragment {
         
         if (alertIcon != null) highDemand.icon(alertIcon);
         Marker s1 = mapLibreMap.addMarker(highDemand);
+        activeAlertMarkers.add(s1);
         symbolAlertMap.put(s1.getId(), highDemand.getSnippet());
 
         MarkerOptions maintenance = new MarkerOptions()
@@ -413,6 +423,7 @@ public class MapFragment extends Fragment {
         
         if (alertIcon != null) maintenance.icon(alertIcon);
         Marker s2 = mapLibreMap.addMarker(maintenance);
+        activeAlertMarkers.add(s2);
         symbolAlertMap.put(s2.getId(), maintenance.getSnippet());
     }
 
