@@ -68,8 +68,20 @@ class Command(BaseCommand):
                     fname_clean = fname.lower().replace(' ', '_').replace('-', '_')
                     if fname_clean in [n.lower().replace('-', '_') for n in potential_names]:
                         img_path = os.path.join(img_dir, fname)
-                        with open(img_path, 'rb') as img_f:
-                            obj.image.save(fname, File(img_f), save=True)
+                        
+                        # Senior Dev Optimization: Check if file already exists in media directory to avoid duplicates
+                        from django.conf import settings
+                        target_path = os.path.join(settings.MEDIA_ROOT, 'ev_images', fname)
+                        
+                        if os.path.exists(target_path):
+                            # File exists, just link it without creating a duplicate
+                            obj.image = f'ev_images/{fname}'
+                            obj.save()
+                        else:
+                            # File does not exist, save it normally
+                            with open(img_path, 'rb') as img_f:
+                                obj.image.save(fname, File(img_f), save=True)
+                                
                         img_found = True
                         break
 

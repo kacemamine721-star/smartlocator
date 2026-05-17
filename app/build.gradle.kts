@@ -20,6 +20,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     signingConfigs {
         create("projectDebug") {
             storeFile = file("../debug-local.keystore")
@@ -32,6 +36,7 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("projectDebug")
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8000/api/\"")
         }
 
         release {
@@ -40,6 +45,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"https://smartlocator-api.onrender.com/api/\"")
         }
     }
     compileOptions {

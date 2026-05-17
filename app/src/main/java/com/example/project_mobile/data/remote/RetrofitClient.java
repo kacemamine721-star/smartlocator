@@ -9,7 +9,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "http://10.0.2.2:8000/api/";
+    // Senior Dev Optimization: Using BuildConfig to switch between local and production URLs automatically
+    private static final String BASE_URL = com.example.project_mobile.BuildConfig.BASE_URL;
     private static Retrofit retrofit = null;
 
     public static ApiService getApiService(Context context) {

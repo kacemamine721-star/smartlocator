@@ -8,13 +8,13 @@ This project consists of an Android frontend (Java/XML) and a Django REST Framew
 
 ## Features
 
-- **Interactive Map:** EV-specific charging station markers (Available, Busy, Inactive) with simulated alerts and floating filter chips.
-- **Station Previews & Details:** Bottom sheet preview with availability, power, ports, and connectors.
+- **Interactive Map:** EV-specific charging station markers (Available, Busy, Inactive) with community alerts and floating filter chips.
+- **Connector-Aware Filtering:** Automatically hides stations that are incompatible with the user's selected vehicle.
+- **Charge Session Estimator:** Calculates estimated time to 80% charge based on vehicle specs and station power.
+- **Real-Time Check-In:** Users can mark a station as "Busy" when charging, awarding them points. Station automatically reverts to "Available" after the estimated charging time.
+- **Community Contributions:** Users can contribute missing stations and report issues (flags stations as broken).
+- **Rating System:** Interactive star rating and reviews for stations, preventing duplicate ratings by updating existing ones.
 - **User Accounts (JWT Auth):** Welcome screen, login, and registration for personalized experiences.
-- **Personalized Data:** Favorites screen for saved stations and History screen for recent activity.
-- **Profile & Settings:** User summary, preferences, and a working Sign Out flow.
-- **Community Contributions:** Users can contribute missing stations directly from the app.
-- **Free Map Stack:** Uses MapLibre and OpenStreetMap raster tiles.
 
 ## Tech Stack
 
@@ -27,7 +27,12 @@ This project consists of an Android frontend (Java/XML) and a Django REST Framew
 **Backend (Django):**
 - Django & Django REST Framework (DRF)
 - `djangorestframework-simplejwt` (Authentication)
-- GeoDjango, PostgreSQL + PostGIS (Production), SQLite (Local Development)
+- SQLite (Local Development)
+- **Production Stack (Planned):**
+  - **PostgreSQL + PostGIS:** Hosted on **Neon** (Permanent free tier with connection pooling).
+  - **Redis Cache:** Hosted on **Upstash** (Serverless, used for EV catalogue and viewport caching).
+  - **File Storage:** **Cloudflare R2** (S3-compatible, zero egress fees for images).
+  - **Hosting:** **Render.com** (Web Service).
 
 ## Project Structure
 
@@ -68,10 +73,12 @@ smartlocator/
 
 ## Roadmap & Enhancements
 
-- **Welcome & Auth:** Finalize Welcome screen, Login/Register UI, and robust JWT token handling.
-- **Map UI Polish:** Implement custom EV markers (Green/Red/Grey) and a simulated Alert banner.
-- **Contributions & Personal Data:** Link the "Contribute a Station" form to the backend and securely sync user favorites/history via their specific account.
-- **Production Deployment:** Migrate the backend from local SQLite to PostgreSQL + PostGIS and deploy to Render.com.
+- [x] **Welcome & Auth:** Finalize Welcome screen, Login/Register UI, and robust JWT token handling.
+- [x] **Map UI Polish:** Implement custom EV markers (Green/Red/Grey) and community alerts.
+- [x] **Contributions & Personal Data:** Link the "Contribute a Station" form to the backend and securely sync user favorites/history.
+- [x] **Vehicle & Charging Simulation:** Added EV database, image matching, and automatic station availability reset based on vehicle specs.
+- [ ] **Station Photos:** Implement upload endpoint for station images and display them in the app.
+- [ ] **Production Deployment:** Migrate the backend to Neon (PostgreSQL), Upstash (Redis), and Cloudflare R2 (Storage) and deploy to Render.com.
 
 ## License
 
