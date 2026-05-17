@@ -26,6 +26,12 @@ public interface StationDao {
     @Query("UPDATE stations SET isFavorite = 1 WHERE id = :stationId")
     void markFavorite(int stationId);
 
+    @Query("UPDATE stations SET isFavorite = :isFav WHERE id = :stationId")
+    void setFavorite(int stationId, boolean isFav);
+    
+    @Query("UPDATE stations SET status = :status WHERE id = :stationId")
+    void updateStatus(int stationId, String status);
+
     @Query("UPDATE stations SET isFavorite = 0 WHERE id = :stationId")
     void unmarkFavorite(int stationId);
 

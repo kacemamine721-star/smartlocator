@@ -209,3 +209,78 @@ class CommunityAlertTests(TestCase):
         response = self.client.get('/api/alerts/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+
+class RatingTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='rater', password='pass123')
+        self.station = ChargingStation.objects.create(
+            station_id="ST002", name="Rate Station", 
+            city="X", availability="Available", power="X", ports="X", network="X", price="X", reliability="X",
+            latitude=0.0, longitude=0.0
+        )
+        login_res = self.client.post('/api/auth/login/', {'username': 'rater', 'password': 'pass123'})
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {login_res.data["access"]}')
+
+    def test_duplicate_rating_updates_existing(self):
+        """Test that submitting a second rating updates the existing one."""
+        self.client.post('/api/ratings/', {'station': self.station.id, 'stars': 3, 'comment': 'Good'}, format='json')
+        response = self.client.post('/api/ratings/', {'station': self.station.id, 'stars': 5, 'comment': 'Great'}, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        from .models import StationRating
+        rating = StationRating.objects.get(user=self.user, station=self.station)
+        self.assertEqual(rating.stars, 5)
+        self.assertEqual(rating.comment, 'Great')
+
+    def test_user_rating_included_in_station_list(self):
+        """Test that user's rating is included in the station data."""
+        from .models import StationRating
+        StationRating.objects.create(user=self.user, station=self.station, stars=4, comment='Nice')
+        
+        response = self.client.get('/api/stations/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        station_data = next(s for s in response.data if s['station_id'] == "ST002")
+        self.assertEqual(station_data['userRating'], 4)
+
+
+class CheckInTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='driver', password='pass123')
+        self.station = ChargingStation.objects.create(
+            station_id="ST003", name="CheckIn Station", 
+            city="X", availability="Available", power="150 kW", ports="X", network="X", price="X", reliability="X",
+            latitude=0.0, longitude=0.0
+        )
+        login_res = self.client.post('/api/auth/login/', {'username': 'driver', 'password': 'pass123'})
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {login_res.data["access"]}')
+
+    def test_check_in_creates_history_and_sets_busy(self):
+        """Test that check-in sets station to Busy and creates history."""
+        response = self.client.post(f'/api/stations/{self.station.id}/check_in/', {'action': 'start'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.availability, "Busy")
+        self.assertIsNotNone(self.station.busy_until)
+        
+        from .models import HistorySession
+        self.assertTrue(HistorySession.objects.filter(user=self.user, station=self.station, route_only=False).exists())
+
+    def test_auto_reset_busy_stations(self):
+        """Test that get_queryset resets expired busy stations."""
+        import datetime
+        from django.utils import timezone
+        
+        self.station.availability = "Busy"
+        self.station.busy_until = timezone.now() - datetime.timedelta(minutes=5)
+        self.station.save()
+        
+        response = self.client.get('/api/stations/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.availability, "Available")

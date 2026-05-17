@@ -116,6 +116,34 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/chip_slow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:paddingStart="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:text="SLOW"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/chip_semifast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:paddingStart="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:text="SEMI-FAST"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/chip_fast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,35 +153,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="@string/filter_dc_fast"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/chip_type2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_filter_chip"
-                    android:paddingStart="16dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="10dp"
-                    android:text="@string/filter_type_2"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/chip_open"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_filter_chip"
-                    android:paddingStart="16dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="10dp"
-                    android:text="@string/filter_open_now"
+                    android:text="FAST"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -333,6 +333,25 @@
             tools:text="Avenue de la Bourse, Les Berges du Lac 2" />
 
         <TextView
+            android:id="@+id/preview_operator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#8FA4B5"
+            android:textSize="14sp"
+            tools:text="Operator: Shell Recharge (Verified)" />
+
+        <ImageView
+            android:id="@+id/preview_image"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:src="@android:drawable/ic_menu_gallery" />
+
+        <TextView
             android:id="@+id/route_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -382,6 +401,16 @@
             android:textSize="14sp"
             tools:text="CCS2 - Type 2 - DC Fast" />
 
+        <TextView
+            android:id="@+id/preview_estimator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/teal_300"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Est. 80% charge: 28 min • Free" />
+
         <Button
             android:id="@+id/preview_action"
             android:layout_width="match_parent"
@@ -391,6 +420,18 @@
             android:text="@string/action_save"
             android:textAllCaps="false"
             android:textColor="@color/slate_950"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/check_in_action"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_filter_chip"
+            android:text="I'm Charging Here"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>

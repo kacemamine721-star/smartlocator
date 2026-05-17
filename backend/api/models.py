@@ -22,6 +22,9 @@ class ChargingStation(models.Model):
     longitude = models.FloatField()
     cs_speed = models.CharField(max_length=100, blank=True, null=True) # e.g., FAST (50-100 KW)
     connectors = models.JSONField(default=list) # e.g., ["CCS2", "Type 2"]
+    flags = models.IntegerField(default=0) # Number of times flagged as broken
+    image = models.ImageField(upload_to='station_images/', null=True, blank=True)
+    busy_until = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.name} ({self.city})"
@@ -158,9 +161,23 @@ class EVVehicle(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     vehicle = models.ForeignKey(EVVehicle, on_delete=models.SET_NULL, null=True, blank=True)
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Profile of {self.user.username}"
+
+class CheckIn(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="checkins")
+    station = models.ForeignKey(ChargingStation, on_delete=models.CASCADE, related_name="checkins")
+    is_charging = models.BooleanField(default=True) # True = Busy, False = Available (Leaving)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        status = "Started charging" if self.is_charging else "Finished charging"
+        return f"{self.user.username} - {status} at {self.station.name}"
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

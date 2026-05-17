@@ -21,7 +21,7 @@ import java.util.List;
 public class GeoJsonLoader {
 
     private static final String TAG = "GeoJsonLoader";
-    private static final String GEOJSON_FILE = "ev_stations"; // res/raw/ev_stations.geojson
+    private static final String GEOJSON_FILE = "ev_stations_tunisia"; // res/raw/ev_stations_tunisia.geojson
 
     /**
      * Seeds the DB if empty. Call from a background thread (e.g. Executors.newSingleThreadExecutor).
@@ -63,15 +63,37 @@ public class GeoJsonLoader {
                 e.csSpeed = props.get("CS_Speed").isJsonNull()
                         ? ""
                         : props.get("CS_Speed").getAsString();
-                e.origin = props.get("ORIGIN").isJsonNull()
-                        ? ""
-                        : props.get("ORIGIN").getAsString();
+                e.origin = props.get("ORIGIN") != null && !props.get("ORIGIN").isJsonNull()
+                        ? props.get("ORIGIN").getAsString() : "";
+                        
+                e.price = "Unknown";
+                if (props.has("charging_free") && !props.get("charging_free").isJsonNull()) {
+                    e.price = props.get("charging_free").getAsBoolean() ? "Free" : "Paid";
+                }
+                
+                if (props.has("connector_types") && !props.get("connector_types").isJsonNull() && props.get("connector_types").isJsonArray()) {
+                    List<String> connList = new ArrayList<>();
+                    for (JsonElement connEl : props.getAsJsonArray("connector_types")) {
+                        connList.add(connEl.getAsString());
+                    }
+                    e.connectors = String.join(",", connList);
+                } else {
+                    e.connectors = "Type2";
+                }
                 e.longitude = coords.get(0).getAsDouble();
                 e.latitude = coords.get(1).getAsDouble();
                 e.isFavorite = false;
                 e.averageRating = 0f;
                 e.ratingCount = 0;
                 e.isUserContributed = false;
+
+                // Enriched properties
+                e.powerKw = props.has("power_kw") && !props.get("power_kw").isJsonNull() ? props.get("power_kw").getAsInt() : 0;
+                e.operator = props.has("operator") && !props.get("operator").isJsonNull() ? props.get("operator").getAsString() : "";
+                e.operatorType = props.has("operator_type") && !props.get("operator_type").isJsonNull() ? props.get("operator_type").getAsString() : "";
+                e.governorate = props.has("governorate") && !props.get("governorate").isJsonNull() ? props.get("governorate").getAsString() : "";
+                e.access = props.has("access") && !props.get("access").isJsonNull() ? props.get("access").getAsString() : "";
+                e.verified = props.has("verified") && !props.get("verified").isJsonNull() && props.get("verified").getAsBoolean();
 
                 entities.add(e);
             }

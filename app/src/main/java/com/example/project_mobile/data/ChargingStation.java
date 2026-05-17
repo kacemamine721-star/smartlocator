@@ -25,6 +25,16 @@ public class ChargingStation {
     public final String csSpeed;
     public final float averageRating;
     public final int ratingCount;
+    public final Integer userRating;
+
+    // Enriched fields
+    public final int powerKw;
+    public final String operator;
+    public final String operatorType;
+    public final String governorate;
+    public final String access;
+    public final boolean verified;
+    public final String imageUrl;
 
     public ChargingStation(
             String id,
@@ -46,7 +56,15 @@ public class ChargingStation {
             List<String> connectors,
             String csSpeed,
             float averageRating,
-            int ratingCount
+            int ratingCount,
+            Integer userRating,
+            int powerKw,
+            String operator,
+            String operatorType,
+            String governorate,
+            String access,
+            boolean verified,
+            String imageUrl
     ) {
         this.id = id;
         this.name = name;
@@ -68,5 +86,13 @@ public class ChargingStation {
         this.csSpeed = csSpeed;
         this.averageRating = averageRating;
         this.ratingCount = ratingCount;
+        this.userRating = userRating;
+        this.powerKw = powerKw;
+        this.operator = operator;
+        this.operatorType = operatorType;
+        this.governorate = governorate;
+        this.access = access;
+        this.verified = verified;
+        this.imageUrl = imageUrl;
     }
 }

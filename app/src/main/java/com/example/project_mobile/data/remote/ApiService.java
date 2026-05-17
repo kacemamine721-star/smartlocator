@@ -31,4 +31,13 @@ public interface ApiService {
 
     @PUT("users/me/")
     Call<UserMeResponse> updateProfile(@Body UpdateProfileRequest request);
+
+    @POST("stations/{id}/check_in/")
+    Call<CheckInResponse> checkInStation(@retrofit2.http.Path("id") int id, @Body CheckInRequest request);
+
+    @POST("stations/{id}/flag_as_broken/")
+    Call<Void> flagStationAsBroken(@retrofit2.http.Path("id") int id);
+
+    @POST("ratings/")
+    Call<RatingResponse> submitRating(@Body RatingRequest request);
 }

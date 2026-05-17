@@ -16,6 +16,8 @@ public class StationEntity {
     public String reliability;
     public String status;       // AVAILABLE | BUSY | OFFLINE | UNKNOWN
     public String csSpeed;      // FAST | SEMI-FAST | SLOW
+    public String price;
+    public String connectors;   // Comma separated list of connectors
     public String origin;       // electromaps | google maps | user
     public String reportUs;
     public double latitude;
@@ -23,5 +25,15 @@ public class StationEntity {
     public boolean isFavorite;
     public float averageRating;
     public int ratingCount;
+    public Integer userRating;
     public boolean isUserContributed;
+
+    // Enriched fields
+    public int powerKw;
+    public String operator;
+    public String operatorType;
+    public String governorate;
+    public String access;
+    public boolean verified;
+    public String imageUrl;
 }

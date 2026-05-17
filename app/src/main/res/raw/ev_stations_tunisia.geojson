@@ -1,0 +1,1543 @@
+{
+  "type": "FeatureCollection",
+  "name": "EV_CHARGING_STATIONS_TUNISIA_ENRICHED",
+  "metadata": {
+    "last_enriched": "2026-05-17",
+    "total_stations": 42,
+    "sources": [
+      "electromaps",
+      "google_maps",
+      "chargemap",
+      "avem.fr",
+      "rechange-tunisie.com",
+      "webmanagercenter.com",
+      "agenceecofin.com"
+    ],
+    "notes": "Connector types, city, governorate, power and operator data added from verified press releases and operator websites. Coordinates unchanged from original source."
+  },
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "NAME": "Shell Ben Arous",
+        "ORIGIN": "electromaps",
+        "STATUS": "AVAILABLE",
+        "report_us": "WORKING",
+        "CS_Speed": "FAST (50-100 KW)",
+        "power_kw": 50,
+        "connector_types": [
+          "CCS2",
+          "CHAdeMO"
+        ],
+        "operator": "Shell",
+        "operator_type": "fuel_station",
+        "network": "Shell Recharge",
+        "city": "Ben Arous",
+        "governorate": "Ben Arous",
+        "approximate_address": "Shell Station, Route de Sfax, Ben Arous",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": []
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.224609744276261,
+          36.733485758102105
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": null,
+        "CS_Speed": "FAST (50-100 KW)",
+        "power_kw": 50,
+        "connector_types": [
+          "CCS2",
+          "CHAdeMO"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Ariana",
+        "governorate": "Ariana",
+        "approximate_address": "Route La Marsa, Ariana",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.202366065659049,
+          36.828883374840998
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "NAME": "Agil La Marsa",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2",
+          "CCS2"
+        ],
+        "operator": "Agil Energy",
+        "operator_type": "fuel_station",
+        "network": "AGIL-STEG",
+        "city": "La Marsa",
+        "governorate": "Tunis",
+        "approximate_address": "Station Agil, Route La Marsa, Tunis",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status"
+        ],
+        "source_note": "AGIL-STEG MOU January 2021: 10 stations equipped, 6 in major governorates including Tunis"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.222114479643375,
+          36.834538633157052
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": null,
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Ariana",
+        "governorate": "Ariana",
+        "approximate_address": "Ariana, Tunis area",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.24818513050012,
+          36.835616146575269
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "NAME": "TotalEnergies La Goulette",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": null,
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 40,
+        "connector_types": [
+          "CCS2",
+          "Type2"
+        ],
+        "operator": "TotalEnergies Tunisie",
+        "operator_type": "fuel_station",
+        "network": "TotalEnergies Recharge",
+        "city": "La Goulette",
+        "governorate": "Tunis",
+        "approximate_address": "Station TotalEnergies, La Goulette / Carthage area",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "collocated_with_id_26",
+          "speed_may_be_underreported"
+        ],
+        "source_note": "TotalEnergies Tunisia inaugurated CCS Combo DC 40kW chargers in 2020 targeting Grand Tunis first. CS_Speed listed as SEMI-FAST but actual DC power is 40kW."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.265980973196324,
+          36.84937075157665
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "La Marsa",
+        "governorate": "Tunis",
+        "approximate_address": "La Marsa / Sidi Bou Said area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.258499115933322,
+          36.936253425379647
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Hammamet",
+        "governorate": "Nabeul",
+        "approximate_address": "Hammamet area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.714775434659446,
+          36.442952485880305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8,
+        "NAME": "KIA Sousse",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "KIA Tunisia",
+        "operator_type": "car_dealer",
+        "network": null,
+        "city": "Sousse",
+        "governorate": "Sousse",
+        "approximate_address": "KIA Dealership, Route Nationale, Sousse",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "dealer_charger_access_may_be_restricted",
+          "missing_status"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.575672726429717,
+          35.88456658661238
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9,
+        "NAME": "Volvo Sousse",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Volvo Tunisia",
+        "operator_type": "car_dealer",
+        "network": null,
+        "city": "Sousse",
+        "governorate": "Sousse",
+        "approximate_address": "Volvo Dealership, Route Nationale, Sousse",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "possible_duplicate_with_id_10",
+          "missing_status"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.582257030761882,
+          35.870795110315285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10,
+        "NAME": "Volvo / Showroom Sousse (2nd port)",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Volvo Tunisia",
+        "operator_type": "car_dealer",
+        "network": null,
+        "city": "Sousse",
+        "governorate": "Sousse",
+        "approximate_address": "Volvo Dealership vicinity, Sousse",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "LIKELY_DUPLICATE_OF_ID_9 — coordinates differ by <150m, same operator zone; verify on site whether this is a second charging port or a data duplicate",
+          "missing_status"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.582620325995787,
+          35.869710848378773
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11,
+        "NAME": "Europcar Sousse",
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Europcar Tunisia",
+        "operator_type": "car_rental",
+        "network": null,
+        "city": "Sousse",
+        "governorate": "Sousse",
+        "approximate_address": "Europcar Agency, Sousse",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "access_may_require_rental_agreement"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.626988459407317,
+          35.842382723616424
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 12,
+        "NAME": "SSR Monastir",
+        "ORIGIN": null,
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "SSR",
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Monastir",
+        "governorate": "Monastir",
+        "approximate_address": "SSR, Monastir area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_origin",
+          "missing_status",
+          "unknown_operator_SSR",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.820032074224361,
+          35.768756389215355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 13,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Sfax",
+        "governorate": "Sfax",
+        "approximate_address": "Sfax East / Mahres area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.00612696472229,
+          35.019928428926136
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 14,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Sfax",
+        "governorate": "Sfax",
+        "approximate_address": "Sfax city area",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.757499179117479,
+          34.730151553127911
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 15,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Sfax",
+        "governorate": "Sfax",
+        "approximate_address": "Sfax city area (3km west of ID 14)",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.72383307094008,
+          34.725344358608659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 16,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Kasserine",
+        "governorate": "Kasserine",
+        "approximate_address": "Kasserine / Feriana area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "remote_location",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.057691393554267,
+          33.375238041636472
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 17,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Gafsa",
+        "governorate": "Gafsa",
+        "approximate_address": "Gafsa area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "remote_location",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.633420984793846,
+          32.832909116855426
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 18,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Gabès",
+        "governorate": "Gabès",
+        "approximate_address": "Gabès North area",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.881805761025092,
+          33.801630796679412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 19,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Gabès",
+        "governorate": "Gabès",
+        "approximate_address": "Gabès / Zarzis direction",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.020782496913636,
+          33.827090706632077
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 20,
+        "NAME": null,
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Tunis",
+        "governorate": "Tunis",
+        "approximate_address": "Tunis city",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.188397757578876,
+          36.800177427597021
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 21,
+        "NAME": "Porsche Destination — Ennakl Tunis",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "car_dealer",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Tunis",
+        "governorate": "Tunis",
+        "approximate_address": "Ennakl Automobiles showroom, Route de La Marsa, Tunis",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ],
+        "source_note": "Porsche Destination Charging: 22kW AC Type 2, free for Porsche/PHEV customers. Operated by Porsche Smart Mobility GmbH."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.186908584545769,
+          36.807339854994929
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 22,
+        "NAME": "Porsche Destination — Ariana",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Ariana",
+        "governorate": "Ariana",
+        "approximate_address": "Partner destination, Ariana",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.209715202062588,
+          36.8353855722007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 23,
+        "NAME": "Porsche Destination — Ariana Nord",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Ariana",
+        "governorate": "Ariana",
+        "approximate_address": "Partner destination, Ariana Nord",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.201097344222971,
+          36.847266338627179
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 24,
+        "NAME": "Porsche Destination — La Marsa",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "La Marsa",
+        "governorate": "Tunis",
+        "approximate_address": "Partner destination, La Marsa",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.217462501044476,
+          36.84829211340525
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 25,
+        "NAME": "Porsche Destination — Tunis West",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Tunis",
+        "governorate": "Tunis",
+        "approximate_address": "Partner destination, Tunis El Menzah area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.160979652572841,
+          36.830799954031512
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 26,
+        "NAME": "Porsche Destination — La Goulette",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "La Goulette",
+        "governorate": "Tunis",
+        "approximate_address": "Partner destination, La Goulette / Carthage",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "collocated_with_id_5 — only 80m apart from TotalEnergies station ID 5; may share same address",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.266661448789224,
+          36.849682308170294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 27,
+        "NAME": "Porsche Destination — Gammarth",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Gammarth",
+        "governorate": "Tunis",
+        "approximate_address": "Partner destination, Gammarth / La Marsa",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.341684726473613,
+          36.871545257881372
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 28,
+        "NAME": "Porsche Destination — Sidi Bou Said",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "La Marsa",
+        "governorate": "Tunis",
+        "approximate_address": "Partner destination, near Sidi Bou Said",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.275254562061821,
+          36.925963059760257
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 29,
+        "NAME": "TotalEnergies Menzel Bourguiba",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 40,
+        "connector_types": [
+          "CCS2",
+          "Type2"
+        ],
+        "operator": "TotalEnergies Tunisie",
+        "operator_type": "fuel_station",
+        "network": "TotalEnergies Recharge",
+        "city": "Menzel Bourguiba",
+        "governorate": "Bizerte",
+        "approximate_address": "Station TotalEnergies, Route Nationale, Bizerte south",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "speed_may_be_underreported"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.99699065844398,
+          37.059603967197845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 30,
+        "NAME": "OLA Energy Bizerte",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "OLA Energy Tunisie",
+        "operator_type": "fuel_station",
+        "network": "OLA Energy / Porsche Tunisie",
+        "city": "Bizerte",
+        "governorate": "Bizerte",
+        "approximate_address": "OLA Energy Station, Bizerte",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_type2_vehicles"
+        ],
+        "source_note": "OLA Energy + Porsche Tunisia partnership: Type 2 AC 22kW, free for all Type 2 compatible EVs and PHEVs."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.85761800948319,
+          37.266785727805008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 31,
+        "NAME": "TotalEnergies Bizerte",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 40,
+        "connector_types": [
+          "CCS2",
+          "Type2"
+        ],
+        "operator": "TotalEnergies Tunisie",
+        "operator_type": "fuel_station",
+        "network": "TotalEnergies Recharge",
+        "city": "Bizerte",
+        "governorate": "Bizerte",
+        "approximate_address": "Station TotalEnergies, Bizerte",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "speed_may_be_underreported"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.830144791577899,
+          37.260334144332269
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 32,
+        "NAME": "TotalEnergies Le Kef",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 40,
+        "connector_types": [
+          "CCS2",
+          "Type2"
+        ],
+        "operator": "TotalEnergies Tunisie",
+        "operator_type": "fuel_station",
+        "network": "TotalEnergies Recharge",
+        "city": "Le Kef",
+        "governorate": "Le Kef",
+        "approximate_address": "Station TotalEnergies, Le Kef",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "speed_may_be_underreported",
+          "remote_location_important_for_routing"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.201776757778434,
+          36.728343949551444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 33,
+        "NAME": "Porsche Destination — Jendouba",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Jendouba",
+        "governorate": "Jendouba",
+        "approximate_address": "Partner destination, Jendouba / Ain Draham area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev",
+          "remote_location_important_for_routing"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.791700795176029,
+          36.955386599447564
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 34,
+        "NAME": null,
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Kasserine",
+        "governorate": "Kasserine",
+        "approximate_address": "Kasserine area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "remote_location",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.885491702188499,
+          35.895166259319154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 35,
+        "NAME": "Shell Monastir",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2",
+          "CCS2"
+        ],
+        "operator": "Shell",
+        "operator_type": "fuel_station",
+        "network": "Shell Recharge",
+        "city": "Monastir",
+        "governorate": "Monastir",
+        "approximate_address": "Shell Station, Monastir",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.727124098353125,
+          35.760137406622597
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 36,
+        "NAME": "TotalEnergies Mahdia",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 40,
+        "connector_types": [
+          "CCS2",
+          "Type2"
+        ],
+        "operator": "TotalEnergies Tunisie",
+        "operator_type": "fuel_station",
+        "network": "TotalEnergies Recharge",
+        "city": "Mahdia",
+        "governorate": "Mahdia",
+        "approximate_address": "Station TotalEnergies, Route Nationale, Mahdia",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "speed_may_be_underreported"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.61285818688852,
+          35.567462710804698
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 37,
+        "NAME": "Agil Gabès",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2",
+          "CCS2"
+        ],
+        "operator": "Agil Energy",
+        "operator_type": "fuel_station",
+        "network": "AGIL-STEG",
+        "city": "Gabès",
+        "governorate": "Gabès",
+        "approximate_address": "Station Agil, Route Nationale, Gabès",
+        "access": "public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status"
+        ],
+        "source_note": "AGIL-STEG pilot: 4 highway stations included, Gabès is a key route waypoint south."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.858654969076152,
+          33.872210175078386
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 38,
+        "NAME": "Porsche Destination — Sbeitla / Kasserine West",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Sbeitla",
+        "governorate": "Kasserine",
+        "approximate_address": "Partner destination, Sbeitla / Kasserine West",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "remote_location_important_for_routing",
+          "free_for_porsche_and_compatible_ev",
+          "coordinates_very_remote_verify_access_hours"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.080611673844324,
+          33.897744318732116
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 39,
+        "NAME": null,
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Gabès",
+        "governorate": "Gabès",
+        "approximate_address": "Gabès South area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.970605014018732,
+          33.818144420902954
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 40,
+        "NAME": "Porsche Destination — Gabès",
+        "ORIGIN": "google_maps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": "Porsche Tunisia / Ennakl Automobiles",
+        "operator_type": "hotel_or_partner",
+        "network": "Porsche Smart Mobility GmbH",
+        "city": "Gabès",
+        "governorate": "Gabès",
+        "approximate_address": "Partner destination, Gabès",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": true,
+        "data_flags": [
+          "missing_status",
+          "free_for_porsche_and_compatible_ev",
+          "remote_location_important_for_routing"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.958772611973222,
+          33.870221611692827
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 41,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SEMI-FAST (11-22 KW)",
+        "power_kw": 22,
+        "connector_types": [
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "unknown",
+        "network": null,
+        "city": "Sidi Bouzid",
+        "governorate": "Sidi Bouzid",
+        "approximate_address": "Sidi Bouzid area",
+        "access": "public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "remote_location",
+          "needs_field_verification"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.11590854850747,
+          33.888255902034864
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 42,
+        "NAME": null,
+        "ORIGIN": "electromaps",
+        "STATUS": "UNKNOWN",
+        "report_us": "WORKING",
+        "CS_Speed": "SLOW (3 KW)",
+        "power_kw": 3,
+        "connector_types": [
+          "Schuko",
+          "Type2"
+        ],
+        "operator": null,
+        "operator_type": "hotel_or_private",
+        "network": null,
+        "city": "Gafsa",
+        "governorate": "Gafsa",
+        "approximate_address": "Gafsa / Metlaoui area",
+        "access": "semi_public",
+        "charging_free": null,
+        "verified": false,
+        "data_flags": [
+          "missing_name",
+          "missing_status",
+          "remote_location",
+          "likely_hotel_or_residence"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.56964298806488,
+          32.858103585089211
+        ]
+      }
+    }
+  ]
+}

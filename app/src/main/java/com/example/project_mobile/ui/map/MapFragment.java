@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +60,8 @@ public class MapFragment extends Fragment {
     private final Map<Long, ChargingStation> symbolStationMap = new HashMap<>();
     private final Map<Long, String> symbolAlertMap = new HashMap<>();
     private final List<org.maplibre.android.annotations.Marker> activeAlertMarkers = new java.util.ArrayList<>();
+    private com.example.project_mobile.data.TokenManager tokenManager;
+    private String userConnectors = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +83,9 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(
                 requireActivity().getApplication());
+                
+        tokenManager = new com.example.project_mobile.data.TokenManager(requireContext());
+        userConnectors = tokenManager.getUserConnectors();
         
         repo.getAllStations().observe(getViewLifecycleOwner(), newStations -> {
             this.fullStationList = newStations;
@@ -157,33 +164,33 @@ public class MapFragment extends Fragment {
 
     private void setupFilters(View v) {
         TextView chipAvailable = v.findViewById(R.id.chip_available);
+        TextView chipSlow = v.findViewById(R.id.chip_slow);
+        TextView chipSemiFast = v.findViewById(R.id.chip_semifast);
         TextView chipFast = v.findViewById(R.id.chip_fast);
-        TextView chipType2 = v.findViewById(R.id.chip_type2);
-        TextView chipOpen = v.findViewById(R.id.chip_open);
 
         View.OnClickListener toggle = view -> {
             int id = view.getId();
             if (id == R.id.chip_available) fAvailable = !fAvailable;
-            else if (id == R.id.chip_fast) fSlow = !fSlow;
-            else if (id == R.id.chip_type2) fSemiFast = !fSemiFast;
-            else if (id == R.id.chip_open) fFast = !fFast;
+            else if (id == R.id.chip_slow) fSlow = !fSlow;
+            else if (id == R.id.chip_semifast) fSemiFast = !fSemiFast;
+            else if (id == R.id.chip_fast) fFast = !fFast;
 
             updateChipUI((TextView) view, id);
             performFiltering(currentQuery);
         };
 
         chipAvailable.setOnClickListener(toggle);
+        chipSlow.setOnClickListener(toggle);
+        chipSemiFast.setOnClickListener(toggle);
         chipFast.setOnClickListener(toggle);
-        chipType2.setOnClickListener(toggle);
-        chipOpen.setOnClickListener(toggle);
     }
 
     private void updateChipUI(TextView chip, int id) {
         boolean active = false;
         if (id == R.id.chip_available) active = fAvailable;
-        else if (id == R.id.chip_fast) active = fSlow;
-        else if (id == R.id.chip_type2) active = fSemiFast;
-        else if (id == R.id.chip_open) active = fFast;
+        else if (id == R.id.chip_slow) active = fSlow;
+        else if (id == R.id.chip_semifast) active = fSemiFast;
+        else if (id == R.id.chip_fast) active = fFast;
 
         chip.setBackgroundResource(active ? R.drawable.bg_filter_chip_active : R.drawable.bg_filter_chip);
         chip.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), active ? R.color.slate_950 : R.color.white));
@@ -215,6 +222,20 @@ public class MapFragment extends Fragment {
                 if (fFast && speed.contains("FAST") && !speed.contains("SEMI-FAST")) matchesPower = true;
                 
                 if (!matchesPower) continue;
+            }
+            
+            // EV-Matched Connector Filtering
+            if (userConnectors != null && !userConnectors.isEmpty() && s.connectors != null && !s.connectors.isEmpty()) {
+                boolean hasCompatibleConnector = false;
+                for (String stationConn : s.connectors) {
+                    if (userConnectors.toLowerCase().contains(stationConn.toLowerCase().trim())) {
+                        hasCompatibleConnector = true;
+                        break;
+                    }
+                }
+                if (!hasCompatibleConnector) {
+                    continue; // Auto-hide incompatible stations
+                }
             }
             
             stations.add(s);
@@ -342,12 +363,56 @@ public class MapFragment extends Fragment {
         updateMapSelection();
     }
 
+    private void handleCheckIn(ChargingStation station, boolean isStarting) {
+        if (station == null) return;
+        com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(requireActivity().getApplication());
+        repo.checkIn(Integer.parseInt(station.id), isStarting, new com.example.project_mobile.data.StationRepository.Callback() {
+            @Override
+            public void onSuccess() {
+                android.widget.Toast.makeText(requireContext(), isStarting ? "Checked in! +10 Points" : "Checked out! +5 Points", android.widget.Toast.LENGTH_SHORT).show();
+                if (isStarting) {
+                    float capacity = tokenManager != null ? tokenManager.getBatteryCapacity() : 0f;
+                    int powerKw = station.powerKw > 0 ? station.powerKw : parsePower(station.power);
+                    int minutes = 30;
+                    if (capacity > 0 && powerKw > 0) {
+                        float hours = (capacity * 0.8f) / powerKw;
+                        minutes = Math.max(1, (int) (hours * 60));
+                    }
+                    repo.saveSession(Integer.parseInt(station.id), station.name, station.city != null ? station.city : "", false, 0f, minutes);
+                }
+                if (getView() != null) {
+                    getView().findViewById(R.id.station_preview_sheet).setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                android.widget.Toast.makeText(requireContext(), "Check-in failed: " + message, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void bindSelectedStation(View root, ChargingStation station) {
         selectedStation = station;
         ((TextView) root.findViewById(R.id.preview_title)).setText(station.name);
         
         String address = station.address != null ? station.address : station.city;
+        if (station.governorate != null && !station.governorate.isEmpty() && !address.contains(station.governorate)) {
+            address += ", " + station.governorate;
+        }
         ((TextView) root.findViewById(R.id.preview_subtitle)).setText(address);
+        
+        TextView opView = root.findViewById(R.id.preview_operator);
+        if (station.operator != null && !station.operator.isEmpty()) {
+            opView.setVisibility(View.VISIBLE);
+            String opText = station.operator;
+            if (station.verified) {
+                opText += " ✓ Verified";
+            }
+            opView.setText(opText);
+        } else {
+            opView.setVisibility(View.GONE);
+        }
         
         TextView statusChip = root.findViewById(R.id.preview_status);
         statusChip.setText(station.status);
@@ -370,10 +435,55 @@ public class MapFragment extends Fragment {
         String distTime = (station.distance != null ? station.distance : "---") + " • " + (station.eta != null ? station.eta : "-- min");
         ((TextView) root.findViewById(R.id.preview_route)).setText(distTime);
         
-        ((TextView) root.findViewById(R.id.preview_power)).setText(station.power + " • " + station.ports);
+        String displayPower = station.powerKw > 0 ? station.powerKw + " kW" : station.power;
+        ((TextView) root.findViewById(R.id.preview_power)).setText(displayPower + " • " + station.ports);
         
         if (station.connectors != null && !station.connectors.isEmpty()) {
             ((TextView) root.findViewById(R.id.preview_connectors)).setText(android.text.TextUtils.join(" • ", station.connectors));
+        } else {
+            ((TextView) root.findViewById(R.id.preview_connectors)).setText("");
+        }
+
+        TextView estimatorView = root.findViewById(R.id.preview_estimator);
+        float capacity = tokenManager != null ? tokenManager.getBatteryCapacity() : 0f;
+        int powerKw = station.powerKw > 0 ? station.powerKw : parsePower(station.power);
+        String estimatorText = "";
+        
+        if (capacity > 0 && powerKw > 0) {
+            float hours = (capacity * 0.8f) / powerKw;
+            int minutes = Math.max(1, (int) (hours * 60));
+            estimatorText = "Est. 80% charge: " + minutes + " min";
+        }
+        
+        if (station.price != null && !station.price.isEmpty() && !station.price.equals("Unknown")) {
+            if (!estimatorText.isEmpty()) estimatorText += " • ";
+            estimatorText += station.price;
+        }
+        
+        if (!estimatorText.isEmpty()) {
+            estimatorView.setVisibility(View.VISIBLE);
+            estimatorView.setText(estimatorText);
+        } else {
+            estimatorView.setVisibility(View.GONE);
+        }
+
+        ImageView previewImage = root.findViewById(R.id.preview_image);
+        if (station.imageUrl != null && !station.imageUrl.isEmpty()) {
+            previewImage.setVisibility(View.VISIBLE);
+            com.bumptech.glide.Glide.with(this)
+                .load(station.imageUrl)
+                .into(previewImage);
+        } else {
+            previewImage.setVisibility(View.GONE);
+        }
+
+        Button checkInBtn = root.findViewById(R.id.check_in_action);
+        if ("Available".equalsIgnoreCase(station.status)) {
+            checkInBtn.setText("I'm Charging Here");
+            checkInBtn.setOnClickListener(v -> handleCheckIn(station, true));
+        } else {
+            checkInBtn.setText("I'm Leaving (Mark Available)");
+            checkInBtn.setOnClickListener(v -> handleCheckIn(station, false));
         }
 
         updateMapSelection();

@@ -17,6 +17,8 @@ public class TokenManager {
     private static final String KEY_REFRESH = "jwt_refresh";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_USER_CONNECTORS = "user_connectors";
+    private static final String KEY_BATTERY_CAPACITY = "battery_capacity_kwh";
 
     private final SharedPreferences prefs;
 
@@ -58,6 +60,22 @@ public class TokenManager {
 
     public String getUserName() {
         return prefs.getString(KEY_USER_NAME, "Driver");
+    }
+
+    public void saveUserConnectors(String connectors) {
+        prefs.edit().putString(KEY_USER_CONNECTORS, connectors).apply();
+    }
+
+    public String getUserConnectors() {
+        return prefs.getString(KEY_USER_CONNECTORS, "");
+    }
+
+    public void saveBatteryCapacity(float capacity) {
+        prefs.edit().putFloat(KEY_BATTERY_CAPACITY, capacity).apply();
+    }
+
+    public float getBatteryCapacity() {
+        return prefs.getFloat(KEY_BATTERY_CAPACITY, 0f);
     }
 
     public void clear() {

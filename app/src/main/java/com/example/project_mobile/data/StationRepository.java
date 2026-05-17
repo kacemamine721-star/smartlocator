@@ -99,6 +99,16 @@ public class StationRepository {
                         e.latitude = dto.latitude;
                         e.longitude = dto.longitude;
                         e.csSpeed = dto.csSpeed;
+                        e.price = "Unknown";
+                        e.averageRating = dto.averageRating;
+                        e.ratingCount = dto.ratingCount;
+                        e.userRating = dto.userRating;
+                        e.imageUrl = dto.image;
+                        if (dto.connectors != null && !dto.connectors.isEmpty()) {
+                            e.connectors = android.text.TextUtils.join(",", dto.connectors);
+                        } else {
+                            e.connectors = "Type2";
+                        }
                         
                         // IMPORTANT: Preserve local favorite status. 
                         // The backend 'is_favorite' is global/featured, not per-user.
@@ -142,22 +152,87 @@ public class StationRepository {
     }
 
     public void addFavorite(int stationId, Callback callback) {
+        if (!tokenManager.hasToken()) {
+            callback.onError("Not logged in");
+            return;
+        }
+
         executor.execute(() -> {
             try {
+                // Check if already favorite locally
                 String uid = tokenManager.getUserId();
                 if (favoriteDao.isFavorite(stationId, uid)) {
-                    postSuccess(callback);
+                    mainHandler.post(() -> callback.onError("Already in favorites"));
                     return;
                 }
-                FavoriteEntity fav = new FavoriteEntity();
-                fav.stationId = stationId;
-                fav.userId = uid;
-                fav.savedAt = System.currentTimeMillis();
-                favoriteDao.insert(fav);
-                stationDao.markFavorite(stationId);
-                postSuccess(callback);
+
+                // Add locally
+                FavoriteEntity fe = new FavoriteEntity();
+                fe.stationId = stationId;
+                fe.userId = uid;
+                fe.savedAt = System.currentTimeMillis();
+                favoriteDao.insert(fe);
+                stationDao.setFavorite(stationId, true);
+
+                // Add to remote (mock)
+                mainHandler.post(callback::onSuccess);
+
             } catch (Exception e) {
-                postError(callback, e.getMessage());
+                mainHandler.post(() -> callback.onError(e.getMessage()));
+            }
+        });
+    }
+
+    public void checkIn(int stationId, boolean isStarting, Callback callback) {
+        if (!tokenManager.hasToken()) {
+            callback.onError("Not logged in");
+            return;
+        }
+
+        String action = isStarting ? "start" : "stop";
+        com.example.project_mobile.data.remote.CheckInRequest req = new com.example.project_mobile.data.remote.CheckInRequest(action);
+        
+        ApiService api = RetrofitClient.getApiService(app);
+        api.checkInStation(stationId, req).enqueue(new retrofit2.Callback<com.example.project_mobile.data.remote.CheckInResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.example.project_mobile.data.remote.CheckInResponse> call, retrofit2.Response<com.example.project_mobile.data.remote.CheckInResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    executor.execute(() -> {
+                        stationDao.updateStatus(stationId, response.body().station_status);
+                        mainHandler.post(callback::onSuccess);
+                    });
+                } else {
+                    mainHandler.post(() -> callback.onError("Check-in failed"));
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.example.project_mobile.data.remote.CheckInResponse> call, Throwable t) {
+                mainHandler.post(() -> callback.onError(t.getMessage()));
+            }
+        });
+    }
+
+    public void flagStation(int stationId, Callback callback) {
+        if (!tokenManager.hasToken()) {
+            callback.onError("Not logged in");
+            return;
+        }
+        
+        ApiService api = RetrofitClient.getApiService(app);
+        api.flagStationAsBroken(stationId).enqueue(new retrofit2.Callback<Void>() {
+            @Override
+            public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                if (response.isSuccessful()) {
+                    mainHandler.post(callback::onSuccess);
+                } else {
+                    mainHandler.post(() -> callback.onError("Flag failed"));
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                mainHandler.post(() -> callback.onError(t.getMessage()));
             }
         });
     }
@@ -206,13 +281,28 @@ public class StationRepository {
     }
 
     public void submitRating(int stationId, int stars, String comment, Callback callback) {
-        executor.execute(() -> {
-            try {
-                // TODO (Student 4): also POST to /api/stations/{id}/rate/
-                Log.d(TAG, "Rating submitted: " + stars + "★ for station " + stationId);
-                postSuccess(callback);
-            } catch (Exception e) {
-                postError(callback, e.getMessage());
+        if (!tokenManager.hasToken()) {
+            callback.onError("Not logged in");
+            return;
+        }
+
+        ApiService api = RetrofitClient.getApiService(app);
+        com.example.project_mobile.data.remote.RatingRequest req = new com.example.project_mobile.data.remote.RatingRequest(stationId, stars, comment);
+        
+        api.submitRating(req).enqueue(new retrofit2.Callback<com.example.project_mobile.data.remote.RatingResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<com.example.project_mobile.data.remote.RatingResponse> call, retrofit2.Response<com.example.project_mobile.data.remote.RatingResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Rating successful, we could update local average rating if we had logic for it, but for now just success
+                    postSuccess(callback);
+                } else {
+                    postError(callback, "Rating failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<com.example.project_mobile.data.remote.RatingResponse> call, Throwable t) {
+                postError(callback, t.getMessage());
             }
         });
     }
@@ -294,15 +384,23 @@ public class StationRepository {
                     "", // ports
                     "", // hours
                     e.network,
-                    "", // price
+                    e.price, // price
                     e.reliability,
                     e.isFavorite,
                     e.latitude,
                     e.longitude,
-                    new ArrayList<>(),
+                    e.connectors != null && !e.connectors.isEmpty() ? java.util.Arrays.asList(e.connectors.split(",")) : new ArrayList<>(),
                     e.csSpeed,
                     e.averageRating,
-                    e.ratingCount));
+                    e.ratingCount,
+                    e.userRating,
+                    e.powerKw,
+                    e.operator,
+                    e.operatorType,
+                    e.governorate,
+                    e.access,
+                    e.verified,
+                    e.imageUrl));
         }
         return result;
     }

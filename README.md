@@ -58,6 +58,7 @@ smartlocator/
 2. Install dependencies: `pip install -r requirements.txt`
 3. Run migrations: `python manage.py migrate`
 4. Start the development server: `python manage.py runserver 0.0.0.0:8000`
+5. Enter the admin interface: `http://127.0.0.1:8000/admin/`
 
 ### Android Setup
 1. Open the root project folder in Android Studio.

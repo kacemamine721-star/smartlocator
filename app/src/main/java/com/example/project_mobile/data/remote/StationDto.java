@@ -42,4 +42,16 @@ public class StationDto {
 
     @SerializedName("cs_speed")
     public String csSpeed;
+
+    @SerializedName("averageRating")
+    public float averageRating;
+
+    @SerializedName("ratingCount")
+    public int ratingCount;
+
+    @SerializedName("userRating")
+    public Integer userRating;
+
+    @SerializedName("image")
+    public String image;
 }

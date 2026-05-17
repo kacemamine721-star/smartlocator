@@ -8,8 +8,8 @@ class Command(BaseCommand):
     help = 'Import EV vehicles from JSON and images'
 
     def handle(self, *args, **kwargs):
-        json_path = os.path.join('..', 'ev_database_tunisia.json')
-        img_dir = os.path.join('..', 'ev_images')
+        json_path = os.path.join('..', 'app', 'src', 'main', 'res', 'raw', 'ev_database_tunisia.json')
+        img_dir = os.path.join('..', 'app', 'src', 'main', 'assets', 'ev_images')
         
         if not os.path.exists(json_path):
             self.stderr.write(self.style.ERROR(f'Could not find {json_path}'))
@@ -56,13 +56,17 @@ class Command(BaseCommand):
             potential_names = [
                 f"{item.get('brand')}_{item.get('model')}.png".replace(' ', '_'),
                 f"{item.get('brand')}_{item.get('model')}.png".replace(' ', '_').replace('-', '_'),
-                f"{item.get('brand')}_{item.get('model')}.png".replace(' ', '_').replace('&', 'and')
+                f"{item.get('brand')}_{item.get('model')}.png".replace(' ', '_').replace('&', 'and'),
+                f"{item.get('model')}.png".replace(' ', '_'), # Fallback to just model name
+                f"{item.get('model')}.png".replace(' ', '_').replace('-', '_')
             ]
             
             img_found = False
-            if os.path.exists(img_dir):
+            if not obj.image and os.path.exists(img_dir):
                 for fname in os.listdir(img_dir):
-                    if fname.lower().replace('-', '_') in [n.lower() for n in potential_names]:
+                    # Replace spaces and hyphens with underscores in both for better matching
+                    fname_clean = fname.lower().replace(' ', '_').replace('-', '_')
+                    if fname_clean in [n.lower().replace('-', '_') for n in potential_names]:
                         img_path = os.path.join(img_dir, fname)
                         with open(img_path, 'rb') as img_f:
                             obj.image.save(fname, File(img_f), save=True)

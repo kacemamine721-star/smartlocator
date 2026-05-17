@@ -4,9 +4,30 @@ from rest_framework import serializers
 from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert, EVVehicle, UserProfile
 
 class ChargingStationSerializer(serializers.ModelSerializer):
+    averageRating = serializers.SerializerMethodField()
+    ratingCount = serializers.SerializerMethodField()
+    userRating = serializers.SerializerMethodField()
+
     class Meta:
         model = ChargingStation
         fields = '__all__'
+
+    def get_averageRating(self, obj):
+        ratings = obj.ratings.all()
+        if not ratings:
+            return 0.0
+        return sum(r.stars for r in ratings) / len(ratings)
+
+    def get_ratingCount(self, obj):
+        return obj.ratings.count()
+
+    def get_userRating(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            rating = obj.ratings.filter(user=request.user).first()
+            if rating:
+                return rating.stars
+        return None
 
 
 class RegisterSerializer(serializers.ModelSerializer):

@@ -20,6 +20,16 @@
             android:src="@android:drawable/ic_media_previous"
             android:tint="@color/white" />
 
+        <ImageView
+            android:id="@+id/details_station_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="18dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:src="@android:drawable/ic_menu_gallery" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="220dp"
@@ -60,6 +70,16 @@
                 android:textColor="#C2D0D8"
                 android:textSize="15sp"
                 tools:text="2.1 km - 6 min" />
+
+            <TextView
+                android:id="@+id/details_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/yellow_500"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="★ 4.5 (120 reviews)" />
         </LinearLayout>
 
         <TextView
@@ -123,6 +143,7 @@
                     android:textColor="@color/white" />
 
                 <TextView
+                    android:id="@+id/btn_report_issue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -132,6 +153,19 @@
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
                     android:text="@string/report_issue"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/btn_rate_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_action_chip_dark"
+                    android:paddingStart="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:text="Rate Station"
                     android:textColor="@color/white" />
             </LinearLayout>
         </HorizontalScrollView>
@@ -204,17 +238,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/provider"
+                android:text="Operator"
                 android:textColor="#8FA4B5" />
 
             <TextView
-                android:id="@+id/details_provider"
+                android:id="@+id/details_operator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                tools:text="ChargeTN" />
+                tools:text="Operator Name" />
 
             <TextView
                 android:id="@+id/details_hours"
@@ -223,6 +257,14 @@
                 android:layout_marginTop="12dp"
                 android:textColor="#C2D0D8"
                 tools:text="Open 24/7" />
+                
+            <TextView
+                android:id="@+id/details_access"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="#C2D0D8"
+                tools:text="Public Access" />
         </LinearLayout>
 
         <LinearLayout
