@@ -11,6 +11,8 @@ from .views import (
     RegisterView,
     StationRatingViewSet,
     CommunityAlertViewSet,
+    EVVehicleViewSet,
+    UserMeView,
 )
 
 router = DefaultRouter()
@@ -20,10 +22,12 @@ router.register(r'history', HistorySessionViewSet, basename='history')
 router.register(r'ratings', StationRatingViewSet, basename='rating')
 router.register(r'contributions', ContributedStationViewSet, basename='contribution')
 router.register(r'alerts', CommunityAlertViewSet, basename='alert')
+router.register(r'vehicles', EVVehicleViewSet, basename='vehicle')
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
     path('auth/login/', LoginView.as_view(), name='auth-login'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='auth-refresh'),
+    path('users/me/', UserMeView.as_view(), name='user-me'),
     path('', include(router.urls)),
 ]

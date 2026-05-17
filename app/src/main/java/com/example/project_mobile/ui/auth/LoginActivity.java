@@ -14,6 +14,7 @@ import com.example.project_mobile.data.TokenManager;
 import com.example.project_mobile.data.remote.AuthResponse;
 import com.example.project_mobile.data.remote.LoginRequest;
 import com.example.project_mobile.data.remote.RetrofitClient;
+import com.example.project_mobile.data.remote.UserMeResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -79,9 +80,31 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void openMain() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        RetrofitClient.getApiService(this).getUserMe().enqueue(new Callback<UserMeResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<UserMeResponse> call, @NonNull Response<UserMeResponse> response) {
+                Intent intent;
+                if (response.isSuccessful() && response.body() != null 
+                    && response.body().profile != null 
+                    && response.body().profile.vehicle != null) {
+                    // User already has a vehicle, go straight to MainActivity
+                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                } else {
+                    // User needs to select a vehicle
+                    intent = new Intent(LoginActivity.this, EVSelectionActivity.class);
+                }
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserMeResponse> call, @NonNull Throwable t) {
+                // If the check fails, fallback to MainActivity just in case
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
     }
 
     private String textOf(TextInputEditText input) {

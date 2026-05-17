@@ -24,6 +24,15 @@ public class WelcomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
 
+        android.widget.VideoView videoView = findViewById(R.id.welcome_video_view);
+        android.net.Uri uri = android.net.Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_video);
+        videoView.setVideoURI(uri);
+        videoView.setOnPreparedListener(mp -> {
+            mp.setLooping(true);
+        });
+        videoView.start();
+
+
         findViewById(R.id.btn_welcome_login).setOnClickListener(v ->
                 startActivity(new Intent(this, LoginActivity.class)));
 

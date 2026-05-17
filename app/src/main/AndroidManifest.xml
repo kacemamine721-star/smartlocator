@@ -40,6 +40,11 @@
             android:name=".ui.details.StationDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.EVSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Project_Mobile" />
+            
+        <activity
             android:name=".ui.contribution.MapPickerActivity"
             android:exported="false" />
         <activity

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert
+from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert, EVVehicle, UserProfile
 
 class ChargingStationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,3 +69,28 @@ class CommunityAlertSerializer(serializers.ModelSerializer):
         model = CommunityAlert
         fields = ("id", "alert_type", "description", "latitude", "longitude", "is_active", "is_validated", "user", "created_at")
         read_only_fields = ("id", "is_validated", "user", "created_at")
+
+class EVVehicleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EVVehicle
+        fields = '__all__'
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    vehicle = EVVehicleSerializer(read_only=True)
+    vehicle_id = serializers.PrimaryKeyRelatedField(
+        queryset=EVVehicle.objects.all(), source='vehicle', write_only=True, allow_null=True
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ('user', 'vehicle', 'vehicle_id')
+        read_only_fields = ('user',)
+
+class UserMeSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'profile')
+        read_only_fields = ('id', 'username', 'email')
+

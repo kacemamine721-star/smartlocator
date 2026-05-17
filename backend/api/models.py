@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class ChargingStation(models.Model):
     station_id = models.CharField(max_length=100, unique=True)
@@ -129,3 +131,44 @@ class CommunityAlert(models.Model):
 
     def __str__(self):
         return f"{self.alert_type} alert by {self.user}"
+
+class EVVehicle(models.Model):
+    vehicle_id = models.CharField(max_length=100, unique=True)
+    brand = models.CharField(max_length=100)
+    model_name = models.CharField(max_length=100)
+    segment = models.CharField(max_length=50)
+    battery_capacity_kwh = models.FloatField(null=True, blank=True)
+    usable_capacity_kwh = models.FloatField(null=True, blank=True)
+    range_wltp_km = models.IntegerField(null=True, blank=True)
+    ac_max_power_kw = models.FloatField(null=True, blank=True)
+    ac_connector_type = models.CharField(max_length=50, null=True, blank=True)
+    ac_phases = models.IntegerField(null=True, blank=True)
+    dc_max_power_kw = models.FloatField(null=True, blank=True)
+    dc_connector_type = models.CharField(max_length=50, null=True, blank=True)
+    km_per_hour_ac = models.IntegerField(null=True, blank=True)
+    km_per_hour_dc = models.IntegerField(null=True, blank=True)
+    full_charge_time_ac_hours = models.FloatField(null=True, blank=True)
+    full_charge_time_dc_minutes = models.IntegerField(null=True, blank=True)
+    image = models.ImageField(upload_to='ev_images/', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.brand} {self.model_name}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    vehicle = models.ForeignKey(EVVehicle, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def save_user_profile(sender, instance, **kwargs):
+    UserProfile.objects.get_or_create(user=instance)
+

@@ -15,6 +15,14 @@ import com.example.project_mobile.ui.auth.WelcomeActivity;
 import android.widget.Button;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.example.project_mobile.data.remote.RetrofitClient;
+import com.example.project_mobile.data.remote.UserMeResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
 
@@ -47,6 +55,40 @@ public class ProfileFragment extends Fragment {
                 savedCount.setText(String.valueOf(stats[0]));
                 routesCount.setText(String.valueOf(stats[1]));
                 alertsCount.setText(String.valueOf(stats[2]));
+            }
+        });
+
+        View llEvVehicle = view.findViewById(R.id.ll_ev_vehicle);
+        TextView tvEvBrand = view.findViewById(R.id.tv_profile_ev_brand);
+        TextView tvEvModel = view.findViewById(R.id.tv_profile_ev_model);
+        ImageView btnChangeEv = view.findViewById(R.id.btn_change_ev);
+
+        btnChangeEv.setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), com.example.project_mobile.ui.auth.EVSelectionActivity.class));
+        });
+
+        RetrofitClient.getApiService(requireContext()).getUserMe().enqueue(new Callback<UserMeResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<UserMeResponse> call, @NonNull Response<UserMeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().profile != null && response.body().profile.vehicle != null) {
+                        llEvVehicle.setVisibility(View.VISIBLE);
+                        tvEvBrand.setText(response.body().profile.vehicle.brand);
+                        tvEvModel.setText(response.body().profile.vehicle.model_name);
+                        
+                        ImageView ivProfileEv = view.findViewById(R.id.iv_profile_ev);
+                        if (response.body().profile.vehicle.image != null) {
+                            Glide.with(requireContext())
+                                    .load(response.body().profile.vehicle.image)
+                                    .into(ivProfileEv);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserMeResponse> call, @NonNull Throwable t) {
+                // Ignore failure for now
             }
         });
 

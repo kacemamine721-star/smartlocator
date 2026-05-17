@@ -5,6 +5,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 
 public interface ApiService {
     @GET("stations/")
@@ -21,4 +22,13 @@ public interface ApiService {
 
     @POST("alerts/")
     Call<Void> submitAlert(@Body AlertRequest request);
+
+    @GET("vehicles/")
+    Call<List<EVVehicle>> getVehicles();
+
+    @GET("users/me/")
+    Call<UserMeResponse> getUserMe();
+
+    @PUT("users/me/")
+    Call<UserMeResponse> updateProfile(@Body UpdateProfileRequest request);
 }

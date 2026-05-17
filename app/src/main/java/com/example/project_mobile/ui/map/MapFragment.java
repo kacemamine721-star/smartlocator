@@ -35,10 +35,6 @@ import org.maplibre.android.plugins.annotation.SymbolManager;
 import org.maplibre.android.plugins.annotation.SymbolOptions;
 import org.maplibre.android.utils.ColorUtils;
 
-import org.maplibre.android.annotations.Icon;
-import org.maplibre.android.annotations.IconFactory;
-import org.maplibre.android.annotations.Marker;
-import org.maplibre.android.annotations.MarkerOptions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +57,7 @@ public class MapFragment extends Fragment {
     private boolean alertsVisible = true;
     private final Map<Long, ChargingStation> symbolStationMap = new HashMap<>();
     private final Map<Long, String> symbolAlertMap = new HashMap<>();
-    private final List<Marker> activeAlertMarkers = new java.util.ArrayList<>();
+    private final List<org.maplibre.android.annotations.Marker> activeAlertMarkers = new java.util.ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -190,7 +186,7 @@ public class MapFragment extends Fragment {
         else if (id == R.id.chip_open) active = fFast;
 
         chip.setBackgroundResource(active ? R.drawable.bg_filter_chip_active : R.drawable.bg_filter_chip);
-        chip.setTextColor(active ? getResources().getColor(R.color.slate_950, null) : getResources().getColor(R.color.white, null));
+        chip.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), active ? R.color.slate_950 : R.color.white));
     }
 
     private void performFiltering(String query) {
@@ -282,16 +278,16 @@ public class MapFragment extends Fragment {
         symbolManager.deleteAll();
 
         if (stations != null && !stations.isEmpty()) {
-            IconFactory iconFactory = IconFactory.getInstance(requireContext());
+            org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory.getInstance(requireContext());
             for (ChargingStation station : stations) {
                 int iconResId = markerIconFor(station.status);
                 android.graphics.Bitmap bitmap = getBitmapFromVector(iconResId);
-                Icon icon = null;
+                org.maplibre.android.annotations.Icon icon = null;
                 if (bitmap != null) {
                     icon = iconFactory.fromBitmap(bitmap);
                 }
 
-                MarkerOptions options = new MarkerOptions()
+                org.maplibre.android.annotations.MarkerOptions options = new org.maplibre.android.annotations.MarkerOptions()
                         .position(new LatLng(station.latitude, station.longitude))
                         .title(station.name)
                         .snippet(station.status + " - " + station.power);
@@ -300,7 +296,7 @@ public class MapFragment extends Fragment {
                     options.icon(icon);
                 }
 
-                Marker marker = mapLibreMap.addMarker(options);
+                org.maplibre.android.annotations.Marker marker = mapLibreMap.addMarker(options);
                 symbolStationMap.put(marker.getId(), station);
             }
         }
@@ -326,7 +322,7 @@ public class MapFragment extends Fragment {
         });
 
         // User location marker
-        mapLibreMap.addMarker(new MarkerOptions()
+        mapLibreMap.addMarker(new org.maplibre.android.annotations.MarkerOptions()
                 .position(MOCK_USER_LOCATION)
                 .title("Your location"));
 
@@ -393,7 +389,7 @@ public class MapFragment extends Fragment {
         if (mapLibreMap == null) return;
 
         // Remove existing markers
-        for (Marker m : activeAlertMarkers) {
+        for (org.maplibre.android.annotations.Marker m : activeAlertMarkers) {
             mapLibreMap.removeMarker(m);
         }
         activeAlertMarkers.clear();
@@ -401,28 +397,28 @@ public class MapFragment extends Fragment {
 
         if (!alertsVisible) return;
 
-        IconFactory iconFactory = IconFactory.getInstance(requireContext());
+        org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory.getInstance(requireContext());
         android.graphics.Bitmap alertBitmap = getBitmapFromVector(R.drawable.ic_alert_warning);
-        Icon alertIcon = (alertBitmap != null) ? iconFactory.fromBitmap(alertBitmap) : null;
+        org.maplibre.android.annotations.Icon alertIcon = (alertBitmap != null) ? iconFactory.fromBitmap(alertBitmap) : null;
 
         // Mock alerts for now (later fetch from backend)
-        MarkerOptions highDemand = new MarkerOptions()
+        org.maplibre.android.annotations.MarkerOptions highDemand = new org.maplibre.android.annotations.MarkerOptions()
                 .position(new LatLng(36.832, 10.231))
                 .title("High Demand")
                 .snippet("Near Les Berges du Lac. Nearby chargers are about 90% occupied.");
         
         if (alertIcon != null) highDemand.icon(alertIcon);
-        Marker s1 = mapLibreMap.addMarker(highDemand);
+        org.maplibre.android.annotations.Marker s1 = mapLibreMap.addMarker(highDemand);
         activeAlertMarkers.add(s1);
         symbolAlertMap.put(s1.getId(), highDemand.getSnippet());
 
-        MarkerOptions maintenance = new MarkerOptions()
+        org.maplibre.android.annotations.MarkerOptions maintenance = new org.maplibre.android.annotations.MarkerOptions()
                 .position(new LatLng(36.845, 10.210))
                 .title("Maintenance")
                 .snippet("Station AGIL Lac 2 is undergoing maintenance until 6 PM.");
         
         if (alertIcon != null) maintenance.icon(alertIcon);
-        Marker s2 = mapLibreMap.addMarker(maintenance);
+        org.maplibre.android.annotations.Marker s2 = mapLibreMap.addMarker(maintenance);
         activeAlertMarkers.add(s2);
         symbolAlertMap.put(s2.getId(), maintenance.getSnippet());
     }

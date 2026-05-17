@@ -1,7 +1,8 @@
 from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert
+from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert, EVVehicle
+from django.contrib.auth.models import User
 from .serializers import (
     ChargingStationSerializer,
     ContributedStationSerializer,
@@ -10,6 +11,9 @@ from .serializers import (
     RegisterSerializer,
     StationRatingSerializer,
     CommunityAlertSerializer,
+    EVVehicleSerializer,
+    UserMeSerializer,
+    UserProfileSerializer,
 )
 
 class ChargingStationViewSet(viewsets.ModelViewSet):
@@ -95,3 +99,33 @@ class CommunityAlertViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class EVVehicleViewSet(viewsets.ModelViewSet):
+    serializer_class = EVVehicleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = EVVehicle.objects.all()
+
+class UserMeView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserMeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        # Allow updating profile's vehicle_id directly via this endpoint
+        user = self.get_object()
+        vehicle_id = request.data.get('vehicle_id')
+        if vehicle_id is not None:
+            profile = user.profile
+            if vehicle_id == "":
+                profile.vehicle = None
+            else:
+                try:
+                    vehicle = EVVehicle.objects.get(id=vehicle_id)
+                    profile.vehicle = vehicle
+                except EVVehicle.DoesNotExist:
+                    pass
+            profile.save()
+        return super().update(request, *args, **kwargs)
+
