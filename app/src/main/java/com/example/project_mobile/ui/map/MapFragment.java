@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,11 +52,16 @@ public class MapFragment extends Fragment {
     private SymbolManager symbolManager;
     private LineManager lineManager;
     private Line routeLine;
+    private Line reachabilityLine;
+    private org.maplibre.android.annotations.Polygon reachabilityPolygon;
     private ChargingStation selectedStation;
     private List<ChargingStation> stations;
     private List<ChargingStation> fullStationList;
     private String currentQuery = "";
     private boolean fAvailable = false, fSlow = false, fSemiFast = false, fFast = false;
+    private boolean fMyCar = true;
+    private boolean rangeOverlayVisible = false;
+    private int currentSoc = 65;
     private boolean alertsVisible = true;
     private final Map<Long, ChargingStation> symbolStationMap = new HashMap<>();
     private final Map<Long, String> symbolAlertMap = new HashMap<>();
@@ -83,27 +89,36 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(
                 requireActivity().getApplication());
-                
+
         tokenManager = new com.example.project_mobile.data.TokenManager(requireContext());
         userConnectors = tokenManager.getUserConnectors();
-        
+        currentSoc = tokenManager.getCurrentSoc();
+
         repo.getAllStations().observe(getViewLifecycleOwner(), newStations -> {
             this.fullStationList = newStations;
-            performFiltering(currentQuery); 
+            performFiltering(currentQuery);
         });
 
         android.widget.EditText searchInput = view.findViewById(R.id.et_search_map);
         if (searchInput != null) {
             searchInput.addTextChangedListener(new android.text.TextWatcher() {
-                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                @Override public void afterTextChanged(android.text.Editable s) {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {
                     currentQuery = s.toString();
                     performFiltering(currentQuery);
                 }
             });
         }
         setupFilters(view);
+        updateSocSummary(view);
 
         mapView.getMapAsync(map -> {
             mapLibreMap = map;
@@ -123,6 +138,16 @@ public class MapFragment extends Fragment {
             View legend = view.findViewById(R.id.map_legend);
             legend.setVisibility(legend.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         });
+        view.findViewById(R.id.range_button).setOnClickListener(v -> {
+            rangeOverlayVisible = !rangeOverlayVisible;
+            if (rangeOverlayVisible && getReachableKm() <= 0) {
+                android.widget.Toast.makeText(requireContext(), "Set your EV profile to show reachability radius",
+                        android.widget.Toast.LENGTH_SHORT).show();
+            }
+            updateReachabilityOverlay();
+            updateSocSummary(view);
+        });
+        view.findViewById(R.id.btn_set_soc).setOnClickListener(v -> showSocSheet());
         view.findViewById(R.id.zoom_in_button).setOnClickListener(v -> {
             if (mapLibreMap != null) {
                 mapLibreMap.animateCamera(CameraUpdateFactory.zoomIn());
@@ -167,13 +192,20 @@ public class MapFragment extends Fragment {
         TextView chipSlow = v.findViewById(R.id.chip_slow);
         TextView chipSemiFast = v.findViewById(R.id.chip_semifast);
         TextView chipFast = v.findViewById(R.id.chip_fast);
+        TextView chipMyCar = v.findViewById(R.id.chip_my_car);
 
         View.OnClickListener toggle = view -> {
             int id = view.getId();
-            if (id == R.id.chip_available) fAvailable = !fAvailable;
-            else if (id == R.id.chip_slow) fSlow = !fSlow;
-            else if (id == R.id.chip_semifast) fSemiFast = !fSemiFast;
-            else if (id == R.id.chip_fast) fFast = !fFast;
+            if (id == R.id.chip_available)
+                fAvailable = !fAvailable;
+            else if (id == R.id.chip_slow)
+                fSlow = !fSlow;
+            else if (id == R.id.chip_semifast)
+                fSemiFast = !fSemiFast;
+            else if (id == R.id.chip_fast)
+                fFast = !fFast;
+            else if (id == R.id.chip_my_car)
+                fMyCar = !fMyCar;
 
             updateChipUI((TextView) view, id);
             performFiltering(currentQuery);
@@ -183,49 +215,65 @@ public class MapFragment extends Fragment {
         chipSlow.setOnClickListener(toggle);
         chipSemiFast.setOnClickListener(toggle);
         chipFast.setOnClickListener(toggle);
+        chipMyCar.setOnClickListener(toggle);
     }
 
     private void updateChipUI(TextView chip, int id) {
         boolean active = false;
-        if (id == R.id.chip_available) active = fAvailable;
-        else if (id == R.id.chip_slow) active = fSlow;
-        else if (id == R.id.chip_semifast) active = fSemiFast;
-        else if (id == R.id.chip_fast) active = fFast;
+        if (id == R.id.chip_available)
+            active = fAvailable;
+        else if (id == R.id.chip_slow)
+            active = fSlow;
+        else if (id == R.id.chip_semifast)
+            active = fSemiFast;
+        else if (id == R.id.chip_fast)
+            active = fFast;
+        else if (id == R.id.chip_my_car)
+            active = fMyCar;
 
         chip.setBackgroundResource(active ? R.drawable.bg_filter_chip_active : R.drawable.bg_filter_chip);
-        chip.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), active ? R.color.slate_950 : R.color.white));
+        chip.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(),
+                active ? R.color.slate_950 : R.color.white));
     }
 
     private void performFiltering(String query) {
-        if (fullStationList == null) return;
-        
+        if (fullStationList == null)
+            return;
+
         String q = (query == null) ? "" : query.toLowerCase(java.util.Locale.US);
         stations = new java.util.ArrayList<>();
-        
+
         for (ChargingStation s : fullStationList) {
-            boolean matchesSearch = q.isEmpty() || 
-                (s.name != null && s.name.toLowerCase(java.util.Locale.US).contains(q)) ||
-                (s.city != null && s.city.toLowerCase(java.util.Locale.US).contains(q));
-            
-            if (!matchesSearch) continue;
-            
-            if (fAvailable && !"Available".equalsIgnoreCase(s.status)) continue;
-            
+            boolean matchesSearch = q.isEmpty() ||
+                    (s.name != null && s.name.toLowerCase(java.util.Locale.US).contains(q)) ||
+                    (s.city != null && s.city.toLowerCase(java.util.Locale.US).contains(q));
+
+            if (!matchesSearch)
+                continue;
+
+            if (fAvailable && !"Available".equalsIgnoreCase(s.status))
+                continue;
+
             // Speed classification (OR logic) based on GeoJSON CS_Speed attribute
             boolean powerFilterActive = fSlow || fSemiFast || fFast;
             if (powerFilterActive) {
                 boolean matchesPower = false;
                 String speed = s.csSpeed != null ? s.csSpeed.toUpperCase(java.util.Locale.US) : "";
-                
-                if (fSlow && speed.contains("SLOW")) matchesPower = true;
-                if (fSemiFast && speed.contains("SEMI-FAST")) matchesPower = true;
-                if (fFast && speed.contains("FAST") && !speed.contains("SEMI-FAST")) matchesPower = true;
-                
-                if (!matchesPower) continue;
+
+                if (fSlow && speed.contains("SLOW"))
+                    matchesPower = true;
+                if (fSemiFast && speed.contains("SEMI-FAST"))
+                    matchesPower = true;
+                if (fFast && speed.contains("FAST") && !speed.contains("SEMI-FAST"))
+                    matchesPower = true;
+
+                if (!matchesPower)
+                    continue;
             }
-            
+
             // EV-Matched Connector Filtering
-            if (userConnectors != null && !userConnectors.isEmpty() && s.connectors != null && !s.connectors.isEmpty()) {
+            if (fMyCar && userConnectors != null && !userConnectors.isEmpty() && s.connectors != null
+                    && !s.connectors.isEmpty()) {
                 boolean hasCompatibleConnector = false;
                 for (String stationConn : s.connectors) {
                     if (userConnectors.toLowerCase().contains(stationConn.toLowerCase().trim())) {
@@ -237,17 +285,18 @@ public class MapFragment extends Fragment {
                     continue; // Auto-hide incompatible stations
                 }
             }
-            
+
             stations.add(s);
         }
-        
+
         if (mapLibreMap != null) {
             configureMap();
         }
     }
 
     private int parsePower(String powerStr) {
-        if (powerStr == null) return 0;
+        if (powerStr == null)
+            return 0;
         try {
             String numeric = powerStr.replaceAll("[^0-9]", "");
             return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
@@ -256,10 +305,117 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private int getReachableKm() {
+        int rangeKm = tokenManager != null ? tokenManager.getRangeWltpKm() : 0;
+        if (rangeKm <= 0)
+            return 0;
+        return Math.max(0, Math.round(rangeKm * (currentSoc / 100f) * 0.85f));
+    }
+
+    private void updateSocSummary(View root) {
+        TextView summary = root.findViewById(R.id.soc_summary);
+        if (summary == null)
+            return;
+        String vehicle = tokenManager != null ? tokenManager.getVehicleLabel() : "";
+        int reachableKm = getReachableKm();
+        if (reachableKm > 0) {
+            String label = vehicle == null || vehicle.isEmpty() ? "My EV" : vehicle;
+            summary.setText(label + " - SoC " + currentSoc + "% - safe radius " + reachableKm + " km");
+        } else {
+            summary.setText("Set your EV profile to unlock reachability and car-matched stations");
+        }
+    }
+
+    private void showSocSheet() {
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(
+                requireContext());
+        LinearLayout sheet = new LinearLayout(requireContext());
+        sheet.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int) (22 * getResources().getDisplayMetrics().density);
+        sheet.setPadding(pad, pad, pad, pad);
+        sheet.setBackgroundColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zid_back));
+
+        TextView title = new TextView(requireContext());
+        title.setText("Battery level");
+        title.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white));
+        title.setTextSize(22);
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
+        sheet.addView(title);
+
+        TextView value = new TextView(requireContext());
+        value.setText(currentSoc + "%");
+        value.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.teal_300));
+        value.setTextSize(36);
+        value.setTypeface(null, android.graphics.Typeface.BOLD);
+        sheet.addView(value);
+
+        android.widget.SeekBar seekBar = new android.widget.SeekBar(requireContext());
+        seekBar.setMax(100);
+        seekBar.setProgress(currentSoc);
+        sheet.addView(seekBar);
+
+        Button apply = new Button(requireContext());
+        apply.setText("Update reachability");
+        apply.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.slate_950));
+        apply.setBackgroundResource(R.drawable.bg_filter_chip_active);
+        sheet.addView(apply);
+
+        seekBar.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
+                currentSoc = Math.max(5, progress);
+                value.setText(currentSoc + "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(android.widget.SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(android.widget.SeekBar seekBar) {
+            }
+        });
+
+        apply.setOnClickListener(v -> {
+            if (getView() != null)
+                updateSocSummary(getView());
+            updateReachabilityOverlay();
+
+            tokenManager.saveCurrentSoc(currentSoc);
+            com.example.project_mobile.data.remote.RetrofitClient.getApiService(requireContext())
+                    .updateProfile(new com.example.project_mobile.data.remote.UpdateProfileRequest(null, currentSoc))
+                    .enqueue(new retrofit2.Callback<com.example.project_mobile.data.remote.UserMeResponse>() {
+                        @Override
+                        public void onResponse(
+                                retrofit2.Call<com.example.project_mobile.data.remote.UserMeResponse> call,
+                                retrofit2.Response<com.example.project_mobile.data.remote.UserMeResponse> response) {
+                            if (response.isSuccessful()) {
+                                android.widget.Toast.makeText(requireContext(), "SoC updated in account!",
+                                        android.widget.Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(
+                                retrofit2.Call<com.example.project_mobile.data.remote.UserMeResponse> call,
+                                Throwable t) {
+                            // Handle failure
+                        }
+                    });
+
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(sheet);
+        dialog.show();
+    }
+
     private void configureMap() {
-        if (mapLibreMap == null) return;
+        if (mapLibreMap == null)
+            return;
         Style style = mapLibreMap.getStyle();
-        if (style == null) return;
+        if (style == null)
+            return;
 
         if (symbolManager == null) {
             symbolManager = new SymbolManager(mapView, mapLibreMap, style);
@@ -299,7 +455,8 @@ public class MapFragment extends Fragment {
         symbolManager.deleteAll();
 
         if (stations != null && !stations.isEmpty()) {
-            org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory.getInstance(requireContext());
+            org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory
+                    .getInstance(requireContext());
             for (ChargingStation station : stations) {
                 int iconResId = markerIconFor(station.status);
                 android.graphics.Bitmap bitmap = getBitmapFromVector(iconResId);
@@ -312,7 +469,7 @@ public class MapFragment extends Fragment {
                         .position(new LatLng(station.latitude, station.longitude))
                         .title(station.name)
                         .snippet(station.status + " - " + station.power);
-                
+
                 if (icon != null) {
                     options.icon(icon);
                 }
@@ -328,7 +485,7 @@ public class MapFragment extends Fragment {
                 bindSelectedStation(getView(), station);
                 return true;
             }
-            
+
             String alertMsg = symbolAlertMap.get(marker.getId());
             if (alertMsg != null) {
                 new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(),
@@ -361,47 +518,55 @@ public class MapFragment extends Fragment {
         });
 
         updateMapSelection();
+        updateReachabilityOverlay();
     }
 
     private void handleCheckIn(ChargingStation station, boolean isStarting) {
-        if (station == null) return;
-        com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(requireActivity().getApplication());
-        repo.checkIn(Integer.parseInt(station.id), isStarting, new com.example.project_mobile.data.StationRepository.Callback() {
-            @Override
-            public void onSuccess() {
-                android.widget.Toast.makeText(requireContext(), isStarting ? "Checked in! +10 Points" : "Checked out! +5 Points", android.widget.Toast.LENGTH_SHORT).show();
-                if (isStarting) {
-                    float capacity = tokenManager != null ? tokenManager.getBatteryCapacity() : 0f;
-                    int powerKw = station.powerKw > 0 ? station.powerKw : parsePower(station.power);
-                    int minutes = 30;
-                    if (capacity > 0 && powerKw > 0) {
-                        float hours = (capacity * 0.8f) / powerKw;
-                        minutes = Math.max(1, (int) (hours * 60));
+        if (station == null)
+            return;
+        com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(
+                requireActivity().getApplication());
+        repo.checkIn(Integer.parseInt(station.id), isStarting,
+                new com.example.project_mobile.data.StationRepository.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        android.widget.Toast.makeText(requireContext(),
+                                isStarting ? "Checked in! +10 Points" : "Checked out! +5 Points",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                        if (isStarting) {
+                            float capacity = tokenManager != null ? tokenManager.getBatteryCapacity() : 0f;
+                            int powerKw = station.powerKw > 0 ? station.powerKw : parsePower(station.power);
+                            int minutes = 30;
+                            if (capacity > 0 && powerKw > 0) {
+                                float hours = (capacity * 0.8f) / powerKw;
+                                minutes = Math.max(1, (int) (hours * 60));
+                            }
+                            repo.saveSession(Integer.parseInt(station.id), station.name,
+                                    station.city != null ? station.city : "", false, 0f, minutes);
+                        }
+                        if (getView() != null) {
+                            getView().findViewById(R.id.station_preview_sheet).setVisibility(View.GONE);
+                        }
                     }
-                    repo.saveSession(Integer.parseInt(station.id), station.name, station.city != null ? station.city : "", false, 0f, minutes);
-                }
-                if (getView() != null) {
-                    getView().findViewById(R.id.station_preview_sheet).setVisibility(View.GONE);
-                }
-            }
 
-            @Override
-            public void onError(String message) {
-                android.widget.Toast.makeText(requireContext(), "Check-in failed: " + message, android.widget.Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onError(String message) {
+                        android.widget.Toast.makeText(requireContext(), "Check-in failed: " + message,
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void bindSelectedStation(View root, ChargingStation station) {
         selectedStation = station;
         ((TextView) root.findViewById(R.id.preview_title)).setText(station.name);
-        
+
         String address = station.address != null ? station.address : station.city;
         if (station.governorate != null && !station.governorate.isEmpty() && !address.contains(station.governorate)) {
             address += ", " + station.governorate;
         }
         ((TextView) root.findViewById(R.id.preview_subtitle)).setText(address);
-        
+
         TextView opView = root.findViewById(R.id.preview_operator);
         if (station.operator != null && !station.operator.isEmpty()) {
             opView.setVisibility(View.VISIBLE);
@@ -413,7 +578,7 @@ public class MapFragment extends Fragment {
         } else {
             opView.setVisibility(View.GONE);
         }
-        
+
         TextView statusChip = root.findViewById(R.id.preview_status);
         statusChip.setText(station.status);
         if ("Available".equalsIgnoreCase(station.status)) {
@@ -432,14 +597,16 @@ public class MapFragment extends Fragment {
             routeTag.setVisibility(View.GONE);
         }
 
-        String distTime = (station.distance != null ? station.distance : "---") + " • " + (station.eta != null ? station.eta : "-- min");
+        String distTime = (station.distance != null ? station.distance : "---") + " • "
+                + (station.eta != null ? station.eta : "-- min");
         ((TextView) root.findViewById(R.id.preview_route)).setText(distTime);
-        
+
         String displayPower = station.powerKw > 0 ? station.powerKw + " kW" : station.power;
         ((TextView) root.findViewById(R.id.preview_power)).setText(displayPower + " • " + station.ports);
-        
+
         if (station.connectors != null && !station.connectors.isEmpty()) {
-            ((TextView) root.findViewById(R.id.preview_connectors)).setText(android.text.TextUtils.join(" • ", station.connectors));
+            ((TextView) root.findViewById(R.id.preview_connectors))
+                    .setText(android.text.TextUtils.join(" • ", station.connectors));
         } else {
             ((TextView) root.findViewById(R.id.preview_connectors)).setText("");
         }
@@ -448,18 +615,38 @@ public class MapFragment extends Fragment {
         float capacity = tokenManager != null ? tokenManager.getBatteryCapacity() : 0f;
         int powerKw = station.powerKw > 0 ? station.powerKw : parsePower(station.power);
         String estimatorText = "";
-        
-        if (capacity > 0 && powerKw > 0) {
-            float hours = (capacity * 0.8f) / powerKw;
-            int minutes = Math.max(1, (int) (hours * 60));
-            estimatorText = "Est. 80% charge: " + minutes + " min";
+
+        float vehicleDcMax = tokenManager != null ? tokenManager.getDcMaxPowerKw() : 0f;
+        int effectivePowerKw = powerKw;
+        if (vehicleDcMax > 0 && powerKw > 0) {
+            effectivePowerKw = Math.round(Math.min(vehicleDcMax, powerKw));
         }
-        
+        if (capacity > 0 && effectivePowerKw > 0) {
+            float targetDelta = Math.max(0.1f, (80 - currentSoc) / 100f);
+            float hours = (capacity * targetDelta) / effectivePowerKw;
+            int minutes = Math.max(1, (int) (hours * 60));
+            estimatorText = "Time to 80%: " + minutes + " min";
+        }
+
         if (station.price != null && !station.price.isEmpty() && !station.price.equals("Unknown")) {
-            if (!estimatorText.isEmpty()) estimatorText += " • ";
+            if (!estimatorText.isEmpty())
+                estimatorText += " • ";
             estimatorText += station.price;
         }
-        
+
+        TextView carFit = root.findViewById(R.id.preview_car_fit);
+        String vehicle = tokenManager != null ? tokenManager.getVehicleLabel() : "";
+        if (vehicle != null && !vehicle.isEmpty()) {
+            boolean compatible = isCompatibleWithUserCar(station);
+            String speedText = effectivePowerKw > 0 ? effectivePowerKw + " kW max here" : "speed unknown";
+            String status = compatible ? "compatible" : "connector not matched";
+            carFit.setVisibility(View.VISIBLE);
+            carFit.setText("For your " + vehicle + ": " + status + " - " + speedText);
+        } else {
+            carFit.setVisibility(View.VISIBLE);
+            carFit.setText("Add your EV profile to show compatible plugs and real charge speed.");
+        }
+
         if (!estimatorText.isEmpty()) {
             estimatorView.setVisibility(View.VISIBLE);
             estimatorView.setText(estimatorText);
@@ -471,8 +658,8 @@ public class MapFragment extends Fragment {
         if (station.imageUrl != null && !station.imageUrl.isEmpty()) {
             previewImage.setVisibility(View.VISIBLE);
             com.bumptech.glide.Glide.with(this)
-                .load(station.imageUrl)
-                .into(previewImage);
+                    .load(station.imageUrl)
+                    .into(previewImage);
         } else {
             previewImage.setVisibility(View.GONE);
         }
@@ -495,8 +682,23 @@ public class MapFragment extends Fragment {
         }
     }
 
+    private boolean isCompatibleWithUserCar(ChargingStation station) {
+        if (userConnectors == null || userConnectors.isEmpty())
+            return true;
+        if (station.connectors == null || station.connectors.isEmpty())
+            return true;
+        for (String stationConn : station.connectors) {
+            if (userConnectors.toLowerCase(java.util.Locale.US)
+                    .contains(stationConn.toLowerCase(java.util.Locale.US).trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void refreshAlertMarkers() {
-        if (mapLibreMap == null) return;
+        if (mapLibreMap == null)
+            return;
 
         // Remove existing markers
         for (org.maplibre.android.annotations.Marker m : activeAlertMarkers) {
@@ -505,32 +707,45 @@ public class MapFragment extends Fragment {
         activeAlertMarkers.clear();
         symbolAlertMap.clear();
 
-        if (!alertsVisible) return;
+        if (!alertsVisible)
+            return;
 
-        org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory.getInstance(requireContext());
+        org.maplibre.android.annotations.IconFactory iconFactory = org.maplibre.android.annotations.IconFactory
+                .getInstance(requireContext());
         android.graphics.Bitmap alertBitmap = getBitmapFromVector(R.drawable.ic_alert_warning);
-        org.maplibre.android.annotations.Icon alertIcon = (alertBitmap != null) ? iconFactory.fromBitmap(alertBitmap) : null;
+        org.maplibre.android.annotations.Icon alertIcon = (alertBitmap != null) ? iconFactory.fromBitmap(alertBitmap)
+                : null;
 
-        // Mock alerts for now (later fetch from backend)
-        org.maplibre.android.annotations.MarkerOptions highDemand = new org.maplibre.android.annotations.MarkerOptions()
-                .position(new LatLng(36.832, 10.231))
-                .title("High Demand")
-                .snippet("Near Les Berges du Lac. Nearby chargers are about 90% occupied.");
-        
-        if (alertIcon != null) highDemand.icon(alertIcon);
-        org.maplibre.android.annotations.Marker s1 = mapLibreMap.addMarker(highDemand);
-        activeAlertMarkers.add(s1);
-        symbolAlertMap.put(s1.getId(), highDemand.getSnippet());
+        com.example.project_mobile.data.remote.RetrofitClient.getApiService(requireContext())
+            .getAlerts()
+            .enqueue(new retrofit2.Callback<List<com.example.project_mobile.data.remote.CommunityAlert>>() {
+                @Override
+                public void onResponse(retrofit2.Call<List<com.example.project_mobile.data.remote.CommunityAlert>> call, retrofit2.Response<List<com.example.project_mobile.data.remote.CommunityAlert>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        for (com.example.project_mobile.data.remote.CommunityAlert alert : response.body()) {
+                            if (alert.isValidated && alert.isActive) {
+                                org.maplibre.android.annotations.MarkerOptions options = new org.maplibre.android.annotations.MarkerOptions()
+                                    .position(new LatLng(alert.latitude, alert.longitude))
+                                    .title(alert.alertType)
+                                    .snippet(alert.description);
 
-        org.maplibre.android.annotations.MarkerOptions maintenance = new org.maplibre.android.annotations.MarkerOptions()
-                .position(new LatLng(36.845, 10.210))
-                .title("Maintenance")
-                .snippet("Station AGIL Lac 2 is undergoing maintenance until 6 PM.");
-        
-        if (alertIcon != null) maintenance.icon(alertIcon);
-        org.maplibre.android.annotations.Marker s2 = mapLibreMap.addMarker(maintenance);
-        activeAlertMarkers.add(s2);
-        symbolAlertMap.put(s2.getId(), maintenance.getSnippet());
+                                if (alertIcon != null) options.icon(alertIcon);
+                                
+                                if (mapLibreMap != null) {
+                                    org.maplibre.android.annotations.Marker m = mapLibreMap.addMarker(options);
+                                    activeAlertMarkers.add(m);
+                                    symbolAlertMap.put(m.getId(), alert.description);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<List<com.example.project_mobile.data.remote.CommunityAlert>> call, Throwable t) {
+                    // Fail silently
+                }
+            });
     }
 
     public void selectStationAndRoute(String stationId) {
@@ -587,6 +802,53 @@ public class MapFragment extends Fragment {
                 .build();
 
         mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 180));
+    }
+
+    private void updateReachabilityOverlay() {
+        if (lineManager == null)
+            return;
+        if (reachabilityLine != null) {
+            lineManager.delete(reachabilityLine);
+            reachabilityLine = null;
+        }
+        if (reachabilityPolygon != null) {
+            mapLibreMap.removePolygon(reachabilityPolygon);
+            reachabilityPolygon = null;
+        }
+        if (!rangeOverlayVisible)
+            return;
+        int radiusKm = getReachableKm();
+        if (radiusKm <= 0)
+            return;
+
+        java.util.List<LatLng> circle = new java.util.ArrayList<>();
+        double lat = MOCK_USER_LOCATION.getLatitude();
+        double lon = MOCK_USER_LOCATION.getLongitude();
+        double radiusEarthKm = 6371.0;
+        double angularDistance = radiusKm / radiusEarthKm;
+        double latRad = Math.toRadians(lat);
+        double lonRad = Math.toRadians(lon);
+        for (int i = 0; i <= 72; i++) {
+            double bearing = Math.toRadians(i * 5.0);
+            double pointLat = Math.asin(Math.sin(latRad) * Math.cos(angularDistance)
+                    + Math.cos(latRad) * Math.sin(angularDistance) * Math.cos(bearing));
+            double pointLon = lonRad + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(latRad),
+                    Math.cos(angularDistance) - Math.sin(latRad) * Math.sin(pointLat));
+            circle.add(new LatLng(Math.toDegrees(pointLat), Math.toDegrees(pointLon)));
+        }
+
+        // Add filled polygon for background
+        reachabilityPolygon = mapLibreMap.addPolygon(new org.maplibre.android.annotations.PolygonOptions()
+                .addAll(circle)
+                .fillColor(android.graphics.Color.argb(10, 255, 255, 0)) // Transparent yellow
+                .strokeColor(android.graphics.Color.TRANSPARENT));
+
+        // Add line for border
+        reachabilityLine = lineManager.create(new LineOptions()
+                .withLatLngs(circle)
+                .withLineColor("#f3ffb0ff")
+                .withLineWidth(4f)
+                .withLineOpacity(0.9f));
     }
 
     @Override

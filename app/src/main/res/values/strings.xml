@@ -4,6 +4,7 @@
     <string name="map">Map</string>
     <string name="favorites">Favorites</string>
     <string name="history">History</string>
+    <string name="trip">Trip</string>
     <string name="profile">Profile</string>
     <string name="search_hint">Search stations, cities, or operators</string>
     <string name="nearby_tunisia">Greater Tunis, Tunisia</string>
@@ -111,4 +112,8 @@
         <item>Français</item>
         <item>العربية</item>
     </string-array>
+    <string name="badge_rookie">🌱 Rookie Eco-Driver</string>
+    <string name="badge_power">⚡ Power Charger</string>
+    <string name="badge_master">🏆 Master Navigator</string>
+    <string name="level_up_message">You have reached the level of %s!</string>
 </resources>

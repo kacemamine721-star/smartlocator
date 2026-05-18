@@ -90,7 +90,7 @@
         android:layout_marginTop="24dp"
         android:hint="@string/alert_description_hint"
         android:textColorHint="#408FA4B5"
-        app:boxBackgroundColor="@color/slate_900"
+        app:boxBackgroundColor="@color/zid_surface_2"
         app:boxStrokeWidth="0dp"
         app:boxStrokeWidthFocused="0dp"
         app:hintTextColor="@color/teal_300"

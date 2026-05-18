@@ -2,30 +2,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@color/zid_black"
+    android:clipToPadding="false"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingStart="20dp"
+    android:paddingTop="42dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="110dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/history"
-        android:textColor="@color/white"
-        android:textSize="28sp"
+        android:background="@drawable/bg_filter_chip"
+        android:paddingStart="12dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="7dp"
+        android:text="Sessions"
+        android:textColor="@color/zid_teal"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/history"
+        android:textColor="@color/zid_text_primary"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/history_subtitle"
-        android:textColor="#8FA4B5"
+        android:textColor="@color/zid_text_secondary"
         android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_panel_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_collection_accent_green"
+            android:gravity="center"
+            android:text="kW"
+            android:textColor="@color/zid_teal"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:text="Charge sessions will show SoC, duration, and station trust signals."
+            android:textColor="@color/zid_text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:clipToPadding="false" />
 </LinearLayout>

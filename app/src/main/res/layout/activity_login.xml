@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@drawable/bg_welcome_gradient"
     android:fillViewport="true">
 
     <LinearLayout
@@ -11,23 +11,33 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="28dp">
+        android:paddingStart="24dp"
+        android:paddingTop="44dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="32dp">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+        <FrameLayout
+            android:layout_width="86dp"
+            android:layout_height="86dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/zidcharge_logo"
-            android:contentDescription="@string/app_logo"
-            android:scaleType="centerInside"
-            android:layout_marginBottom="20dp" />
+            android:background="@drawable/bg_auth_logo"
+            android:padding="14dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/app_logo"
+                android:scaleType="centerInside"
+                android:src="@drawable/zidcharge_logo" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
             android:text="@string/welcome_back"
-            android:textColor="@color/white"
-            android:textSize="32sp"
+            android:textColor="@color/zid_text_primary"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <TextView
@@ -35,62 +45,92 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/login_subtitle"
-            android:textColor="#B4C1CB"
-            android:textSize="16sp" />
+            android:textColor="@color/zid_text_secondary"
+            android:textSize="15sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="34dp"
-            android:hint="Username"
-            app:boxStrokeColor="@color/teal_300"
-            app:hintTextColor="@color/teal_300">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_username_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textColor="@color/white" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Password"
-            app:boxStrokeColor="@color/teal_300"
-            app:hintTextColor="@color/teal_300"
-            app:passwordToggleEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_password_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:textColor="@color/white" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_login"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
             android:layout_marginTop="28dp"
-            android:text="@string/login"
-            android:textColor="@color/slate_950"
-            app:backgroundTint="@color/teal_300"
-            app:cornerRadius="12dp" />
+            android:background="@drawable/bg_auth_panel"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACCOUNT"
+                android:textColor="@color/zid_text_secondary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="Username"
+                app:boxBackgroundColor="@color/zid_surface_2"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/zid_teal"
+                app:hintTextColor="@color/zid_teal">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/login_username_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/zid_text_primary"
+                    android:textColorHint="@color/zid_text_secondary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="Password"
+                app:boxBackgroundColor="@color/zid_surface_2"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/zid_teal"
+                app:hintTextColor="@color/zid_teal"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/login_password_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="@color/zid_text_primary"
+                    android:textColorHint="@color/zid_text_secondary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="22dp"
+                android:text="@string/login"
+                android:textAllCaps="false"
+                android:textColor="@color/zid_black"
+                android:textStyle="bold"
+                app:backgroundTint="@color/zid_teal"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_open_register"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="@string/create_account"
-            android:textColor="@color/teal_300" />
-
+            android:textAllCaps="false"
+            android:textColor="@color/zid_teal" />
     </LinearLayout>
 </ScrollView>

@@ -19,6 +19,11 @@ public class TokenManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_CONNECTORS = "user_connectors";
     private static final String KEY_BATTERY_CAPACITY = "battery_capacity_kwh";
+    private static final String KEY_VEHICLE_LABEL = "vehicle_label";
+    private static final String KEY_RANGE_WLTP_KM = "range_wltp_km";
+    private static final String KEY_DC_MAX_POWER_KW = "dc_max_power_kw";
+    private static final String KEY_KM_PER_HOUR_DC = "km_per_hour_dc";
+    private static final String KEY_CURRENT_SOC = "current_soc";
 
     private final SharedPreferences prefs;
 
@@ -76,6 +81,42 @@ public class TokenManager {
 
     public float getBatteryCapacity() {
         return prefs.getFloat(KEY_BATTERY_CAPACITY, 0f);
+    }
+
+    public void saveVehicleSpecs(String label, float batteryCapacityKwh, int rangeWltpKm,
+                                 float dcMaxPowerKw, int kmPerHourDc, String connectors) {
+        prefs.edit()
+                .putString(KEY_VEHICLE_LABEL, label)
+                .putFloat(KEY_BATTERY_CAPACITY, batteryCapacityKwh)
+                .putInt(KEY_RANGE_WLTP_KM, rangeWltpKm)
+                .putFloat(KEY_DC_MAX_POWER_KW, dcMaxPowerKw)
+                .putInt(KEY_KM_PER_HOUR_DC, kmPerHourDc)
+                .putString(KEY_USER_CONNECTORS, connectors)
+                .apply();
+    }
+
+    public String getVehicleLabel() {
+        return prefs.getString(KEY_VEHICLE_LABEL, "");
+    }
+
+    public int getRangeWltpKm() {
+        return prefs.getInt(KEY_RANGE_WLTP_KM, 0);
+    }
+
+    public float getDcMaxPowerKw() {
+        return prefs.getFloat(KEY_DC_MAX_POWER_KW, 0f);
+    }
+
+    public int getKmPerHourDc() {
+        return prefs.getInt(KEY_KM_PER_HOUR_DC, 0);
+    }
+
+    public void saveCurrentSoc(int soc) {
+        prefs.edit().putInt(KEY_CURRENT_SOC, soc).apply();
+    }
+
+    public int getCurrentSoc() {
+        return prefs.getInt(KEY_CURRENT_SOC, 65);
     }
 
     public void clear() {

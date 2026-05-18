@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/bg_panel_surface">
+
+    <ImageView
+        android:id="@+id/dialog_badge_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/badge_gold" />
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="🎉 Level Up!"
+        android:textColor="@color/zid_gold"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/dialog_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="You are now a Master Navigator!"
+        android:textColor="@color/zid_text_primary"
+        android:textSize="16sp"
+        android:gravity="center" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dialog_btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Awesome!"
+        android:textColor="@color/zid_black"
+        android:textStyle="bold"
+        app:backgroundTint="@color/zid_teal"
+        app:cornerRadius="12dp" />
+</LinearLayout>

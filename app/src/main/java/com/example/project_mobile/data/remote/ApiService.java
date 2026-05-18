@@ -23,6 +23,9 @@ public interface ApiService {
     @POST("alerts/")
     Call<Void> submitAlert(@Body AlertRequest request);
 
+    @GET("alerts/")
+    Call<List<CommunityAlert>> getAlerts();
+
     @GET("vehicles/")
     Call<List<EVVehicle>> getVehicles();
 

@@ -2,30 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@color/zid_black"
+    android:clipToPadding="false"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingStart="20dp"
+    android:paddingTop="42dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="110dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/favorites"
-        android:textColor="@color/white"
-        android:textSize="28sp"
+        android:background="@drawable/bg_filter_chip"
+        android:paddingStart="12dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="7dp"
+        android:text="Saved network"
+        android:textColor="@color/zid_teal"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/favorites"
+        android:textColor="@color/zid_text_primary"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/favorites_subtitle"
-        android:textColor="#8FA4B5"
+        android:textColor="@color/zid_text_secondary"
         android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_search_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -36,7 +54,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@android:drawable/ic_menu_search"
-            android:tint="#8FA4B5" />
+            android:tint="@color/zid_text_secondary" />
 
         <EditText
             android:id="@+id/et_search_favorites"
@@ -46,11 +64,11 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:hint="@string/search_saved_hint"
-            android:textColor="@color/white"
-            android:textColorHint="#8FA4B5"
-            android:textSize="15sp"
             android:imeOptions="actionSearch"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColor="@color/zid_text_primary"
+            android:textColorHint="@color/zid_text_secondary"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
@@ -58,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/smart_collections"
-        android:textColor="@color/white"
+        android:textColor="@color/zid_text_primary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -70,32 +88,29 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="142dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/bg_favorite_collection"
             android:orientation="vertical"
-            android:padding="18dp">
+            android:padding="16dp">
 
-            <LinearLayout
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+            <TextView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/bg_collection_accent_green"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@android:drawable/ic_lock_idle_charging"
-                    android:tint="@color/teal_300" />
-            </LinearLayout>
+                android:gravity="center"
+                android:text="DC"
+                android:textColor="@color/zid_teal"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/collection_fast"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textStyle="bold" />
 
             <TextView
@@ -104,37 +119,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/zero_stations"
-                android:textColor="#8FA4B5" />
+                android:textColor="@color/zid_text_secondary" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:background="@drawable/bg_favorite_collection"
             android:orientation="vertical"
-            android:padding="18dp">
+            android:padding="16dp">
 
-            <LinearLayout
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+            <TextView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/bg_collection_accent_orange"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@android:drawable/btn_star_big_on"
-                    android:tint="@color/heatmap_yellow" />
-            </LinearLayout>
+                android:gravity="center"
+                android:text="4.5"
+                android:textColor="@color/zid_gold"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/collection_trusted"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textStyle="bold" />
 
             <TextView
@@ -143,23 +155,60 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="0 stations"
-                android:textColor="#8FA4B5" />
+                android:textColor="@color/zid_text_secondary" />
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/recently_saved"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favorites_list"
+        <TextView
+            android:id="@+id/btn_stations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stations"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="@drawable/bg_favorite_collection"
+            android:textColor="@color/zid_text_primary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_recent_activity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="Recent Activity"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="@drawable/bg_favorite_collection"
+            android:textColor="@color/zid_text_secondary"
+            android:textStyle="bold"
+            android:alpha="0.6" />
+    </LinearLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="14dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="14dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favorites_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favorites_history_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

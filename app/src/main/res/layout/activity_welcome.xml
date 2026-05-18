@@ -9,12 +9,12 @@
     android:padding="28dp">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="115dp"
+        android:layout_height="112dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/zidcharge_logo"
         android:contentDescription="@string/app_logo"
-        android:scaleType="centerInside" />
+        android:scaleType="centerInside"
+        android:src="@drawable/zidcharge_logo" />
 
     <TextView
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/welcome_subtitle"
-        android:textColor="#B4C1CB"
+            android:textColor="@color/zid_text_secondary"
         android:textSize="16sp" />
 
     <VideoView

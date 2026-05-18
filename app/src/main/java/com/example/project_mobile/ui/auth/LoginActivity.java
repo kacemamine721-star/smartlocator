@@ -89,14 +89,16 @@ public class LoginActivity extends AppCompatActivity {
                     && response.body().profile.vehicle != null) {
                     
                     // Save EV data for filtering & estimations
-                    String acConn = response.body().profile.vehicle.ac_connector_type;
-                    String dcConn = response.body().profile.vehicle.dc_connector_type;
+                    com.example.project_mobile.data.remote.EVVehicle vehicle = response.body().profile.vehicle;
+                    String acConn = vehicle.ac_connector_type;
+                    String dcConn = vehicle.dc_connector_type;
                     String connectors = (acConn != null ? acConn : "") + "," + (dcConn != null ? dcConn : "");
-                    tokenManager.saveUserConnectors(connectors);
-                    
-                    if (response.body().profile.vehicle.usable_capacity_kwh != null) {
-                        tokenManager.saveBatteryCapacity(response.body().profile.vehicle.usable_capacity_kwh);
-                    }
+                    float capacity = vehicle.usable_capacity_kwh != null ? vehicle.usable_capacity_kwh : 0f;
+                    int range = vehicle.range_wltp_km != null ? vehicle.range_wltp_km : 0;
+                    float dcPower = vehicle.dc_max_power_kw != null ? vehicle.dc_max_power_kw : 0f;
+                    int kmPerHourDc = vehicle.km_per_hour_dc != null ? vehicle.km_per_hour_dc : 0;
+                    tokenManager.saveVehicleSpecs(vehicle.brand + " " + vehicle.model_name, capacity, range,
+                            dcPower, kmPerHourDc, connectors);
                     
                     // User already has a vehicle, go straight to MainActivity
                     intent = new Intent(LoginActivity.this, MainActivity.class);

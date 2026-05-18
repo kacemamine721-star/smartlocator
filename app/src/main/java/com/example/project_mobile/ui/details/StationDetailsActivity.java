@@ -16,6 +16,7 @@ import com.example.project_mobile.MainActivity;
 import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
 import com.example.project_mobile.data.StationRepository;
+import com.example.project_mobile.data.TokenManager;
 
 import java.util.ArrayList;
 
@@ -56,6 +57,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_station_details);
 
         StationRepository repository = new StationRepository(getApplication());
+        TokenManager tokenManager = new TokenManager(this);
 
         findViewById(R.id.details_back).setOnClickListener(v -> finish());
 
@@ -105,6 +107,8 @@ public class StationDetailsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.details_price)).setText(getIntent().getStringExtra("price"));
         ((TextView) findViewById(R.id.details_reliability)).setText(getIntent().getStringExtra("reliability"));
         ((TextView) findViewById(R.id.details_connectors)).setText(android.text.TextUtils.join(" - ", getIntent().getStringArrayListExtra("connectors")));
+        bindForMyCarPanel(tokenManager, powerKw, getIntent().getStringExtra("power"),
+                getIntent().getStringArrayListExtra("connectors"));
 
         String imageUrl = getIntent().getStringExtra("imageUrl");
         ImageView stationImageView = findViewById(R.id.details_station_image);
@@ -222,5 +226,66 @@ public class StationDetailsActivity extends AppCompatActivity {
             startActivity(mainIntent);
             finish();
         });
+    }
+
+    private void bindForMyCarPanel(TokenManager tokenManager, int stationPowerKw, String stationPowerText,
+                                   ArrayList<String> stationConnectors) {
+        String vehicle = tokenManager.getVehicleLabel();
+        TextView title = findViewById(R.id.details_my_car_title);
+        TextView speed = findViewById(R.id.details_my_car_speed);
+        TextView time = findViewById(R.id.details_my_car_time);
+        TextView connector = findViewById(R.id.details_my_car_connector);
+
+        if (vehicle == null || vehicle.isEmpty()) {
+            title.setText("Add your EV profile");
+            speed.setText("Unlock compatible-station filtering and realistic charge speed.");
+            time.setText("The app uses your battery size and DC limit from the EV database.");
+            connector.setText("Vehicle can be selected after sign-in.");
+            return;
+        }
+
+        int parsedPower = stationPowerKw > 0 ? stationPowerKw : parsePower(stationPowerText);
+        float vehicleDc = tokenManager.getDcMaxPowerKw();
+        int effectivePower = parsedPower;
+        if (vehicleDc > 0 && parsedPower > 0) {
+            effectivePower = Math.round(Math.min(vehicleDc, parsedPower));
+        }
+        float capacity = tokenManager.getBatteryCapacity();
+        int minutes = 0;
+        if (capacity > 0 && effectivePower > 0) {
+            minutes = Math.max(1, Math.round((capacity * 0.70f / effectivePower) * 60f));
+        }
+
+        boolean compatible = isCompatible(tokenManager.getUserConnectors(), stationConnectors);
+        title.setText(vehicle);
+        speed.setText(effectivePower > 0
+                ? "Max achievable speed here: " + effectivePower + " kW"
+                : "Max achievable speed here: unknown");
+        time.setText(minutes > 0
+                ? "10% to 80%: about " + minutes + " minutes"
+                : "10% to 80%: add battery data to estimate");
+        connector.setText("Connector: " + (compatible ? "compatible" : "not matched to your EV"));
+    }
+
+    private boolean isCompatible(String userConnectors, ArrayList<String> stationConnectors) {
+        if (userConnectors == null || userConnectors.isEmpty()) return true;
+        if (stationConnectors == null || stationConnectors.isEmpty()) return true;
+        String normalized = userConnectors.toLowerCase(java.util.Locale.US);
+        for (String stationConnector : stationConnectors) {
+            if (stationConnector != null && normalized.contains(stationConnector.toLowerCase(java.util.Locale.US).trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int parsePower(String powerText) {
+        if (powerText == null) return 0;
+        try {
+            String numeric = powerText.replaceAll("[^0-9]", "");
+            return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

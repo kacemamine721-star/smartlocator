@@ -109,4 +109,8 @@
         <item>Français</item>
         <item>Arabe</item>
     </string-array>
+    <string name="badge_rookie">🌱 Éco-conducteur débutant</string>
+    <string name="badge_power">⚡ Chargeur puissant</string>
+    <string name="badge_master">🏆 Maître navigateur</string>
+    <string name="level_up_message">Vous avez atteint le niveau %s !</string>
 </resources>

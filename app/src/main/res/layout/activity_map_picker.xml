@@ -28,7 +28,7 @@
             android:id="@+id/picker_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/surface_dark_card"
+            android:background="#0A0C0E"
             app:title="Pick Station Location"
             app:titleTextColor="@color/white"
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />

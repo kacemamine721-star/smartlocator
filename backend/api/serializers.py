@@ -104,7 +104,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'vehicle', 'vehicle_id')
+        fields = ('user', 'vehicle', 'vehicle_id', 'current_soc', 'points', 'badge')
         read_only_fields = ('user',)
 
 class UserMeSerializer(serializers.ModelSerializer):

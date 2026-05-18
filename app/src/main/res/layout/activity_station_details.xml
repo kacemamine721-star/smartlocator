@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950">
+    android:background="@color/zid_black">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -290,6 +290,61 @@
                 android:layout_marginTop="8dp"
                 android:textColor="#8FA4B5"
                 tools:text="Reliable 96%" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/details_for_my_car_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_panel_surface"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="For My Car"
+                android:textColor="#8FA4B5"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/details_my_car_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Kia EV3" />
+
+            <TextView
+                android:id="@+id/details_my_car_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/teal_300"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="Max achievable speed here: 50 kW" />
+
+            <TextView
+                android:id="@+id/details_my_car_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                tools:text="10% to 80%: about 31 minutes" />
+
+            <TextView
+                android:id="@+id/details_my_car_connector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#C2D0D8"
+                android:textSize="14sp"
+                tools:text="Connector: compatible with CCS2" />
         </LinearLayout>
 
         <Button

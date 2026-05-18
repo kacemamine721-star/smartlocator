@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.project_mobile.MainActivity;
 import com.example.project_mobile.R;
+import com.example.project_mobile.data.TokenManager;
 import com.example.project_mobile.data.remote.EVVehicle;
 import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.data.remote.UpdateProfileRequest;
@@ -90,6 +91,20 @@ public class EVSelectionActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NonNull Call<UserMeResponse> call, @NonNull Response<UserMeResponse> response) {
                         if (response.isSuccessful()) {
+                            String acConn = selectedVehicle.ac_connector_type != null ? selectedVehicle.ac_connector_type : "";
+                            String dcConn = selectedVehicle.dc_connector_type != null ? selectedVehicle.dc_connector_type : "";
+                            float capacity = selectedVehicle.usable_capacity_kwh != null ? selectedVehicle.usable_capacity_kwh : 0f;
+                            int range = selectedVehicle.range_wltp_km != null ? selectedVehicle.range_wltp_km : 0;
+                            float dcPower = selectedVehicle.dc_max_power_kw != null ? selectedVehicle.dc_max_power_kw : 0f;
+                            int kmPerHourDc = selectedVehicle.km_per_hour_dc != null ? selectedVehicle.km_per_hour_dc : 0;
+                            new TokenManager(EVSelectionActivity.this).saveVehicleSpecs(
+                                    selectedVehicle.brand + " " + selectedVehicle.model_name,
+                                    capacity,
+                                    range,
+                                    dcPower,
+                                    kmPerHourDc,
+                                    acConn + "," + dcConn
+                            );
                             openMain();
                         } else {
                             btnConfirm.setEnabled(true);

@@ -19,6 +19,7 @@ import com.example.project_mobile.ui.favorites.FavoritesFragment;
 import com.example.project_mobile.ui.history.HistoryFragment;
 import com.example.project_mobile.ui.map.MapFragment;
 import com.example.project_mobile.ui.profile.ProfileFragment;
+import com.example.project_mobile.ui.trip.TripFragment;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
@@ -97,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment;
         if (itemId == R.id.navigation_favorites) {
             fragment = new FavoritesFragment();
-        } else if (itemId == R.id.navigation_history) {
-            fragment = new HistoryFragment();
+        } else if (itemId == R.id.navigation_trip) {
+            fragment = new TripFragment();
         } else if (itemId == R.id.navigation_profile) {
             fragment = new ProfileFragment();
         } else {

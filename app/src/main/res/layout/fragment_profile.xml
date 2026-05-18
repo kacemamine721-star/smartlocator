@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@color/zid_black"
     android:clipToPadding="false"
     android:paddingBottom="120dp">
 
@@ -11,22 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/zidcharge_logo"
-                android:contentDescription="@string/app_logo"
-                android:scaleType="centerInside" />
-        </LinearLayout>
+        android:paddingStart="20dp"
+        android:paddingTop="42dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="132dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,21 +22,21 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_green_chip"
-                android:gravity="center">
+            <FrameLayout
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:background="@drawable/bg_profile_avatar">
 
                 <TextView
                     android:id="@+id/profile_initials"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:text="SL"
-                    android:textColor="@color/slate_950"
+                    android:textColor="@color/zid_black"
                     android:textSize="24sp"
                     android:textStyle="bold" />
-            </LinearLayout>
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -62,8 +50,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/driver_profile"
-                    android:textColor="@color/white"
-                    android:textSize="28sp"
+                    android:textColor="@color/zid_text_primary"
+                    android:textSize="30sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -71,15 +59,117 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="@string/profile_status"
-                    android:textColor="#8FA4B5"
-                    android:textSize="15sp" />
+                    android:textColor="@color/zid_text_secondary"
+                    android:textSize="14sp" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_profile_badge_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/profile_badge_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/badge_bronze" />
+
+            <TextView
+                android:id="@+id/profile_badge_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/badge_rookie"
+                android:textColor="@color/zid_text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/profile_points_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="0 Points"
+                android:textColor="@color/zid_text_secondary"
+                android:textSize="16sp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_ev_vehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_panel_surface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="96dp"
+                android:layout_height="82dp"
+                android:background="@drawable/bg_auth_logo"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/iv_profile_ev"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_car_charging" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="top|start"
+                    android:src="@drawable/ic_car_charging" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_profile_ev_brand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/zid_teal"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_profile_ev_model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/zid_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btn_change_ev"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_action_chip_dark"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_edit"
+                app:tint="@color/zid_teal" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/bg_panel_surface"
             android:gravity="center"
             android:orientation="horizontal"
@@ -97,22 +187,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="14"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/zid_text_primary"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:gravity="center"
                     android:text="@string/profile_stat_saved"
-                    android:textColor="#8FA4B5" />
+                    android:textColor="@color/zid_text_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
-                android:layout_height="32dp"
-                android:background="#274050" />
+                android:layout_height="42dp"
+                android:background="@color/zid_border" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -126,22 +218,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="31"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/zid_text_primary"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:gravity="center"
                     android:text="@string/profile_stat_routes"
-                    android:textColor="#8FA4B5" />
+                    android:textColor="@color/zid_text_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
-                android:layout_height="32dp"
-                android:background="#274050" />
+                android:layout_height="42dp"
+                android:background="@color/zid_border" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -155,73 +249,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/zid_text_primary"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:gravity="center"
                     android:text="@string/profile_stat_alerts"
-                    android:textColor="#8FA4B5" />
+                    android:textColor="@color/zid_text_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
-        </LinearLayout>
-
-        <!-- EV Vehicle Section -->
-        <LinearLayout
-            android:id="@+id/ll_ev_vehicle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:background="@drawable/bg_panel_surface"
-            android:orientation="horizontal"
-            android:padding="18dp"
-            android:gravity="center_vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/iv_profile_ev"
-                android:layout_width="80dp"
-                android:layout_height="60dp"
-                android:scaleType="centerCrop"
-                android:background="@color/surface_chip" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_profile_ev_brand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_profile_ev_model"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#B4C1CB"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/btn_change_ev"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_edit"
-                app:tint="@color/teal_300" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/bg_panel_surface"
             android:orientation="vertical"
             android:padding="18dp">
@@ -230,7 +276,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_title"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textStyle="bold" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -239,7 +285,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/pref_ccs2"
-                android:textColor="#8FA4B5"
+                android:textColor="@color/zid_text_secondary"
                 app:useMaterialThemeColors="true" />
         </LinearLayout>
 
@@ -255,7 +301,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_notifications"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textStyle="bold" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -264,16 +310,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/filter_available"
-                android:textColor="#8FA4B5"
+                android:textColor="@color/zid_text_secondary"
                 app:useMaterialThemeColors="true" />
-                
+
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_notif_demand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/pref_notif_demand"
-                android:textColor="#8FA4B5"
+                android:textColor="@color/zid_text_secondary"
                 app:useMaterialThemeColors="true" />
         </LinearLayout>
 
@@ -289,7 +335,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_privacy"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textStyle="bold" />
 
             <TextView
@@ -297,17 +343,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/settings_language"
-                android:textColor="#8FA4B5" />
-                
+                android:textColor="@color/zid_text_secondary" />
+
             <Spinner
                 android:id="@+id/spinner_language"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp"
-                android:theme="@style/DarkSpinnerTheme"
-                android:background="@drawable/bg_panel_surface"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_search_surface"
                 android:entries="@array/language_options"
-                android:padding="8dp" />
+                android:padding="10dp"
+                android:theme="@style/DarkSpinnerTheme" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -316,21 +362,20 @@
             android:layout_height="56dp"
             android:layout_marginTop="24dp"
             android:text="@string/action_contribute"
-            android:textColor="@color/slate_950"
-            app:backgroundTint="@color/teal_300"
+            android:textAllCaps="false"
+            android:textColor="@color/zid_black"
+            android:textStyle="bold"
+            app:backgroundTint="@color/zid_teal"
             app:cornerRadius="12dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sign_out"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="8dp"
             android:text="@string/action_sign_out"
-            android:textColor="#FF5252"
-            app:cornerRadius="12dp"
-            app:strokeColor="#FF5252" />
-
+            android:textAllCaps="false"
+            android:textColor="@color/zid_error" />
     </LinearLayout>
 </ScrollView>

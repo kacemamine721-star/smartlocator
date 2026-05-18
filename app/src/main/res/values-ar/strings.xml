@@ -109,4 +109,8 @@
         <item>الفرنسية</item>
         <item>العربية</item>
     </string-array>
+    <string name="badge_rookie">🌱 سائق بيئي مبتدئ</string>
+    <string name="badge_power">⚡ شاحن قوي</string>
+    <string name="badge_master">🏆 ملاح ماهر</string>
+    <string name="level_up_message">لقد وصلت إلى مستوى %s!</string>
 </resources>

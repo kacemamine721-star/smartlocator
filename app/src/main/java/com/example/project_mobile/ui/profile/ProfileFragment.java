@@ -63,24 +63,84 @@ public class ProfileFragment extends Fragment {
         TextView tvEvModel = view.findViewById(R.id.tv_profile_ev_model);
         ImageView btnChangeEv = view.findViewById(R.id.btn_change_ev);
 
-        btnChangeEv.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), com.example.project_mobile.ui.auth.EVSelectionActivity.class));
-        });
+        if (btnChangeEv != null) {
+            btnChangeEv.setOnClickListener(v -> {
+                startActivity(new Intent(requireContext(), com.example.project_mobile.ui.auth.EVSelectionActivity.class));
+            });
+        }
+
+        View badgeContainer = view.findViewById(R.id.ll_profile_badge_container);
+        if (badgeContainer != null) {
+            badgeContainer.setOnClickListener(v -> {
+                android.content.SharedPreferences prefs = requireActivity().getPreferences(android.content.Context.MODE_PRIVATE);
+                if (prefs.getBoolean("needs_level_up_dialog", false)) {
+                    String levelKey = prefs.getString("new_level_key", "rookie");
+                    showCustomLevelUpDialog(levelKey);
+                    prefs.edit().putBoolean("needs_level_up_dialog", false).apply();
+                }
+            });
+        }
 
         RetrofitClient.getApiService(requireContext()).getUserMe().enqueue(new Callback<UserMeResponse>() {
             @Override
             public void onResponse(@NonNull Call<UserMeResponse> call, @NonNull Response<UserMeResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if (response.body().profile != null && response.body().profile.vehicle != null) {
-                        llEvVehicle.setVisibility(View.VISIBLE);
-                        tvEvBrand.setText(response.body().profile.vehicle.brand);
-                        tvEvModel.setText(response.body().profile.vehicle.model_name);
+                    com.example.project_mobile.data.remote.UserProfile profile = response.body().profile;
+                    if (profile != null) {
+                        TextView badgeLabel = view.findViewById(R.id.profile_badge_label);
+                        TextView pointsLabel = view.findViewById(R.id.profile_points_label);
+                        ImageView badgeImage = view.findViewById(R.id.profile_badge_image);
                         
-                        ImageView ivProfileEv = view.findViewById(R.id.iv_profile_ev);
-                        if (response.body().profile.vehicle.image != null) {
-                            Glide.with(requireContext())
-                                    .load(response.body().profile.vehicle.image)
-                                    .into(ivProfileEv);
+                        android.content.SharedPreferences prefs = requireActivity().getPreferences(android.content.Context.MODE_PRIVATE);
+                        int lastPoints = prefs.getInt("last_points", 0);
+                        int newPoints = profile.points;
+
+                        if (pointsLabel != null) pointsLabel.setText(newPoints + " Points");
+                        if (badgeLabel != null) {
+                            if (newPoints < 50) {
+                                badgeLabel.setText(getString(R.string.badge_rookie));
+                            } else if (newPoints < 150) {
+                                badgeLabel.setText(getString(R.string.badge_power));
+                            } else {
+                                badgeLabel.setText(getString(R.string.badge_master));
+                            }
+                        }
+                        
+                        if (badgeImage != null) {
+                            if (newPoints < 50) {
+                                badgeImage.setImageResource(R.drawable.badge_bronze);
+                            } else if (newPoints < 150) {
+                                badgeImage.setImageResource(R.drawable.badge_silver);
+                            } else {
+                                badgeImage.setImageResource(R.drawable.badge_gold);
+                            }
+                        }
+
+                        // Level up detection
+                        if (lastPoints < 50 && newPoints >= 50) {
+                            prefs.edit().putBoolean("needs_level_up_dialog", true).putString("new_level_key", "power").apply();
+                        } else if (lastPoints < 150 && newPoints >= 150) {
+                            prefs.edit().putBoolean("needs_level_up_dialog", true).putString("new_level_key", "master").apply();
+                        }
+
+                        // Save new points
+                        prefs.edit().putInt("last_points", newPoints).apply();
+
+                        if (profile.vehicle != null && llEvVehicle != null) {
+                            llEvVehicle.setVisibility(View.VISIBLE);
+                            if (tvEvBrand != null) tvEvBrand.setText(profile.vehicle.brand);
+                            if (tvEvModel != null) tvEvModel.setText(profile.vehicle.model_name);
+                            
+                            ImageView ivProfileEv = view.findViewById(R.id.iv_profile_ev);
+                            if (ivProfileEv != null) {
+                                if (profile.vehicle.image != null) {
+                                    Glide.with(requireContext())
+                                            .load(profile.vehicle.image)
+                                            .into(ivProfileEv);
+                                } else {
+                                    ivProfileEv.setImageResource(R.drawable.ic_car_charging);
+                                }
+                            }
                         }
                     }
                 }
@@ -100,29 +160,31 @@ public class ProfileFragment extends Fragment {
         com.google.android.material.switchmaterial.SwitchMaterial notifDemandSwitch = view.findViewById(R.id.switch_notif_demand);
         android.widget.Spinner langSpinner = view.findViewById(R.id.spinner_language);
 
-        ccs2Switch.setChecked(prefs.getBoolean("pref_ccs2", false));
-        notifAvailSwitch.setChecked(prefs.getBoolean("pref_notif_avail", true));
-        notifDemandSwitch.setChecked(prefs.getBoolean("pref_notif_demand", true));
-        langSpinner.setSelection(prefs.getInt("pref_lang", 0));
+        if (ccs2Switch != null) ccs2Switch.setChecked(prefs.getBoolean("pref_ccs2", false));
+        if (notifAvailSwitch != null) notifAvailSwitch.setChecked(prefs.getBoolean("pref_notif_avail", true));
+        if (notifDemandSwitch != null) notifDemandSwitch.setChecked(prefs.getBoolean("pref_notif_demand", true));
+        if (langSpinner != null) langSpinner.setSelection(prefs.getInt("pref_lang", 0));
 
-        ccs2Switch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_ccs2", isChecked).apply());
-        notifAvailSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_avail", isChecked).apply());
-        notifDemandSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_demand", isChecked).apply());
+        if (ccs2Switch != null) ccs2Switch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_ccs2", isChecked).apply());
+        if (notifAvailSwitch != null) notifAvailSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_avail", isChecked).apply());
+        if (notifDemandSwitch != null) notifDemandSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_demand", isChecked).apply());
         
-        langSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                if (prefs.getInt("pref_lang", 0) != position) {
-                    prefs.edit().putInt("pref_lang", position).apply();
-                    String langCode = position == 1 ? "fr" : (position == 2 ? "ar" : "en");
-                    androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
-                        androidx.core.os.LocaleListCompat.forLanguageTags(langCode)
-                    );
+        if (langSpinner != null) {
+            langSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                    if (prefs.getInt("pref_lang", 0) != position) {
+                        prefs.edit().putInt("pref_lang", position).apply();
+                        String langCode = position == 1 ? "fr" : (position == 2 ? "ar" : "en");
+                        androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
+                            androidx.core.os.LocaleListCompat.forLanguageTags(langCode)
+                        );
+                    }
                 }
-            }
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+            });
+        }
 
         view.findViewById(R.id.btn_sign_out).setOnClickListener(v -> {
             viewModel.signOut();
@@ -138,5 +200,45 @@ public class ProfileFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         });
+    }
+    
+    private void showCustomLevelUpDialog(String levelKey) {
+        android.view.View dialogView = getLayoutInflater().inflate(R.layout.dialog_level_up, null);
+        
+        TextView messageTv = dialogView.findViewById(R.id.dialog_message);
+        ImageView badgeIv = dialogView.findViewById(R.id.dialog_badge_image);
+        android.widget.Button okBtn = dialogView.findViewById(R.id.dialog_btn_ok);
+        
+        String levelName = "";
+        int imageResId = R.drawable.badge_bronze;
+        
+        if ("power".equals(levelKey)) {
+            levelName = getString(R.string.badge_power);
+            imageResId = R.drawable.badge_silver;
+        } else if ("master".equals(levelKey)) {
+            levelName = getString(R.string.badge_master);
+            imageResId = R.drawable.badge_gold;
+        } else {
+            levelName = getString(R.string.badge_rookie);
+            imageResId = R.drawable.badge_bronze;
+        }
+        
+        if (messageTv != null) {
+            messageTv.setText(getString(R.string.level_up_message, levelName));
+        }
+        
+        if (badgeIv != null) {
+            badgeIv.setImageResource(imageResId);
+        }
+        
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create();
+            
+        if (okBtn != null) {
+            okBtn.setOnClickListener(v -> dialog.dismiss());
+        }
+        
+        dialog.show();
     }
 }

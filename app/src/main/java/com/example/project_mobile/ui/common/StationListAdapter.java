@@ -52,9 +52,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         );
         cardParams.bottomMargin = dp(context, 14);
         cardView.setLayoutParams(cardParams);
-        cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.surface_dark_card));
-        cardView.setRadius(dp(context, 26));
-        cardView.setStrokeColor(ContextCompat.getColor(context, R.color.blue_900));
+        cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.zid_surface));
+        cardView.setRadius(dp(context, 14));
+        cardView.setStrokeColor(ContextCompat.getColor(context, R.color.zid_border));
         cardView.setStrokeWidth(dp(context, 1));
 
         LinearLayout row = new LinearLayout(context);
@@ -73,7 +73,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         infoColumn.setOrientation(LinearLayout.VERTICAL);
 
         TextView name = new TextView(context);
-        name.setTextColor(ContextCompat.getColor(context, R.color.white));
+        name.setTextColor(ContextCompat.getColor(context, R.color.zid_text_primary));
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         name.setTypeface(name.getTypeface(), android.graphics.Typeface.BOLD);
 
@@ -84,7 +84,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         );
         metaParams.topMargin = dp(context, 6);
         meta.setLayoutParams(metaParams);
-        meta.setTextColor(0xFFB4C1CB);
+        meta.setTextColor(ContextCompat.getColor(context, R.color.zid_text_secondary));
         meta.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
         TextView connectors = new TextView(context);
@@ -94,7 +94,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         );
         connectorsParams.topMargin = dp(context, 6);
         connectors.setLayoutParams(connectorsParams);
-        connectors.setTextColor(ContextCompat.getColor(context, R.color.teal_500));
+        connectors.setTextColor(ContextCompat.getColor(context, R.color.zid_teal));
         connectors.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
 
         infoColumn.addView(name);
@@ -110,7 +110,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         actionsColumn.setOrientation(LinearLayout.VERTICAL);
 
         TextView status = new TextView(context);
-        status.setTextColor(ContextCompat.getColor(context, R.color.slate_950));
+        status.setTextColor(ContextCompat.getColor(context, R.color.zid_black));
         status.setTypeface(status.getTypeface(), android.graphics.Typeface.BOLD);
         int statusHorizontal = dp(context, 12);
         int statusVertical = dp(context, 8);
@@ -123,7 +123,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         openMapButton.setLayoutParams(buttonParams);
         openMapButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_map_control));
         openMapButton.setImageResource(android.R.drawable.ic_menu_directions);
-        openMapButton.setColorFilter(ContextCompat.getColor(context, R.color.white));
+        openMapButton.setColorFilter(ContextCompat.getColor(context, R.color.zid_text_primary));
         openMapButton.setContentDescription(context.getString(R.string.open_on_map));
 
         actionsColumn.addView(status);
@@ -155,13 +155,13 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     private GradientDrawable buildStatusBackground(Context context, String status) {
-        int colorRes = R.color.unknown_gray;
+        int colorRes = R.color.zid_text_tertiary;
         if ("Available".equals(status)) {
-            colorRes = R.color.available_green;
+            colorRes = R.color.zid_teal;
         } else if ("Busy".equals(status)) {
-            colorRes = R.color.busy_orange;
+            colorRes = R.color.zid_gold;
         } else if ("Offline".equals(status)) {
-            colorRes = R.color.offline_red;
+            colorRes = R.color.zid_text_tertiary;
         }
 
         GradientDrawable drawable = new GradientDrawable();

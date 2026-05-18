@@ -162,6 +162,16 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     vehicle = models.ForeignKey(EVVehicle, on_delete=models.SET_NULL, null=True, blank=True)
     points = models.IntegerField(default=0)
+    current_soc = models.IntegerField(default=65)
+
+    @property
+    def badge(self):
+        if self.points < 50:
+            return "🌱 Rookie Eco-Driver"
+        elif self.points < 150:
+            return "⚡ Power Charger"
+        else:
+            return "🏆 Master Navigator"
 
     def __str__(self):
         return f"Profile of {self.user.username}"

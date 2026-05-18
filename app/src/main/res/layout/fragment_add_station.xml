@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@color/zid_black"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/add_station_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/surface_dark_card"
+        android:background="@color/zid_surface"
         app:title="Contribute Station"
-        app:titleTextColor="@color/white"
+        app:titleTextColor="@color/zid_text_primary"
         app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
 
     <ScrollView
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location_details"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -48,7 +48,7 @@
                     android:background="@drawable/bg_panel_surface"
                     android:padding="16dp"
                     android:text="Lat: \nLng: "
-                    android:textColor="#8FA4B5"
+                    android:textColor="@color/zid_text_secondary"
                     android:textSize="14sp" />
                     
                 <com.google.android.material.button.MaterialButton
@@ -58,8 +58,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="@string/action_locate"
-                    android:textColor="@color/white"
-                    app:strokeColor="@color/teal_300" />
+                    android:textColor="@color/zid_text_primary"
+                    app:strokeColor="@color/zid_teal" />
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -68,14 +68,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:hint="Station Name (Optional)"
-                app:hintTextColor="@color/white"
-                app:boxStrokeColor="@color/blue_500">
+                app:hintTextColor="@color/zid_teal"
+                app:boxBackgroundColor="@color/zid_surface_2"
+                app:boxStrokeColor="@color/zid_teal">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/add_station_name_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/zid_text_primary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -83,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="@string/charging_speed"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textSize="16sp" />
 
             <Spinner
@@ -100,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="@string/current_status"
-                android:textColor="@color/white"
+                android:textColor="@color/zid_text_primary"
                 android:textSize="16sp" />
 
             <Spinner
@@ -119,8 +120,8 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
                 android:text="@string/action_submit_review"
-                android:textColor="@color/slate_950"
-                app:backgroundTint="@color/teal_300"
+                android:textColor="@color/zid_black"
+                app:backgroundTint="@color/zid_teal"
                 app:cornerRadius="12dp" />
 
         </LinearLayout>

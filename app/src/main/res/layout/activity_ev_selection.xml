@@ -3,55 +3,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/slate_950"
+    android:background="@color/zid_black"
+    android:clipToPadding="false"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="20dp"
+    android:paddingTop="42dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_gold_badge"
+        android:paddingStart="12dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="7dp"
+        android:text="Step 2 of 2 - Vehicle"
+        android:textColor="@color/zid_gold"
+        android:textSize="12sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Choose your Vehicle"
-        android:textColor="@color/white"
-        android:textSize="28sp"
+        android:layout_marginTop="18dp"
+        android:text="Choose your EV"
+        android:textColor="@color/zid_text_primary"
+        android:textSize="32sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Select your electric vehicle so we can personalize your charging experience in Tunisia."
-        android:textColor="#B4C1CB"
-        android:textSize="16sp" />
+        android:text="ZidCharge will hide incompatible stations and calculate real charging speed for Tunisia routes."
+        android:textColor="@color/zid_text_secondary"
+        android:textSize="15sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_ev_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="22dp"
         android:layout_weight="1"
-        android:layout_marginTop="16dp" />
+        android:clipToPadding="false"
+        android:paddingBottom="12dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_confirm_ev"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="12dp"
         android:text="Confirm Selection"
-        android:textColor="@color/slate_950"
-        app:backgroundTint="@color/teal_300"
-        app:cornerRadius="12dp"
-        android:enabled="false" />
-        
+        android:textAllCaps="false"
+        android:textColor="@color/zid_black"
+        android:textStyle="bold"
+        android:enabled="false"
+        app:backgroundTint="@color/zid_teal"
+        app:cornerRadius="12dp" />
+
     <TextView
         android:id="@+id/tv_skip"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_height="48dp"
         android:gravity="center"
-        android:text="Skip for now"
-        android:textColor="@color/teal_300"
-        android:textSize="16sp"
+        android:text="Skip - Add later"
+        android:textColor="@color/zid_text_secondary"
+        android:textSize="15sp"
         android:textStyle="bold" />
-
 </LinearLayout>
