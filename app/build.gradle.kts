@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.maplibre.android)
     implementation(libs.maplibre.annotation)
+    
+    // Explicit coordinatorlayout to resolve duplicate class conflicts
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     // Room — local database
     implementation("androidx.room:room-runtime:2.6.1")

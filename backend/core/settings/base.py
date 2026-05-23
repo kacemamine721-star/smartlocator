@@ -12,16 +12,22 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fm961l%l(=$3fh2cl-l!4f!jwvamq3%=m!klt+9r6=k9e0z^@a'
+SECRET_KEY = env(
+    'SECRET_KEY',
+    default='django-insecure-fm961l%l(=$3fh2cl-l!4f!jwvamq3%=m!klt+9r6=k9e0z^@a'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -94,6 +100,8 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+GRAPHHOPPER_API_KEY = env("GRAPHHOPPER_API_KEY", default="")
 
 
 

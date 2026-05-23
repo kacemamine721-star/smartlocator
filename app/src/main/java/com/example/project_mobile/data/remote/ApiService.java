@@ -1,11 +1,13 @@
 package com.example.project_mobile.data.remote;
 
 import java.util.List;
+import com.example.project_mobile.data.model.RouteResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("stations/")
@@ -16,6 +18,9 @@ public interface ApiService {
 
     @POST("auth/register/")
     Call<RegisterResponse> register(@Body RegisterRequest request);
+
+    @POST("auth/refresh/")
+    Call<TokenRefreshResponse> refreshToken(@Body TokenRefreshRequest request);
 
     @POST("contributions/")
     Call<ContributionResponse> submitContribution(@Body ContributionRequest request);
@@ -43,4 +48,15 @@ public interface ApiService {
 
     @POST("ratings/")
     Call<RatingResponse> submitRating(@Body RatingRequest request);
+
+    @GET("route/")
+    Call<RouteResponse> getRoute(
+            @Query("from_lat") double fromLat,
+            @Query("from_lng") double fromLng,
+            @Query("to_lat") double toLat,
+            @Query("to_lng") double toLng
+    );
+
+    @POST("history/")
+    Call<Void> saveHistorySession(@Body HistorySessionRequest request);
 }

@@ -1,7 +1,10 @@
 from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework import status
+from django.conf import settings
+import requests
 
 from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert, EVVehicle, CheckIn
 from django.contrib.auth.models import User
@@ -126,6 +129,54 @@ class ChargingStationViewSet(viewsets.ModelViewSet):
             "image_url": request.build_absolute_uri(station.image.url)
         })
 
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def get_route(request):
+    required = ("from_lat", "from_lng", "to_lat", "to_lng")
+    missing = [key for key in required if key not in request.GET]
+    if missing:
+        return Response({"error": f"Missing query parameters: {', '.join(missing)}"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    if not settings.GRAPHHOPPER_API_KEY:
+        return Response({"error": "GRAPHHOPPER_API_KEY is not configured"},
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    params = {
+        "point": [
+            f"{request.GET['from_lat']},{request.GET['from_lng']}",
+            f"{request.GET['to_lat']},{request.GET['to_lng']}",
+        ],
+        "vehicle": "car",
+        "locale": "fr",
+        "calc_points": "true",
+        "points_encoded": "true",
+        "elevation": "false",
+        "key": settings.GRAPHHOPPER_API_KEY,
+        "type": "json",
+    }
+
+    try:
+        session = requests.Session()
+        session.trust_env = False
+        graphhopper_response = session.get(
+            "https://graphhopper.com/api/1/route",
+            params=params,
+            timeout=12,
+        )
+        graphhopper_response.raise_for_status()
+        data = graphhopper_response.json()
+        path = data["paths"][0]
+    except (requests.RequestException, KeyError, IndexError) as exc:
+        return Response({"error": "Unable to calculate route"},
+                        status=status.HTTP_502_BAD_GATEWAY)
+
+    return Response({
+        "distance_m": path.get("distance", 0),
+        "duration_s": int(path.get("time", 0) // 1000),
+        "polyline": path.get("points", ""),
+    })
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
@@ -219,9 +270,9 @@ class UserMeView(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         # Allow updating profile's vehicle_id directly via this endpoint
         user = self.get_object()
+        profile = user.profile
         vehicle_id = request.data.get('vehicle_id')
         if vehicle_id is not None:
-            profile = user.profile
             if vehicle_id == "":
                 profile.vehicle = None
             else:
@@ -230,6 +281,12 @@ class UserMeView(generics.RetrieveUpdateAPIView):
                     profile.vehicle = vehicle
                 except EVVehicle.DoesNotExist:
                     pass
-            profile.save()
-        return super().update(request, *args, **kwargs)
+        current_soc = request.data.get('current_soc')
+        if current_soc is not None:
+            try:
+                profile.current_soc = max(0, min(100, int(current_soc)))
+            except (TypeError, ValueError):
+                pass
+        profile.save()
+        return Response(self.get_serializer(user).data)
 

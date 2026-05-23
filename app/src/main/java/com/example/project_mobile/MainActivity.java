@@ -16,7 +16,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.project_mobile.data.TokenManager;
 import com.example.project_mobile.ui.auth.WelcomeActivity;
 import com.example.project_mobile.ui.favorites.FavoritesFragment;
-import com.example.project_mobile.ui.history.HistoryFragment;
 import com.example.project_mobile.ui.map.MapFragment;
 import com.example.project_mobile.ui.profile.ProfileFragment;
 import com.example.project_mobile.ui.trip.TripFragment;

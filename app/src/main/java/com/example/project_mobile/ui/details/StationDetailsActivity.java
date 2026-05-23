@@ -38,6 +38,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         intent.putExtra("price", station.price);
         intent.putExtra("reliability", station.reliability);
         intent.putExtra("latitude", station.latitude);
+        intent.putExtra("longitude", station.longitude);
         intent.putExtra("operator", station.operator);
         intent.putExtra("verified", station.verified);
         intent.putExtra("access", station.access);
@@ -210,16 +211,6 @@ public class StationDetailsActivity extends AppCompatActivity {
 
         Button btnGoCharge = findViewById(R.id.btn_go_charge);
         btnGoCharge.setOnClickListener(v -> {
-            // 1. Collect for history
-            try {
-                int id = Integer.parseInt(idString);
-                repository.saveSession(id, name, city, true, 0, 0);
-            } catch (Exception e) {
-                repository.saveSession(0, name, city, true, 0, 0);
-            }
-            Toast.makeText(this, "Route added to history", Toast.LENGTH_SHORT).show();
-
-            // 2. Navigate back to MainActivity and trigger internal routing
             Intent mainIntent = new Intent(this, MainActivity.class);
             mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             mainIntent.putExtra("routing_station_id", idString);

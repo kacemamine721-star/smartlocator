@@ -1,6 +1,8 @@
 package com.example.project_mobile.ui.map;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,12 +16,20 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.project_mobile.BuildConfig;
 import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
+import com.example.project_mobile.data.model.RouteResponse;
+import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.ui.alerts.AlertsActivity;
 import com.example.project_mobile.ui.details.StationDetailsActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.maplibre.android.MapLibre;
@@ -46,6 +56,7 @@ import java.util.Objects;
 public class MapFragment extends Fragment {
 
     private static final LatLng MOCK_USER_LOCATION = new LatLng(36.81897, 10.16579);
+    private static final LatLng DEBUG_TEST_USER_LOCATION = new LatLng(36.8065, 10.1815);
 
     private MapView mapView;
     private MapLibreMap mapLibreMap;
@@ -63,6 +74,13 @@ public class MapFragment extends Fragment {
     private boolean rangeOverlayVisible = false;
     private int currentSoc = 65;
     private boolean alertsVisible = true;
+    private LatLng userLocation;
+    private boolean usingDebugTestLocation = false;
+    private org.maplibre.android.annotations.Marker userLocationMarker;
+    private FusedLocationProviderClient fusedLocationClient;
+    private ActivityResultLauncher<String> fineLocationPermissionLauncher;
+    private ChargingStation pendingRouteStation;
+    private String pendingRouteStationId;
     private final Map<Long, ChargingStation> symbolStationMap = new HashMap<>();
     private final Map<Long, String> symbolAlertMap = new HashMap<>();
     private final List<org.maplibre.android.annotations.Marker> activeAlertMarkers = new java.util.ArrayList<>();
@@ -73,6 +91,17 @@ public class MapFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapLibre.getInstance(requireContext());
+        fineLocationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                granted -> {
+                    if (granted) {
+                        refreshUserLocation(true);
+                    } else {
+                        android.widget.Toast.makeText(requireContext(),
+                                "Enable location to calculate a road route from your GPS position.",
+                                android.widget.Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Nullable
@@ -93,6 +122,8 @@ public class MapFragment extends Fragment {
         tokenManager = new com.example.project_mobile.data.TokenManager(requireContext());
         userConnectors = tokenManager.getUserConnectors();
         currentSoc = tokenManager.getCurrentSoc();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        refreshUserLocation(false);
 
         repo.getAllStations().observe(getViewLifecycleOwner(), newStations -> {
             this.fullStationList = newStations;
@@ -133,7 +164,12 @@ public class MapFragment extends Fragment {
             bottomSheet.setVisibility(View.GONE);
         });
 
-        view.findViewById(R.id.recenter_button).setOnClickListener(v -> updateMapSelection());
+        view.findViewById(R.id.recenter_button).setOnClickListener(v -> {
+            refreshUserLocation(true);
+            if (userLocation != null && mapLibreMap != null) {
+                mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 13.5));
+            }
+        });
         view.findViewById(R.id.layers_button).setOnClickListener(v -> {
             View legend = view.findViewById(R.id.map_legend);
             legend.setVisibility(legend.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
@@ -291,6 +327,9 @@ public class MapFragment extends Fragment {
 
         if (mapLibreMap != null) {
             configureMap();
+        }
+        if (pendingRouteStationId != null) {
+            selectStationAndRoute(pendingRouteStationId);
         }
     }
 
@@ -499,10 +538,7 @@ public class MapFragment extends Fragment {
             return false;
         });
 
-        // User location marker
-        mapLibreMap.addMarker(new org.maplibre.android.annotations.MarkerOptions()
-                .position(MOCK_USER_LOCATION)
-                .title("Your location"));
+        updateUserLocationMarker();
 
         refreshAlertMarkers();
 
@@ -519,6 +555,11 @@ public class MapFragment extends Fragment {
 
         updateMapSelection();
         updateReachabilityOverlay();
+        if (pendingRouteStation != null && userLocation != null) {
+            ChargingStation station = pendingRouteStation;
+            pendingRouteStation = null;
+            requestRouteToStation(station);
+        }
     }
 
     private void handleCheckIn(ChargingStation station, boolean isStarting) {
@@ -667,7 +708,7 @@ public class MapFragment extends Fragment {
         Button checkInBtn = root.findViewById(R.id.check_in_action);
         if ("Available".equalsIgnoreCase(station.status)) {
             checkInBtn.setText("I'm Charging Here");
-            checkInBtn.setOnClickListener(v -> handleCheckIn(station, true));
+            checkInBtn.setOnClickListener(v -> requestRouteToStation(station));
         } else {
             checkInBtn.setText("I'm Leaving (Mark Available)");
             checkInBtn.setOnClickListener(v -> handleCheckIn(station, false));
@@ -749,18 +790,287 @@ public class MapFragment extends Fragment {
     }
 
     public void selectStationAndRoute(String stationId) {
-        if (stations == null || stationId == null)
+        if (stations == null || stationId == null) {
+            pendingRouteStationId = stationId;
             return;
+        }
         for (ChargingStation s : stations) {
             if (stationId.equals(s.id)) {
+                pendingRouteStationId = null;
                 if (getView() != null) {
                     bindSelectedStation(getView(), s);
+                    requestRouteToStation(s);
                 } else {
                     selectedStation = s;
+                    pendingRouteStation = s;
                 }
                 break;
             }
         }
+    }
+
+    private void refreshUserLocation(boolean requestIfMissingPermission) {
+        if (fusedLocationClient == null || getContext() == null)
+            return;
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (requestIfMissingPermission && fineLocationPermissionLauncher != null) {
+                fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            return;
+        }
+
+        fusedLocationClient.getCurrentLocation(
+                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                null
+        ).addOnSuccessListener(current -> {
+            if (current != null) {
+                applyUserLocation(current);
+            } else {
+                useCachedLocationFallback(requestIfMissingPermission);
+            }
+        }).addOnFailureListener(error -> useCachedLocationFallback(requestIfMissingPermission));
+    }
+
+    private void useCachedLocationFallback(boolean showNoFixMessage) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        applyUserLocation(location);
+                    } else if (showNoFixMessage) {
+                        android.widget.Toast.makeText(requireContext(),
+                                "No GPS fix. Set a location in Emulator > Extended Controls > Location, or start routing in debug to use the test origin.",
+                                android.widget.Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void applyUserLocation(android.location.Location location) {
+        userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        usingDebugTestLocation = false;
+        updateUserLocationMarker();
+        if (pendingRouteStation != null) {
+            ChargingStation station = pendingRouteStation;
+            pendingRouteStation = null;
+            requestRouteToStation(station);
+        }
+    }
+
+    private void applyDebugLocationFallback() {
+        if (BuildConfig.DEBUG) {
+            userLocation = DEBUG_TEST_USER_LOCATION;
+            usingDebugTestLocation = true;
+            updateUserLocationMarker();
+            android.widget.Toast.makeText(requireContext(),
+                    "Debug test origin enabled: Tunis center. Set emulator GPS to test another start point.",
+                    android.widget.Toast.LENGTH_LONG).show();
+            if (pendingRouteStation != null) {
+                ChargingStation station = pendingRouteStation;
+                pendingRouteStation = null;
+                requestRouteToStation(station);
+            }
+        } else {
+            android.widget.Toast.makeText(requireContext(),
+                    "No GPS fix. Enable location services and try again.",
+                    android.widget.Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void updateUserLocationMarker() {
+        if (mapLibreMap == null)
+            return;
+        if (userLocationMarker != null) {
+            mapLibreMap.removeMarker(userLocationMarker);
+            userLocationMarker = null;
+        }
+        if (userLocation == null) {
+            return;
+        }
+        userLocationMarker = mapLibreMap.addMarker(new org.maplibre.android.annotations.MarkerOptions()
+                .position(userLocation)
+                .title(usingDebugTestLocation
+                        ? "Debug test origin"
+                        : (userLocation != null ? "Your GPS position" : "Tunisia fallback position")));
+    }
+
+    private void requestRouteToStation(ChargingStation station) {
+        if (station == null)
+            return;
+        if (BuildConfig.DEBUG && !usingDebugTestLocation) {
+            pendingRouteStation = station;
+            applyDebugLocationFallback();
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            pendingRouteStation = station;
+            fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return;
+        }
+        if (userLocation == null) {
+            pendingRouteStation = station;
+            refreshUserLocation(true);
+            android.widget.Toast.makeText(requireContext(),
+                    "Getting your GPS position for the optimized route...",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mapLibreMap == null || lineManager == null) {
+            pendingRouteStation = station;
+            return;
+        }
+
+        selectedStation = station;
+        TextView routeTag = getView() != null ? getView().findViewById(R.id.route_tag) : null;
+        if (routeTag != null) {
+            routeTag.setVisibility(View.VISIBLE);
+            routeTag.setText("Calculating road route...");
+        }
+
+        RetrofitClient.getApiService(requireContext())
+                .getRoute(userLocation.getLatitude(), userLocation.getLongitude(),
+                        station.latitude, station.longitude)
+                .enqueue(new retrofit2.Callback<RouteResponse>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<RouteResponse> call,
+                                           retrofit2.Response<RouteResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null) {
+                            showRoutingError("Routing failed: " + response.code());
+                            return;
+                        }
+                        RouteResponse route = response.body();
+                        java.util.List<LatLng> routePoints = decodePolyline(route.polyline);
+                        if (routePoints.isEmpty()) {
+                            showRoutingError("Routing failed: empty route");
+                            return;
+                        }
+                        drawRoute(routePoints);
+                        String distance = formatDistance(route.distanceM);
+                        String eta = formatDuration(route.durationS);
+                        updateRouteLabels(distance, eta);
+                        saveRouteSession(station, route.durationS);
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<RouteResponse> call, Throwable t) {
+                        showRoutingError("Routing failed: " + t.getMessage());
+                    }
+                });
+    }
+
+    private void drawRoute(java.util.List<LatLng> routePoints) {
+        if (lineManager == null || mapLibreMap == null)
+            return;
+        if (routeLine != null) {
+            lineManager.delete(routeLine);
+        }
+        routeLine = lineManager.create(new LineOptions()
+                .withLatLngs(routePoints)
+                .withLineColor(ColorUtils.colorToRgbaString(
+                        ContextCompat.getColor(requireContext(), R.color.teal_500)))
+                .withLineWidth(5f));
+
+        LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+        for (LatLng point : routePoints) {
+            bounds.include(point);
+        }
+        mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 160));
+    }
+
+    private void updateRouteLabels(String distance, String eta) {
+        if (getView() == null)
+            return;
+        TextView routeTag = getView().findViewById(R.id.route_tag);
+        TextView previewRoute = getView().findViewById(R.id.preview_route);
+        if (routeTag != null) {
+            routeTag.setVisibility(View.VISIBLE);
+            routeTag.setText("Smart route - " + eta + " - " + distance);
+        }
+        if (previewRoute != null) {
+            previewRoute.setText(distance + " - " + eta);
+        }
+    }
+
+    private void saveRouteSession(ChargingStation station, long durationS) {
+        try {
+            new com.example.project_mobile.data.StationRepository(requireActivity().getApplication())
+                    .saveSession(Integer.parseInt(station.id), station.name,
+                            station.city != null ? station.city : "", true, 0f,
+                            Math.max(1, Math.round(durationS / 60f)));
+        } catch (NumberFormatException ignored) {
+            new com.example.project_mobile.data.StationRepository(requireActivity().getApplication())
+                    .saveSession(0, station.name, station.city != null ? station.city : "",
+                            true, 0f, Math.max(1, Math.round(durationS / 60f)));
+        }
+    }
+
+    private void showRoutingError(String message) {
+        if (getView() != null) {
+            TextView routeTag = getView().findViewById(R.id.route_tag);
+            if (routeTag != null) {
+                routeTag.setVisibility(View.VISIBLE);
+                routeTag.setText("Route unavailable");
+            }
+        }
+        android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    private String formatDistance(double meters) {
+        if (meters >= 1000) {
+            return String.format(java.util.Locale.US, "%.1f km", meters / 1000d);
+        }
+        return Math.round(meters) + " m";
+    }
+
+    private String formatDuration(long seconds) {
+        long minutes = Math.max(1, Math.round(seconds / 60f));
+        if (minutes < 60) {
+            return minutes + " min";
+        }
+        long hours = minutes / 60;
+        long remainingMinutes = minutes % 60;
+        return remainingMinutes == 0 ? hours + " h" : hours + " h " + remainingMinutes + " min";
+    }
+
+    private java.util.List<LatLng> decodePolyline(String encoded) {
+        java.util.List<LatLng> polyline = new java.util.ArrayList<>();
+        if (encoded == null || encoded.isEmpty())
+            return polyline;
+
+        int index = 0;
+        int lat = 0;
+        int lng = 0;
+        while (index < encoded.length()) {
+            int[] latitudeResult = decodeNextPolylineValue(encoded, index);
+            lat += latitudeResult[0];
+            index = latitudeResult[1];
+            if (index >= encoded.length())
+                break;
+            int[] longitudeResult = decodeNextPolylineValue(encoded, index);
+            lng += longitudeResult[0];
+            index = longitudeResult[1];
+            polyline.add(new LatLng(lat / 1E5, lng / 1E5));
+        }
+        return polyline;
+    }
+
+    private int[] decodeNextPolylineValue(String encoded, int startIndex) {
+        int result = 0;
+        int shift = 0;
+        int index = startIndex;
+        int b;
+        do {
+            b = encoded.charAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20 && index < encoded.length());
+        int value = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+        return new int[]{value, index};
     }
 
     private int markerIconFor(String status) {
@@ -785,19 +1095,11 @@ public class MapFragment extends Fragment {
             return;
         }
 
+        LatLng origin = userLocation != null ? userLocation : MOCK_USER_LOCATION;
         LatLng stationLatLng = new LatLng(selectedStation.latitude, selectedStation.longitude);
-        if (routeLine != null) {
-            lineManager.delete(routeLine);
-        }
-
-        routeLine = lineManager.create(new LineOptions()
-                .withLatLngs(java.util.Arrays.asList(MOCK_USER_LOCATION, stationLatLng))
-                .withLineColor(ColorUtils.colorToRgbaString(
-                        androidx.core.content.ContextCompat.getColor(requireContext(), R.color.teal_500)))
-                .withLineWidth(5f));
 
         LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(MOCK_USER_LOCATION)
+                .include(origin)
                 .include(stationLatLng)
                 .build();
 

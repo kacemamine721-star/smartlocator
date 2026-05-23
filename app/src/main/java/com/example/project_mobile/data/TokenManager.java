@@ -39,6 +39,13 @@ public class TokenManager {
                     .apply();
     }
 
+    public void saveAccessToken(String access) {
+        prefs.edit()
+                .putString(KEY_ACCESS, access)
+                .putString(KEY_USER_ID, extractUserId(access))
+                .apply();
+    }
+
     public String getAccessToken() {
         return prefs.getString(KEY_ACCESS, null);
     }
@@ -49,6 +56,26 @@ public class TokenManager {
 
     public boolean hasToken() {
         return getAccessToken() != null;
+    }
+
+    public boolean isAccessTokenExpired() {
+        String access = getAccessToken();
+        if (access == null || access.isEmpty()) {
+            return true;
+        }
+        try {
+            String[] parts = access.split("\\.");
+            if (parts.length < 2) {
+                return true;
+            }
+            byte[] decoded = Base64.decode(parts[1], Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            JSONObject payload = new JSONObject(new String(decoded, java.nio.charset.StandardCharsets.UTF_8));
+            long expSeconds = payload.optLong("exp", 0);
+            long nowSeconds = System.currentTimeMillis() / 1000L;
+            return expSeconds <= nowSeconds + 30;
+        } catch (Exception ignored) {
+            return true;
+        }
     }
 
     public void saveUserId(String userId) {

@@ -59,8 +59,10 @@ public class ProfileFragment extends Fragment {
         });
 
         View llEvVehicle = view.findViewById(R.id.ll_ev_vehicle);
-        TextView tvEvBrand = view.findViewById(R.id.tv_profile_ev_brand);
-        TextView tvEvModel = view.findViewById(R.id.tv_profile_ev_model);
+        TextView tvEvBrand = view.findViewById(R.id.tv_ev_brand);
+        TextView tvEvModel = view.findViewById(R.id.tv_ev_model);
+        TextView tvEvSpecs = view.findViewById(R.id.tv_profile_ev_specs);
+        ImageView ivEvSelected = view.findViewById(R.id.iv_ev_selected);
         ImageView btnChangeEv = view.findViewById(R.id.btn_change_ev);
 
         if (btnChangeEv != null) {
@@ -130,8 +132,16 @@ public class ProfileFragment extends Fragment {
                             llEvVehicle.setVisibility(View.VISIBLE);
                             if (tvEvBrand != null) tvEvBrand.setText(profile.vehicle.brand);
                             if (tvEvModel != null) tvEvModel.setText(profile.vehicle.model_name);
+                            if (ivEvSelected != null) ivEvSelected.setVisibility(View.VISIBLE);
+                            if (tvEvSpecs != null) {
+                                String connectors = connectorText(profile.vehicle);
+                                String range = profile.vehicle.range_wltp_km != null
+                                        ? profile.vehicle.range_wltp_km + " km WLTP"
+                                        : "range unknown";
+                                tvEvSpecs.setText(range + " - " + connectors);
+                            }
                             
-                            ImageView ivProfileEv = view.findViewById(R.id.iv_profile_ev);
+                            ImageView ivProfileEv = view.findViewById(R.id.iv_ev_image);
                             if (ivProfileEv != null) {
                                 if (profile.vehicle.image != null) {
                                     Glide.with(requireContext())
@@ -143,6 +153,14 @@ public class ProfileFragment extends Fragment {
                             }
                         }
                     }
+                } else if (response.code() == 401) {
+                    android.widget.Toast.makeText(requireContext(),
+                            "Session expired. Please sign in again to sync your profile and history.",
+                            android.widget.Toast.LENGTH_LONG).show();
+                    viewModel.signOut();
+                    Intent intent = new Intent(requireContext(), WelcomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
             }
 
@@ -200,6 +218,15 @@ public class ProfileFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         });
+    }
+
+    private String connectorText(com.example.project_mobile.data.remote.EVVehicle vehicle) {
+        String ac = vehicle.ac_connector_type != null ? vehicle.ac_connector_type : "";
+        String dc = vehicle.dc_connector_type != null ? vehicle.dc_connector_type : "";
+        if (!ac.isEmpty() && !dc.isEmpty()) return ac + " + " + dc;
+        if (!dc.isEmpty()) return dc;
+        if (!ac.isEmpty()) return ac;
+        return "connectors unknown";
     }
     
     private void showCustomLevelUpDialog(String levelKey) {

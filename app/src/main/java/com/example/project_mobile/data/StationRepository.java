@@ -276,6 +276,24 @@ public class StationRepository {
             h.durationMin = durationMin;
             h.userId = tokenManager.getUserId();
             historyDao.insert(h);
+            if (tokenManager.hasToken() && stationId > 0) {
+                RetrofitClient.getApiService(app)
+                        .saveHistorySession(new com.example.project_mobile.data.remote.HistorySessionRequest(
+                                stationId, routeOnly, kwh, durationMin))
+                        .enqueue(new retrofit2.Callback<Void>() {
+                            @Override
+                            public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                                if (!response.isSuccessful()) {
+                                    Log.w(TAG, "History sync failed: " + response.code());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                                Log.w(TAG, "History sync failed", t);
+                            }
+                        });
+            }
             Log.d(TAG, "Session saved for station " + stationId);
         });
     }

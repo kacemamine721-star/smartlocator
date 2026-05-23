@@ -8,7 +8,10 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 DEBUG = False
-ALLOWED_HOSTS = ['smartlocator-api.onrender.com']
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["smartlocator-api.onrender.com", ".onrender.com", "localhost", "127.0.0.1"],
+)
 
 # Render Database URL
 DATABASES = {'default': dj_database_url.parse(env('DATABASE_URL'))}

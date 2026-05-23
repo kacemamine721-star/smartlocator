@@ -80,6 +80,10 @@ smartlocator/
 - [ ] **Station Photos:** Implement upload endpoint for station images and display them in the app.
 - [ ] **Production Deployment:** Migrate the backend to Neon (PostgreSQL), Upstash (Redis), and Cloudflare R2 (Storage) and deploy to Render.com.
 
+## Production Release Testing
+
+Before sharing a release APK or deploying the Render backend, follow the full checklist in [`docs/Production_Release_Testing.md`](docs/Production_Release_Testing.md). It covers backend environment checks, release APK testing, routing, EV profile persistence, Favorites history, and the Neon persistence audit.
+
 ## License
 
 This project is currently provided for academic and demonstration purposes.

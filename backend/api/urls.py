@@ -13,6 +13,7 @@ from .views import (
     CommunityAlertViewSet,
     EVVehicleViewSet,
     UserMeView,
+    get_route,
 )
 
 router = DefaultRouter()
@@ -29,5 +30,6 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='auth-login'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='auth-refresh'),
     path('users/me/', UserMeView.as_view(), name='user-me'),
+    path('route/', get_route, name='route'),
     path('', include(router.urls)),
 ]
