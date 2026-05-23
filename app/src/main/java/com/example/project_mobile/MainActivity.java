@@ -24,6 +24,7 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
 
     private int selectedItemId = R.id.navigation_map;
+    private boolean restoringSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +57,22 @@ public class MainActivity extends AppCompatActivity {
             return windowInsets;
         });
         bottomNavigation.setOnItemSelectedListener(item -> {
-            selectedItemId = item.getItemId();
-            switchToDestination(selectedItemId);
+            int itemId = item.getItemId();
+            if (!restoringSelection && itemId == selectedItemId
+                    && getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+                return true;
+            }
+            selectedItemId = itemId;
+            switchToDestination(itemId);
             return true;
         });
 
+        restoringSelection = true;
         bottomNavigation.setSelectedItemId(selectedItemId);
+        restoringSelection = false;
+        if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) == null) {
+            switchToDestination(selectedItemId);
+        }
         handleIntent(getIntent());
     }
 
@@ -77,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
             String stationId = intent.getStringExtra("routing_station_id");
             switchToDestination(R.id.navigation_map);
             findViewById(R.id.bottom_navigation).post(() -> {
+                restoringSelection = true;
                 ((NavigationBarView) findViewById(R.id.bottom_navigation)).setSelectedItemId(R.id.navigation_map);
+                restoringSelection = false;
                 getSupportFragmentManager().executePendingTransactions();
                 Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if (f instanceof MapFragment) {
@@ -94,6 +107,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void switchToDestination(int itemId) {
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (current instanceof FavoritesFragment && itemId == R.id.navigation_favorites) {
+            return;
+        }
+        if (current instanceof TripFragment && itemId == R.id.navigation_trip) {
+            return;
+        }
+        if (current instanceof ProfileFragment && itemId == R.id.navigation_profile) {
+            return;
+        }
+        if (current instanceof MapFragment && itemId == R.id.navigation_map) {
+            return;
+        }
+
         Fragment fragment;
         if (itemId == R.id.navigation_favorites) {
             fragment = new FavoritesFragment();

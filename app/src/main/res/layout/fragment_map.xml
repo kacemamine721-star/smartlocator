@@ -58,7 +58,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
-                    android:tint="#9DAFBC" />
+                    app:tint="#9DAFBC" />
 
                 <EditText
                     android:id="@+id/et_search_map"

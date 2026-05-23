@@ -4,6 +4,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Avg, Count
 import requests
 
@@ -25,6 +26,20 @@ from .serializers import (
 class ChargingStationViewSet(viewsets.ModelViewSet):
     serializer_class = ChargingStationSerializer
     permission_classes = [permissions.AllowAny]
+    PUBLIC_LIST_CACHE_SECONDS = 30
+
+    def list(self, request, *args, **kwargs):
+        city = request.query_params.get("city", "")
+        cache_key = f"stations:list:public:{city.lower()}"
+        if not request.user.is_authenticated:
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return Response(cached)
+
+        response = super().list(request, *args, **kwargs)
+        if not request.user.is_authenticated and response.status_code == status.HTTP_200_OK:
+            cache.set(cache_key, response.data, self.PUBLIC_LIST_CACHE_SECONDS)
+        return response
 
     def get_queryset(self):
         from django.utils import timezone

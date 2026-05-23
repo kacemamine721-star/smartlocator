@@ -551,9 +551,16 @@ public class MapFragment extends Fragment {
     private void handleCheckIn(ChargingStation station, boolean isStarting) {
         if (station == null)
             return;
+        int stationId;
+        try {
+            stationId = Integer.parseInt(station.id);
+        } catch (NumberFormatException e) {
+            android.widget.Toast.makeText(requireContext(), "Invalid station ID", android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
         com.example.project_mobile.data.StationRepository repo = new com.example.project_mobile.data.StationRepository(
                 requireActivity().getApplication());
-        repo.checkIn(Integer.parseInt(station.id), isStarting,
+        repo.checkIn(stationId, isStarting,
                 new com.example.project_mobile.data.StationRepository.Callback() {
                     @Override
                     public void onSuccess() {
@@ -568,7 +575,7 @@ public class MapFragment extends Fragment {
                                 float hours = (capacity * 0.8f) / powerKw;
                                 minutes = Math.max(1, (int) (hours * 60));
                             }
-                            repo.saveLocalSession(Integer.parseInt(station.id), station.name,
+                            repo.saveLocalSession(stationId, station.name,
                                     station.city != null ? station.city : "", false, 0f, minutes);
                         }
                         if (getView() != null) {
@@ -1199,10 +1206,6 @@ public class MapFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        if (mapView != null) {
-            mapView.onDestroy();
-            mapView = null;
-        }
         if (symbolManager != null) {
             symbolManager.onDestroy();
             symbolManager = null;
@@ -1210,6 +1213,10 @@ public class MapFragment extends Fragment {
         if (lineManager != null) {
             lineManager.onDestroy();
             lineManager = null;
+        }
+        if (mapView != null) {
+            mapView.onDestroy();
+            mapView = null;
         }
         mapLibreMap = null;
         routeLine = null;

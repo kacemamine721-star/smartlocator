@@ -123,7 +123,12 @@ public class FavoritesFragment extends Fragment {
                 int position = viewHolder.getAdapterPosition();
                 ChargingStation station = adapter.getStationAt(position);
                 if (station.favorite) {
-                    viewModel.removeFavorite(Integer.parseInt(station.id), null);
+                    try {
+                        viewModel.removeFavorite(Integer.parseInt(station.id), null);
+                    } catch (NumberFormatException e) {
+                        adapter.notifyItemChanged(position);
+                        android.widget.Toast.makeText(requireContext(), "Invalid station ID", android.widget.Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     adapter.notifyItemChanged(position);
                     android.widget.Toast.makeText(requireContext(), "Save a station first, then swipe to remove it.", android.widget.Toast.LENGTH_SHORT).show();

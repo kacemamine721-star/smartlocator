@@ -81,7 +81,7 @@
             android:layout_marginStart="12dp"
             android:background="@drawable/bg_map_control"
             android:src="@android:drawable/ic_menu_mylocation"
-            android:tint="@color/teal_300" />
+            app:tint="@color/teal_300" />
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout

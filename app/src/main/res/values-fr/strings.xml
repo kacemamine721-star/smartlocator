@@ -138,7 +138,7 @@
     <string name="saved_network">Réseau enregistré</string>
     <string name="stations">Stations</string>
     <string name="recent_activity">Activité récente</string>
-    <string name="soc_summary_placeholder">SoC 65 % - autonomie routière en attente</string>
+    <string name="soc_summary_placeholder">SoC 65 %% - autonomie routière en attente</string>
     <string name="set_soc">Définir SoC</string>
     <string name="charging_here">Je recharge ici</string>
     <string name="toggle_reachability">Afficher l\'autonomie</string>
