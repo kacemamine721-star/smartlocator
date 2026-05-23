@@ -17,11 +17,11 @@ import android.widget.TextView;
 import android.content.Intent;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.example.project_mobile.data.TokenManager;
 import com.example.project_mobile.data.remote.EVVehicle;
 import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.data.remote.UserMeResponse;
+import com.example.project_mobile.ui.common.EvImageLoader;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -168,17 +168,21 @@ public class ProfileFragment extends Fragment {
         if (ccs2Switch != null) ccs2Switch.setChecked(prefs.getBoolean("pref_ccs2", false));
         if (notifAvailSwitch != null) notifAvailSwitch.setChecked(prefs.getBoolean("pref_notif_avail", true));
         if (notifDemandSwitch != null) notifDemandSwitch.setChecked(prefs.getBoolean("pref_notif_demand", true));
-        if (langSpinner != null) langSpinner.setSelection(prefs.getInt("pref_lang", 0));
+        if (langSpinner != null) {
+            langSpinner.setSelection(currentLanguagePosition());
+        }
 
         if (ccs2Switch != null) ccs2Switch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_ccs2", isChecked).apply());
         if (notifAvailSwitch != null) notifAvailSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_avail", isChecked).apply());
         if (notifDemandSwitch != null) notifDemandSwitch.setOnCheckedChangeListener((btn, isChecked) -> prefs.edit().putBoolean("pref_notif_demand", isChecked).apply());
         
         if (langSpinner != null) {
+            final boolean[] languageReady = {false};
+            langSpinner.post(() -> languageReady[0] = true);
             langSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                    if (prefs.getInt("pref_lang", 0) != position) {
+                    if (languageReady[0] && currentLanguagePosition() != position) {
                         prefs.edit().putInt("pref_lang", position).apply();
                         String langCode = position == 1 ? "fr" : (position == 2 ? "ar" : "en");
                         androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
@@ -216,6 +220,16 @@ public class ProfileFragment extends Fragment {
         return "connectors unknown";
     }
 
+    private int currentLanguagePosition() {
+        String tags = androidx.appcompat.app.AppCompatDelegate.getApplicationLocales().toLanguageTags();
+        if (tags == null || tags.isEmpty()) {
+            tags = java.util.Locale.getDefault().getLanguage();
+        }
+        if (tags.startsWith("fr")) return 1;
+        if (tags.startsWith("ar")) return 2;
+        return 0;
+    }
+
     private void bindVehicleCard(View container, TextView brand, TextView model, TextView specs,
                                  ImageView selected, ImageView image, EVVehicle vehicle) {
         if (container == null || vehicle == null) {
@@ -230,11 +244,7 @@ public class ProfileFragment extends Fragment {
             specs.setText(range + " - " + connectorText(vehicle));
         }
         if (image != null) {
-            if (vehicle.image != null && !vehicle.image.isEmpty()) {
-                Glide.with(requireContext()).load(vehicle.image).into(image);
-            } else {
-                image.setImageResource(R.drawable.ic_car_charging);
-            }
+            EvImageLoader.load(image, vehicle.image);
         }
     }
 

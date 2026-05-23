@@ -70,7 +70,7 @@ public class MapFragment extends Fragment {
     private List<ChargingStation> fullStationList;
     private String currentQuery = "";
     private boolean fAvailable = false, fSlow = false, fSemiFast = false, fFast = false;
-    private boolean fMyCar = true;
+    private boolean fMyCar = false;
     private boolean rangeOverlayVisible = false;
     private int currentSoc = 65;
     private boolean alertsVisible = true;
@@ -177,7 +177,11 @@ public class MapFragment extends Fragment {
         view.findViewById(R.id.range_button).setOnClickListener(v -> {
             rangeOverlayVisible = !rangeOverlayVisible;
             if (rangeOverlayVisible && getReachableKm() <= 0) {
-                android.widget.Toast.makeText(requireContext(), "Set your EV profile to show reachability radius",
+                android.widget.Toast.makeText(requireContext(), "Set your EV profile to check road reachability",
+                        android.widget.Toast.LENGTH_SHORT).show();
+            } else if (rangeOverlayVisible) {
+                android.widget.Toast.makeText(requireContext(),
+                        "Road reachability is checked on the selected route.",
                         android.widget.Toast.LENGTH_SHORT).show();
             }
             updateReachabilityOverlay();
@@ -240,9 +244,6 @@ public class MapFragment extends Fragment {
                 fSemiFast = !fSemiFast;
             else if (id == R.id.chip_fast)
                 fFast = !fFast;
-            else if (id == R.id.chip_my_car)
-                fMyCar = !fMyCar;
-
             updateChipUI((TextView) view, id);
             performFiltering(currentQuery);
         };
@@ -251,7 +252,9 @@ public class MapFragment extends Fragment {
         chipSlow.setOnClickListener(toggle);
         chipSemiFast.setOnClickListener(toggle);
         chipFast.setOnClickListener(toggle);
-        chipMyCar.setOnClickListener(toggle);
+        if (chipMyCar != null) {
+            chipMyCar.setVisibility(View.GONE);
+        }
     }
 
     private void updateChipUI(TextView chip, int id) {
@@ -264,9 +267,6 @@ public class MapFragment extends Fragment {
             active = fSemiFast;
         else if (id == R.id.chip_fast)
             active = fFast;
-        else if (id == R.id.chip_my_car)
-            active = fMyCar;
-
         chip.setBackgroundResource(active ? R.drawable.bg_filter_chip_active : R.drawable.bg_filter_chip);
         chip.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(),
                 active ? R.color.slate_950 : R.color.white));
@@ -307,21 +307,6 @@ public class MapFragment extends Fragment {
                     continue;
             }
 
-            // EV-Matched Connector Filtering
-            if (fMyCar && userConnectors != null && !userConnectors.isEmpty() && s.connectors != null
-                    && !s.connectors.isEmpty()) {
-                boolean hasCompatibleConnector = false;
-                for (String stationConn : s.connectors) {
-                    if (userConnectors.toLowerCase().contains(stationConn.toLowerCase().trim())) {
-                        hasCompatibleConnector = true;
-                        break;
-                    }
-                }
-                if (!hasCompatibleConnector) {
-                    continue; // Auto-hide incompatible stations
-                }
-            }
-
             stations.add(s);
         }
 
@@ -359,9 +344,9 @@ public class MapFragment extends Fragment {
         int reachableKm = getReachableKm();
         if (reachableKm > 0) {
             String label = vehicle == null || vehicle.isEmpty() ? "My EV" : vehicle;
-            summary.setText(label + " - SoC " + currentSoc + "% - safe radius " + reachableKm + " km");
+            summary.setText(label + " - SoC " + currentSoc + "% - road range about " + reachableKm + " km");
         } else {
-            summary.setText("Set your EV profile to unlock reachability and car-matched stations");
+            summary.setText("Set your EV profile to check road reachability");
         }
     }
 
@@ -970,7 +955,7 @@ public class MapFragment extends Fragment {
                         drawRoute(routePoints);
                         String distance = formatDistance(route.distanceM);
                         String eta = formatDuration(route.durationS);
-                        updateRouteLabels(distance, eta);
+                        updateRouteLabels(distance, eta, route.distanceM);
                         saveRouteSession(station, route.durationS);
                     }
 
@@ -1000,18 +985,30 @@ public class MapFragment extends Fragment {
         mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 160));
     }
 
-    private void updateRouteLabels(String distance, String eta) {
+    private void updateRouteLabels(String distance, String eta, double routeMeters) {
         if (getView() == null)
             return;
         TextView routeTag = getView().findViewById(R.id.route_tag);
         TextView previewRoute = getView().findViewById(R.id.preview_route);
+        String rangeStatus = roadRangeStatus(routeMeters);
         if (routeTag != null) {
             routeTag.setVisibility(View.VISIBLE);
-            routeTag.setText("Smart route - " + eta + " - " + distance);
+            routeTag.setText("Smart route - " + eta + " - " + distance + rangeStatus);
         }
         if (previewRoute != null) {
             previewRoute.setText(distance + " - " + eta);
         }
+    }
+
+    private String roadRangeStatus(double routeMeters) {
+        int reachableKm = getReachableKm();
+        if (reachableKm <= 0 || routeMeters <= 0) {
+            return "";
+        }
+        double reachableMeters = reachableKm * 1000d;
+        return routeMeters <= reachableMeters
+                ? " - within road range"
+                : " - beyond current SoC";
     }
 
     private void saveRouteSession(ChargingStation station, long durationS) {
@@ -1135,40 +1132,6 @@ public class MapFragment extends Fragment {
             mapLibreMap.removePolygon(reachabilityPolygon);
             reachabilityPolygon = null;
         }
-        if (!rangeOverlayVisible)
-            return;
-        int radiusKm = getReachableKm();
-        if (radiusKm <= 0)
-            return;
-
-        java.util.List<LatLng> circle = new java.util.ArrayList<>();
-        double lat = MOCK_USER_LOCATION.getLatitude();
-        double lon = MOCK_USER_LOCATION.getLongitude();
-        double radiusEarthKm = 6371.0;
-        double angularDistance = radiusKm / radiusEarthKm;
-        double latRad = Math.toRadians(lat);
-        double lonRad = Math.toRadians(lon);
-        for (int i = 0; i <= 72; i++) {
-            double bearing = Math.toRadians(i * 5.0);
-            double pointLat = Math.asin(Math.sin(latRad) * Math.cos(angularDistance)
-                    + Math.cos(latRad) * Math.sin(angularDistance) * Math.cos(bearing));
-            double pointLon = lonRad + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(latRad),
-                    Math.cos(angularDistance) - Math.sin(latRad) * Math.sin(pointLat));
-            circle.add(new LatLng(Math.toDegrees(pointLat), Math.toDegrees(pointLon)));
-        }
-
-        // Add filled polygon for background
-        reachabilityPolygon = mapLibreMap.addPolygon(new org.maplibre.android.annotations.PolygonOptions()
-                .addAll(circle)
-                .fillColor(android.graphics.Color.argb(10, 255, 255, 0)) // Transparent yellow
-                .strokeColor(android.graphics.Color.TRANSPARENT));
-
-        // Add line for border
-        reachabilityLine = lineManager.create(new LineOptions()
-                .withLatLngs(circle)
-                .withLineColor("#f3ffb0ff")
-                .withLineWidth(4f)
-                .withLineOpacity(0.9f));
     }
 
     @Override

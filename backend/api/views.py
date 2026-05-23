@@ -162,7 +162,7 @@ def get_route(request):
         graphhopper_response = session.get(
             "https://graphhopper.com/api/1/route",
             params=params,
-            timeout=12,
+            timeout=25,
         )
         graphhopper_response.raise_for_status()
         data = graphhopper_response.json()

@@ -24,6 +24,7 @@ import com.example.project_mobile.data.remote.EVVehicle;
 import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.data.remote.UpdateProfileRequest;
 import com.example.project_mobile.data.remote.UserMeResponse;
+import com.example.project_mobile.ui.common.EvImageLoader;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -147,13 +148,7 @@ public class EVSelectionActivity extends AppCompatActivity {
             holder.itemView.setBackgroundColor(isSelected ? Color.parseColor("#162831") : Color.TRANSPARENT);
             holder.ivSelected.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
-            if (vehicle.image != null) {
-                Glide.with(holder.itemView.getContext())
-                        .load(vehicle.image)
-                        .into(holder.ivImage);
-            } else {
-                holder.ivImage.setImageDrawable(null);
-            }
+            EvImageLoader.load(holder.ivImage, vehicle.image);
 
             holder.itemView.setOnClickListener(v -> {
                 selectedVehicle = vehicle;

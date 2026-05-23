@@ -169,7 +169,8 @@
                     android:paddingBottom="10dp"
                     android:text="My Car"
                     android:textColor="@color/slate_950"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -290,6 +291,7 @@
             android:elevation="2dp"
             android:orientation="vertical"
             android:padding="16dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 

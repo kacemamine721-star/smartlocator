@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
     // Senior Dev Optimization: Using BuildConfig to switch between local and production URLs automatically
@@ -22,6 +23,10 @@ public class RetrofitClient {
         if (retrofit == null) {
             TokenManager tokenManager = new TokenManager(context.getApplicationContext());
             OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .readTimeout(45, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .callTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(chain -> {
                         String token = tokenManager.getAccessToken();
                         okhttp3.Request request = chain.request();
@@ -88,7 +93,12 @@ public class RetrofitClient {
         }
 
         try {
-            OkHttpClient refreshClient = new OkHttpClient.Builder().build();
+            OkHttpClient refreshClient = new OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(20, TimeUnit.SECONDS)
+                    .callTimeout(40, TimeUnit.SECONDS)
+                    .build();
             String json = new Gson().toJson(new TokenRefreshRequest(refresh));
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(BASE_URL + "auth/refresh/")
