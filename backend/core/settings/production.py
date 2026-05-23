@@ -10,8 +10,20 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = False
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["smartlocator-api.onrender.com", ".onrender.com", "localhost", "127.0.0.1"],
+    default=["smartlocator.onrender.com", ".onrender.com", "localhost", "127.0.0.1"],
 )
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=["https://smartlocator.onrender.com", "https://*.onrender.com"],
+)
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=3600)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 MIDDLEWARE = MIDDLEWARE.copy()
 if "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:

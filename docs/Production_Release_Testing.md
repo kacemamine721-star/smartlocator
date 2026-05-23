@@ -7,7 +7,7 @@ Use this checklist before sharing a release APK with testers or deploying the ba
 - Confirm Render uses `DJANGO_SETTINGS_MODULE=core.settings.production`.
 - Confirm Render environment variables are set:
   - `DATABASE_URL` points to Neon.
-  - `ALLOWED_HOSTS` includes your Render domain, for example `smartlocator-api.onrender.com,.onrender.com`.
+  - `ALLOWED_HOSTS` includes your Render domain, for example `smartlocator.onrender.com,.onrender.com`.
   - `GRAPHHOPPER_API_KEY` is present.
   - `SECRET_KEY` is set in Render, not committed.
   - Optional: `REDIS_URL` points to Upstash.
@@ -52,7 +52,7 @@ Do not commit this file. In Render, prefer dashboard environment variables.
 ```env
 DJANGO_SETTINGS_MODULE=core.settings.production
 DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
-ALLOWED_HOSTS=smartlocator-api.onrender.com,.onrender.com
+ALLOWED_HOSTS=smartlocator.onrender.com,.onrender.com
 GRAPHHOPPER_API_KEY=your_graphhopper_key
 SECRET_KEY=your_production_secret_key
 REDIS_URL=redis://default:password@host:port
@@ -71,7 +71,7 @@ pip install -r requirements.txt && python manage.py collectstatic --settings=cor
 
 Recommended Render start command:
 ```bash
-gunicorn core.wsgi:application
+gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
 Recommended Render release command, if using Render release phase:
@@ -121,7 +121,7 @@ Command-line sanity build:
 
 The release APK uses:
 ```text
-https://smartlocator-api.onrender.com/api/
+https://smartlocator.onrender.com/api/
 ```
 
 Debug-only routing fallback is disabled in release builds because it is guarded by `BuildConfig.DEBUG`.

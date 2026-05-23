@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -24,7 +25,30 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+def api_root(request):
+    return JsonResponse({
+        'name': 'ZidCharge SmartLocator API',
+        'status': 'ok',
+        'country': 'TN',
+        'api_base': '/api/',
+        'endpoints': {
+            'stations': '/api/stations/',
+            'vehicles': '/api/vehicles/',
+            'alerts': '/api/alerts/',
+            'route': '/api/route/',
+            'login': '/api/auth/login/',
+            'register': '/api/auth/register/',
+        },
+    })
+
+
+def healthz(request):
+    return JsonResponse({'status': 'ok'})
+
+
 urlpatterns = [
+    path('', api_root, name='api-root'),
+    path('healthz/', healthz, name='healthz'),
     path('admin/', admin.site.urls),
     
     # Auth

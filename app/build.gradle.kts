@@ -59,7 +59,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "BASE_URL", "\"https://smartlocator-api.onrender.com/api/\"")
+            buildConfigField("String", "BASE_URL", "\"https://smartlocator.onrender.com/api/\"")
         }
     }
     compileOptions {
