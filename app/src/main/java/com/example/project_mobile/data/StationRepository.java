@@ -88,22 +88,22 @@ public class StationRepository {
                     List<StationEntity> entities = new ArrayList<>();
                     for (StationDto dto : response.body()) {
                         StationEntity e = new StationEntity();
-                        e.id = Integer.parseInt(dto.stationId);
-                        e.name = dto.name;
-                        e.address = dto.address;
-                        e.city = dto.city;
-                        e.power = dto.power;
-                        e.network = dto.network;
-                        e.reliability = dto.reliability;
-                        e.status = dto.availability;
+                        e.id = dto.id > 0 ? dto.id : parseStationId(dto.stationId);
+                        e.name = safeText(dto.name, "Station " + e.id);
+                        e.address = safeText(dto.address, "");
+                        e.city = safeText(dto.city, "");
+                        e.power = safeText(dto.power, "");
+                        e.network = safeText(dto.network, "");
+                        e.reliability = safeText(dto.reliability, "");
+                        e.status = safeText(dto.availability, "Unknown");
                         e.latitude = dto.latitude;
                         e.longitude = dto.longitude;
-                        e.csSpeed = dto.csSpeed;
+                        e.csSpeed = safeText(dto.csSpeed, "");
                         e.price = "Unknown";
                         e.averageRating = dto.averageRating;
                         e.ratingCount = dto.ratingCount;
                         e.userRating = dto.userRating;
-                        e.imageUrl = dto.image;
+                        e.imageUrl = safeText(dto.image, "");
                         if (dto.connectors != null && !dto.connectors.isEmpty()) {
                             e.connectors = android.text.TextUtils.join(",", dto.connectors);
                         } else {
@@ -421,6 +421,21 @@ public class StationRepository {
                     e.imageUrl));
         }
         return result;
+    }
+
+    private int parseStationId(String stationId) {
+        if (stationId == null) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(stationId);
+        } catch (NumberFormatException e) {
+            return Math.abs(stationId.hashCode());
+        }
+    }
+
+    private String safeText(String value, String fallback) {
+        return value == null ? fallback : value;
     }
 
     private void postSuccess(Callback cb) {

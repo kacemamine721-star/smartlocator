@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class StationDto {
+    @SerializedName("id")
+    public int id;
+
     @SerializedName("station_id")
     public String stationId;
     

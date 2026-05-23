@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.project_mobile.data.TokenManager;
+import com.example.project_mobile.data.remote.EVVehicle;
 import com.example.project_mobile.data.remote.RetrofitClient;
 import com.example.project_mobile.data.remote.UserMeResponse;
 import retrofit2.Call;
@@ -64,6 +66,9 @@ public class ProfileFragment extends Fragment {
         TextView tvEvSpecs = view.findViewById(R.id.tv_profile_ev_specs);
         ImageView ivEvSelected = view.findViewById(R.id.iv_ev_selected);
         ImageView btnChangeEv = view.findViewById(R.id.btn_change_ev);
+        ImageView ivProfileEv = view.findViewById(R.id.iv_ev_image);
+        TokenManager tokenManager = new TokenManager(requireContext());
+        bindVehicleFromTokenManager(llEvVehicle, tvEvBrand, tvEvModel, tvEvSpecs, ivEvSelected, ivProfileEv, tokenManager);
 
         if (btnChangeEv != null) {
             btnChangeEv.setOnClickListener(v -> {
@@ -128,29 +133,11 @@ public class ProfileFragment extends Fragment {
                         // Save new points
                         prefs.edit().putInt("last_points", newPoints).apply();
 
-                        if (profile.vehicle != null && llEvVehicle != null) {
-                            llEvVehicle.setVisibility(View.VISIBLE);
-                            if (tvEvBrand != null) tvEvBrand.setText(profile.vehicle.brand);
-                            if (tvEvModel != null) tvEvModel.setText(profile.vehicle.model_name);
-                            if (ivEvSelected != null) ivEvSelected.setVisibility(View.VISIBLE);
-                            if (tvEvSpecs != null) {
-                                String connectors = connectorText(profile.vehicle);
-                                String range = profile.vehicle.range_wltp_km != null
-                                        ? profile.vehicle.range_wltp_km + " km WLTP"
-                                        : "range unknown";
-                                tvEvSpecs.setText(range + " - " + connectors);
-                            }
-                            
-                            ImageView ivProfileEv = view.findViewById(R.id.iv_ev_image);
-                            if (ivProfileEv != null) {
-                                if (profile.vehicle.image != null) {
-                                    Glide.with(requireContext())
-                                            .load(profile.vehicle.image)
-                                            .into(ivProfileEv);
-                                } else {
-                                    ivProfileEv.setImageResource(R.drawable.ic_car_charging);
-                                }
-                            }
+                        if (profile.vehicle != null) {
+                            saveVehicleSpecs(tokenManager, profile.vehicle);
+                            bindVehicleCard(llEvVehicle, tvEvBrand, tvEvModel, tvEvSpecs, ivEvSelected, ivProfileEv, profile.vehicle);
+                        } else {
+                            bindVehicleFromTokenManager(llEvVehicle, tvEvBrand, tvEvModel, tvEvSpecs, ivEvSelected, ivProfileEv, tokenManager);
                         }
                     }
                 } else if (response.code() == 401) {
@@ -227,6 +214,66 @@ public class ProfileFragment extends Fragment {
         if (!dc.isEmpty()) return dc;
         if (!ac.isEmpty()) return ac;
         return "connectors unknown";
+    }
+
+    private void bindVehicleCard(View container, TextView brand, TextView model, TextView specs,
+                                 ImageView selected, ImageView image, EVVehicle vehicle) {
+        if (container == null || vehicle == null) {
+            return;
+        }
+        container.setVisibility(View.VISIBLE);
+        if (brand != null) brand.setText(vehicle.brand != null ? vehicle.brand : "EV");
+        if (model != null) model.setText(vehicle.model_name != null ? vehicle.model_name : "Selected vehicle");
+        if (selected != null) selected.setVisibility(View.VISIBLE);
+        if (specs != null) {
+            String range = vehicle.range_wltp_km != null ? vehicle.range_wltp_km + " km WLTP" : "range unknown";
+            specs.setText(range + " - " + connectorText(vehicle));
+        }
+        if (image != null) {
+            if (vehicle.image != null && !vehicle.image.isEmpty()) {
+                Glide.with(requireContext()).load(vehicle.image).into(image);
+            } else {
+                image.setImageResource(R.drawable.ic_car_charging);
+            }
+        }
+    }
+
+    private void bindVehicleFromTokenManager(View container, TextView brand, TextView model, TextView specs,
+                                             ImageView selected, ImageView image, TokenManager tokenManager) {
+        String label = tokenManager.getVehicleLabel();
+        if (container == null || label == null || label.isEmpty()) {
+            return;
+        }
+        container.setVisibility(View.VISIBLE);
+        String[] parts = label.split(" ", 2);
+        if (brand != null) brand.setText(parts.length > 0 ? parts[0] : "EV");
+        if (model != null) model.setText(parts.length > 1 ? parts[1] : label);
+        if (selected != null) selected.setVisibility(View.VISIBLE);
+        if (specs != null) {
+            String range = tokenManager.getRangeWltpKm() > 0 ? tokenManager.getRangeWltpKm() + " km WLTP" : "range unknown";
+            String connectors = tokenManager.getUserConnectors();
+            specs.setText(range + " - " + (connectors == null || connectors.isEmpty() ? "connectors unknown" : connectors.replace(",", " + ")));
+        }
+        if (image != null) {
+            image.setImageResource(R.drawable.ic_car_charging);
+        }
+    }
+
+    private void saveVehicleSpecs(TokenManager tokenManager, EVVehicle vehicle) {
+        String acConn = vehicle.ac_connector_type != null ? vehicle.ac_connector_type : "";
+        String dcConn = vehicle.dc_connector_type != null ? vehicle.dc_connector_type : "";
+        float capacity = vehicle.usable_capacity_kwh != null ? vehicle.usable_capacity_kwh : 0f;
+        int range = vehicle.range_wltp_km != null ? vehicle.range_wltp_km : 0;
+        float dcPower = vehicle.dc_max_power_kw != null ? vehicle.dc_max_power_kw : 0f;
+        int kmPerHourDc = vehicle.km_per_hour_dc != null ? vehicle.km_per_hour_dc : 0;
+        tokenManager.saveVehicleSpecs(
+                (vehicle.brand != null ? vehicle.brand : "EV") + " " + (vehicle.model_name != null ? vehicle.model_name : ""),
+                capacity,
+                range,
+                dcPower,
+                kmPerHourDc,
+                acConn + "," + dcConn
+        );
     }
     
     private void showCustomLevelUpDialog(String levelKey) {

@@ -66,10 +66,11 @@ public class StationDetailsActivity extends AppCompatActivity {
         String city = getIntent().getStringExtra("city");
         String idString = getIntent().getStringExtra("id");
 
-        ((TextView) findViewById(R.id.details_title)).setText(name);
-        ((TextView) findViewById(R.id.details_address)).setText(getIntent().getStringExtra("address"));
-        ((TextView) findViewById(R.id.details_status)).setText(getIntent().getStringExtra("status"));
-        ((TextView) findViewById(R.id.details_route)).setText(getIntent().getStringExtra("distance") + " - " + getIntent().getStringExtra("eta"));
+        ((TextView) findViewById(R.id.details_title)).setText(firstNonEmpty(name, "Charging station"));
+        ((TextView) findViewById(R.id.details_address)).setText(firstNonEmpty(getIntent().getStringExtra("address"), city, "Tunisia"));
+        ((TextView) findViewById(R.id.details_status)).setText(firstNonEmpty(getIntent().getStringExtra("status"), "Unknown"));
+        ((TextView) findViewById(R.id.details_route)).setText(firstNonEmpty(getIntent().getStringExtra("distance"), "---")
+                + " - " + firstNonEmpty(getIntent().getStringExtra("eta"), "-- min"));
         String operator = getIntent().getStringExtra("operator");
         boolean verified = getIntent().getBooleanExtra("verified", false);
         String access = getIntent().getStringExtra("access");
@@ -103,11 +104,15 @@ public class StationDetailsActivity extends AppCompatActivity {
             btnRate.setText("Your Rating: " + userRating + " ★");
         }
 
-        ((TextView) findViewById(R.id.details_ports)).setText(getIntent().getStringExtra("ports"));
-        ((TextView) findViewById(R.id.details_hours)).setText(getIntent().getStringExtra("hours"));
-        ((TextView) findViewById(R.id.details_price)).setText(getIntent().getStringExtra("price"));
-        ((TextView) findViewById(R.id.details_reliability)).setText(getIntent().getStringExtra("reliability"));
-        ((TextView) findViewById(R.id.details_connectors)).setText(android.text.TextUtils.join(" - ", getIntent().getStringArrayListExtra("connectors")));
+        ((TextView) findViewById(R.id.details_ports)).setText(firstNonEmpty(getIntent().getStringExtra("ports"), "ports unknown"));
+        ((TextView) findViewById(R.id.details_hours)).setText(firstNonEmpty(getIntent().getStringExtra("hours"), "Hours unknown"));
+        ((TextView) findViewById(R.id.details_price)).setText(firstNonEmpty(getIntent().getStringExtra("price"), "Price unknown"));
+        ((TextView) findViewById(R.id.details_reliability)).setText(firstNonEmpty(getIntent().getStringExtra("reliability"), "Reliability unknown"));
+        ArrayList<String> connectors = getIntent().getStringArrayListExtra("connectors");
+        ((TextView) findViewById(R.id.details_connectors)).setText(
+                connectors != null && !connectors.isEmpty()
+                        ? android.text.TextUtils.join(" - ", connectors)
+                        : "Connectors unknown");
         bindForMyCarPanel(tokenManager, powerKw, getIntent().getStringExtra("power"),
                 getIntent().getStringArrayListExtra("connectors"));
 
@@ -278,5 +283,17 @@ public class StationDetailsActivity extends AppCompatActivity {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    private String firstNonEmpty(String... values) {
+        if (values == null) {
+            return "";
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value;
+            }
+        }
+        return "";
     }
 }

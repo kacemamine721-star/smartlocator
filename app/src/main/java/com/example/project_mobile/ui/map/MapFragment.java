@@ -602,7 +602,7 @@ public class MapFragment extends Fragment {
         selectedStation = station;
         ((TextView) root.findViewById(R.id.preview_title)).setText(station.name);
 
-        String address = station.address != null ? station.address : station.city;
+        String address = firstNonEmpty(station.address, station.city, "Tunisia");
         if (station.governorate != null && !station.governorate.isEmpty() && !address.contains(station.governorate)) {
             address += ", " + station.governorate;
         }
@@ -621,10 +621,11 @@ public class MapFragment extends Fragment {
         }
 
         TextView statusChip = root.findViewById(R.id.preview_status);
-        statusChip.setText(station.status);
-        if ("Available".equalsIgnoreCase(station.status)) {
+        String status = firstNonEmpty(station.status, "Unknown");
+        statusChip.setText(status);
+        if ("Available".equalsIgnoreCase(status)) {
             statusChip.setBackgroundResource(R.drawable.bg_green_chip);
-        } else if ("Busy".equalsIgnoreCase(station.status)) {
+        } else if ("Busy".equalsIgnoreCase(status)) {
             statusChip.setBackgroundResource(R.drawable.bg_orange_chip);
         } else {
             statusChip.setBackgroundResource(R.drawable.bg_grey_chip);
@@ -642,8 +643,8 @@ public class MapFragment extends Fragment {
                 + (station.eta != null ? station.eta : "-- min");
         ((TextView) root.findViewById(R.id.preview_route)).setText(distTime);
 
-        String displayPower = station.powerKw > 0 ? station.powerKw + " kW" : station.power;
-        ((TextView) root.findViewById(R.id.preview_power)).setText(displayPower + " • " + station.ports);
+        String displayPower = station.powerKw > 0 ? station.powerKw + " kW" : firstNonEmpty(station.power, "Unknown kW");
+        ((TextView) root.findViewById(R.id.preview_power)).setText(displayPower + " - " + firstNonEmpty(station.ports, "ports unknown"));
 
         if (station.connectors != null && !station.connectors.isEmpty()) {
             ((TextView) root.findViewById(R.id.preview_connectors))
@@ -680,9 +681,9 @@ public class MapFragment extends Fragment {
         if (vehicle != null && !vehicle.isEmpty()) {
             boolean compatible = isCompatibleWithUserCar(station);
             String speedText = effectivePowerKw > 0 ? effectivePowerKw + " kW max here" : "speed unknown";
-            String status = compatible ? "compatible" : "connector not matched";
+            String fitStatus = compatible ? "compatible" : "connector not matched";
             carFit.setVisibility(View.VISIBLE);
-            carFit.setText("For your " + vehicle + ": " + status + " - " + speedText);
+            carFit.setText("For your " + vehicle + ": " + fitStatus + " - " + speedText);
         } else {
             carFit.setVisibility(View.VISIBLE);
             carFit.setText("Add your EV profile to show compatible plugs and real charge speed.");
@@ -706,7 +707,7 @@ public class MapFragment extends Fragment {
         }
 
         Button checkInBtn = root.findViewById(R.id.check_in_action);
-        if ("Available".equalsIgnoreCase(station.status)) {
+        if ("Available".equalsIgnoreCase(status)) {
             checkInBtn.setText("I'm Charging Here");
             checkInBtn.setOnClickListener(v -> requestRouteToStation(station));
         } else {
@@ -790,11 +791,16 @@ public class MapFragment extends Fragment {
     }
 
     public void selectStationAndRoute(String stationId) {
-        if (stations == null || stationId == null) {
+        if (stationId == null) {
             pendingRouteStationId = stationId;
             return;
         }
-        for (ChargingStation s : stations) {
+        java.util.List<ChargingStation> source = fullStationList != null ? fullStationList : stations;
+        if (source == null) {
+            pendingRouteStationId = stationId;
+            return;
+        }
+        for (ChargingStation s : source) {
             if (stationId.equals(s.id)) {
                 pendingRouteStationId = null;
                 if (getView() != null) {
@@ -807,6 +813,18 @@ public class MapFragment extends Fragment {
                 break;
             }
         }
+    }
+
+    private String firstNonEmpty(String... values) {
+        if (values == null) {
+            return "";
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value;
+            }
+        }
+        return "";
     }
 
     private void refreshUserLocation(boolean requestIfMissingPermission) {

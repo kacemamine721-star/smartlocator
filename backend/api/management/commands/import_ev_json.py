@@ -62,23 +62,21 @@ class Command(BaseCommand):
             ]
             
             img_found = False
-            if not obj.image and os.path.exists(img_dir):
+            if os.path.exists(img_dir):
                 for fname in os.listdir(img_dir):
                     # Replace spaces and hyphens with underscores in both for better matching
                     fname_clean = fname.lower().replace(' ', '_').replace('-', '_')
                     if fname_clean in [n.lower().replace('-', '_') for n in potential_names]:
                         img_path = os.path.join(img_dir, fname)
-                        
-                        # Senior Dev Optimization: Check if file already exists in media directory to avoid duplicates
-                        from django.conf import settings
-                        target_path = os.path.join(settings.MEDIA_ROOT, 'ev_images', fname)
-                        
-                        if os.path.exists(target_path):
-                            # File exists, just link it without creating a duplicate
-                            obj.image = f'ev_images/{fname}'
-                            obj.save()
-                        else:
-                            # File does not exist, save it normally
+
+                        image_name = f'ev_images/{fname}'
+                        image_exists = obj.image.storage.exists(image_name)
+
+                        if obj.image.name != image_name:
+                            obj.image.name = image_name
+                            obj.save(update_fields=['image'])
+
+                        if not image_exists:
                             with open(img_path, 'rb') as img_f:
                                 obj.image.save(fname, File(img_f), save=True)
                                 

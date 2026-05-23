@@ -89,3 +89,5 @@ else:
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
+
+SERVE_MEDIA_FILES = env.bool("SERVE_MEDIA_FILES", default=not bool(r2_access_key))

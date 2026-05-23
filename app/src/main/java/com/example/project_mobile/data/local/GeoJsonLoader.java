@@ -94,6 +94,11 @@ public class GeoJsonLoader {
                 e.governorate = props.has("governorate") && !props.get("governorate").isJsonNull() ? props.get("governorate").getAsString() : "";
                 e.access = props.has("access") && !props.get("access").isJsonNull() ? props.get("access").getAsString() : "";
                 e.verified = props.has("verified") && !props.get("verified").isJsonNull() && props.get("verified").getAsBoolean();
+                e.address = e.governorate != null && !e.governorate.isEmpty() ? e.governorate : "Tunisia";
+                e.city = e.governorate != null && !e.governorate.isEmpty() ? e.governorate : "Tunisia";
+                e.power = e.powerKw > 0 ? e.powerKw + " kW" : e.csSpeed;
+                e.network = e.operator != null && !e.operator.isEmpty() ? e.operator : "Community";
+                e.reliability = e.verified ? "Verified" : "Community reported";
 
                 entities.add(e);
             }

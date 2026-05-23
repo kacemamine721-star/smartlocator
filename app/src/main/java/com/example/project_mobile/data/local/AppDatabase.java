@@ -18,7 +18,7 @@ import androidx.room.RoomDatabase;
                 RatingEntity.class,
                 ContributionEntity.class
         },
-        version = 6,
+        version = 7,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
