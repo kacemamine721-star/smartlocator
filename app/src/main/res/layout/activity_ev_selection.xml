@@ -19,7 +19,7 @@
         android:paddingTop="7dp"
         android:paddingEnd="12dp"
         android:paddingBottom="7dp"
-        android:text="Step 2 of 2 - Vehicle"
+        android:text="@string/step_vehicle"
         android:textColor="@color/zid_gold"
         android:textSize="12sp"
         android:textStyle="bold" />
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="Choose your EV"
+        android:text="@string/choose_ev"
         android:textColor="@color/zid_text_primary"
         android:textSize="32sp"
         android:textStyle="bold" />
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="ZidCharge will hide incompatible stations and calculate real charging speed for Tunisia routes."
+        android:text="@string/choose_ev_subtitle"
         android:textColor="@color/zid_text_secondary"
         android:textSize="15sp" />
 
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="12dp"
-        android:text="Confirm Selection"
+        android:text="@string/confirm_selection"
         android:textAllCaps="false"
         android:textColor="@color/zid_black"
         android:textStyle="bold"
@@ -68,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:gravity="center"
-        android:text="Skip - Add later"
+        android:text="@string/skip_add_later"
         android:textColor="@color/zid_text_secondary"
         android:textSize="15sp"
         android:textStyle="bold" />

@@ -125,7 +125,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="SLOW"
+                    android:text="@string/filter_slow"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -139,7 +139,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="SEMI-FAST"
+                    android:text="@string/filter_semi_fast"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -153,7 +153,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="FAST"
+                    android:text="@string/filter_fast"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
 
@@ -167,7 +167,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="My Car"
+                    android:text="@string/my_car"
                     android:textColor="@color/slate_950"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -195,7 +195,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="SoC 65% - safe radius pending"
+                android:text="@string/soc_summary_placeholder"
                 android:textColor="@color/white"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -206,7 +206,7 @@
                 android:layout_height="44dp"
                 android:background="@drawable/bg_filter_chip_active"
                 android:minWidth="92dp"
-                android:text="Set SoC"
+                android:text="@string/set_soc"
                 android:textAllCaps="false"
                 android:textColor="@color/slate_950"
                 android:textStyle="bold" />
@@ -252,7 +252,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_map_control"
                 android:backgroundTint="@null"
-                android:contentDescription="Toggle reachability"
+                android:contentDescription="@string/toggle_reachability"
                 android:elevation="4dp"
                 android:src="@android:drawable/ic_menu_compass"
                 app:tint="@color/white" />
@@ -374,7 +374,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Close"
+                android:contentDescription="@string/close"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 app:tint="#8FA4B5" />
         </RelativeLayout>
@@ -507,7 +507,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_filter_chip"
-            android:text="I'm Charging Here"
+            android:text="@string/charging_here"
             android:textAllCaps="false"
             android:textColor="@color/slate_950"
             android:textSize="18sp"

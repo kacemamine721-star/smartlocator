@@ -26,6 +26,7 @@ import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
 import com.example.project_mobile.data.model.RouteResponse;
 import com.example.project_mobile.data.remote.RetrofitClient;
+import com.example.project_mobile.ui.common.EvImageLoader;
 import com.example.project_mobile.ui.alerts.AlertsActivity;
 import com.example.project_mobile.ui.details.StationDetailsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -567,7 +568,7 @@ public class MapFragment extends Fragment {
                                 float hours = (capacity * 0.8f) / powerKw;
                                 minutes = Math.max(1, (int) (hours * 60));
                             }
-                            repo.saveSession(Integer.parseInt(station.id), station.name,
+                            repo.saveLocalSession(Integer.parseInt(station.id), station.name,
                                     station.city != null ? station.city : "", false, 0f, minutes);
                         }
                         if (getView() != null) {
@@ -684,9 +685,7 @@ public class MapFragment extends Fragment {
         ImageView previewImage = root.findViewById(R.id.preview_image);
         if (station.imageUrl != null && !station.imageUrl.isEmpty()) {
             previewImage.setVisibility(View.VISIBLE);
-            com.bumptech.glide.Glide.with(this)
-                    .load(station.imageUrl)
-                    .into(previewImage);
+            EvImageLoader.loadRemote(previewImage, station.imageUrl);
         } else {
             previewImage.setVisibility(View.GONE);
         }
@@ -694,7 +693,7 @@ public class MapFragment extends Fragment {
         Button checkInBtn = root.findViewById(R.id.check_in_action);
         if ("Available".equalsIgnoreCase(status)) {
             checkInBtn.setText("I'm Charging Here");
-            checkInBtn.setOnClickListener(v -> requestRouteToStation(station));
+            checkInBtn.setOnClickListener(v -> handleCheckIn(station, true));
         } else {
             checkInBtn.setText("I'm Leaving (Mark Available)");
             checkInBtn.setOnClickListener(v -> handleCheckIn(station, false));

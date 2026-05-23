@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.project_mobile.MainActivity;
 import com.example.project_mobile.R;
 import com.example.project_mobile.data.TokenManager;
@@ -50,7 +49,10 @@ public class EVSelectionActivity extends AppCompatActivity {
 
         rvEvList = findViewById(R.id.rv_ev_list);
         rvEvList.setLayoutManager(new LinearLayoutManager(this));
+        rvEvList.setHasFixedSize(true);
+        rvEvList.setItemViewCacheSize(12);
         adapter = new EVAdapter();
+        adapter.setHasStableIds(true);
         rvEvList.setAdapter(adapter);
 
         btnConfirm = findViewById(R.id.btn_confirm_ev);
@@ -70,6 +72,7 @@ public class EVSelectionActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     vehicles = response.body();
                     adapter.notifyDataSetChanged();
+                    preloadVehicleImages();
                 } else {
                     Toast.makeText(EVSelectionActivity.this, "Failed to load vehicles", Toast.LENGTH_SHORT).show();
                 }
@@ -104,7 +107,8 @@ public class EVSelectionActivity extends AppCompatActivity {
                                     range,
                                     dcPower,
                                     kmPerHourDc,
-                                    acConn + "," + dcConn
+                                    acConn + "," + dcConn,
+                                    selectedVehicle.image
                             );
                             openMain();
                         } else {
@@ -129,6 +133,17 @@ public class EVSelectionActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void preloadVehicleImages() {
+        int preloadCount = Math.min(vehicles.size(), 12);
+        ImageView anchor = rvEvList.findViewById(R.id.iv_ev_image);
+        if (anchor == null) {
+            anchor = new ImageView(this);
+        }
+        for (int i = 0; i < preloadCount; i++) {
+            EvImageLoader.preload(anchor, vehicles.get(i).image);
+        }
+    }
+
     private class EVAdapter extends RecyclerView.Adapter<EVAdapter.EVViewHolder> {
 
         @NonNull
@@ -151,15 +166,27 @@ public class EVSelectionActivity extends AppCompatActivity {
             EvImageLoader.load(holder.ivImage, vehicle.image);
 
             holder.itemView.setOnClickListener(v -> {
+                int previous = vehicles.indexOf(selectedVehicle);
                 selectedVehicle = vehicle;
                 btnConfirm.setEnabled(true);
-                notifyDataSetChanged();
+                if (previous >= 0) {
+                    notifyItemChanged(previous);
+                }
+                int current = holder.getBindingAdapterPosition();
+                if (current != RecyclerView.NO_POSITION) {
+                    notifyItemChanged(current);
+                }
             });
         }
 
         @Override
         public int getItemCount() {
             return vehicles.size();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return vehicles.get(position).id;
         }
 
         class EVViewHolder extends RecyclerView.ViewHolder {

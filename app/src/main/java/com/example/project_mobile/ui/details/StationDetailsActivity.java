@@ -17,6 +17,7 @@ import com.example.project_mobile.R;
 import com.example.project_mobile.data.ChargingStation;
 import com.example.project_mobile.data.StationRepository;
 import com.example.project_mobile.data.TokenManager;
+import com.example.project_mobile.ui.common.EvImageLoader;
 
 import java.util.ArrayList;
 
@@ -120,9 +121,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         ImageView stationImageView = findViewById(R.id.details_station_image);
         if (imageUrl != null && !imageUrl.isEmpty()) {
             stationImageView.setVisibility(android.view.View.VISIBLE);
-            com.bumptech.glide.Glide.with(this)
-                .load(imageUrl)
-                .into(stationImageView);
+            EvImageLoader.loadRemote(stationImageView, imageUrl);
         }
 
         findViewById(R.id.btn_report_issue).setOnClickListener(v -> {
@@ -190,6 +189,7 @@ public class StationDetailsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Please select a rating", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                submitView.setEnabled(false);
                 String comment = ((com.google.android.material.textfield.TextInputEditText) sheetView.findViewById(R.id.rating_comment_input)).getText().toString();
                 
                 try {
@@ -203,10 +203,12 @@ public class StationDetailsActivity extends AppCompatActivity {
 
                         @Override
                         public void onError(String message) {
+                            submitView.setEnabled(true);
                             Toast.makeText(StationDetailsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (Exception e) {
+                    submitView.setEnabled(true);
                     Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show();
                 }
             });

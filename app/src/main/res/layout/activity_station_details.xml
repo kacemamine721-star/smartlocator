@@ -165,7 +165,7 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="10dp"
-                    android:text="Rate Station"
+                    android:text="@string/rate_station"
                     android:textColor="@color/white" />
             </LinearLayout>
         </HorizontalScrollView>
@@ -238,7 +238,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Operator"
+                android:text="@string/operator"
                 android:textColor="#8FA4B5" />
 
             <TextView
@@ -304,7 +304,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="For My Car"
+                android:text="@string/for_my_car"
                 android:textColor="#8FA4B5"
                 android:textStyle="bold" />
 

@@ -18,7 +18,7 @@
         android:paddingTop="7dp"
         android:paddingEnd="12dp"
         android:paddingBottom="7dp"
-        android:text="Saved network"
+        android:text="@string/saved_network"
         android:textColor="@color/zid_teal"
         android:textSize="12sp"
         android:textStyle="bold" />
@@ -154,7 +154,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="0 stations"
+                android:text="@string/zero_stations"
                 android:textColor="@color/zid_text_secondary" />
         </LinearLayout>
     </LinearLayout>
@@ -170,7 +170,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Stations"
+            android:text="@string/stations"
             android:gravity="center"
             android:padding="16dp"
             android:background="@drawable/bg_favorite_collection"
@@ -183,7 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="12dp"
-            android:text="Recent Activity"
+            android:text="@string/recent_activity"
             android:gravity="center"
             android:padding="16dp"
             android:background="@drawable/bg_favorite_collection"

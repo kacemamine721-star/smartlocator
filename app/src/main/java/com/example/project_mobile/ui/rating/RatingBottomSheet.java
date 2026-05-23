@@ -64,13 +64,15 @@ public class RatingBottomSheet extends BottomSheetDialogFragment {
         }
 
         TextInputEditText commentInput = view.findViewById(R.id.rating_comment_input);
+        View submitButton = view.findViewById(R.id.btn_submit_rating);
 
-        view.findViewById(R.id.btn_submit_rating).setOnClickListener(v -> {
+        submitButton.setOnClickListener(v -> {
             if (selectedStars == 0) {
                 Toast.makeText(requireContext(), "Please select a rating", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            submitButton.setEnabled(false);
             StationRepository repository = new StationRepository(requireActivity().getApplication());
             String comment = commentInput.getText() != null ? commentInput.getText().toString() : "";
             
@@ -83,6 +85,7 @@ public class RatingBottomSheet extends BottomSheetDialogFragment {
 
                 @Override
                 public void onError(String message) {
+                    submitButton.setEnabled(true);
                     Toast.makeText(requireContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
                 }
             });

@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
-            android:text="Range-aware routing"
+            android:text="@string/range_aware_routing"
             android:textColor="@color/zid_text_secondary"
             android:textSize="13sp"
             app:layout_constraintEnd_toStartOf="@id/iv_ev_selected"

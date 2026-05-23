@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#0A0C0E"
-            app:title="Pick Station Location"
+            app:title="@string/pick_station_location"
             app:titleTextColor="@color/white"
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
     </com.google.android.material.appbar.AppBarLayout>

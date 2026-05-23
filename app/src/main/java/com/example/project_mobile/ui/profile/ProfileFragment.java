@@ -265,7 +265,7 @@ public class ProfileFragment extends Fragment {
             specs.setText(range + " - " + (connectors == null || connectors.isEmpty() ? "connectors unknown" : connectors.replace(",", " + ")));
         }
         if (image != null) {
-            image.setImageResource(R.drawable.ic_car_charging);
+            EvImageLoader.load(image, tokenManager.getVehicleImage());
         }
     }
 
@@ -282,7 +282,8 @@ public class ProfileFragment extends Fragment {
                 range,
                 dcPower,
                 kmPerHourDc,
-                acConn + "," + dcConn
+                acConn + "," + dcConn,
+                vehicle.image
         );
     }
     

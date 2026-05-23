@@ -7,6 +7,8 @@ import com.example.project_mobile.data.TokenManager;
 
 import java.io.IOException;
 
+import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -17,31 +19,49 @@ import java.util.concurrent.TimeUnit;
 public class RetrofitClient {
     // Senior Dev Optimization: Using BuildConfig to switch between local and production URLs automatically
     private static final String BASE_URL = com.example.project_mobile.BuildConfig.BASE_URL;
+    private static final int CACHE_SIZE_BYTES = 10 * 1024 * 1024;
     private static Retrofit retrofit = null;
+    private static ApiService apiService = null;
 
-    public static ApiService getApiService(Context context) {
-        if (retrofit == null) {
-            TokenManager tokenManager = new TokenManager(context.getApplicationContext());
+    public static synchronized ApiService getApiService(Context context) {
+        if (apiService == null) {
+            Context appContext = context.getApplicationContext();
+            TokenManager tokenManager = new TokenManager(appContext);
+            Cache cache = new Cache(appContext.getCacheDir(), CACHE_SIZE_BYTES);
             OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(20, TimeUnit.SECONDS)
-                    .readTimeout(45, TimeUnit.SECONDS)
+                    .cache(cache)
+                    .connectTimeout(12, TimeUnit.SECONDS)
+                    .readTimeout(25, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
-                    .callTimeout(60, TimeUnit.SECONDS)
+                    .callTimeout(35, TimeUnit.SECONDS)
                     .addInterceptor(chain -> {
                         String token = tokenManager.getAccessToken();
                         okhttp3.Request request = chain.request();
+                        if (isCacheablePublicGet(request)) {
+                            request = request.newBuilder()
+                                    .cacheControl(new CacheControl.Builder()
+                                            .maxAge(2, TimeUnit.MINUTES)
+                                            .build())
+                                    .build();
+                        }
                         if (!isPublicRequest(request) && tokenManager.isAccessTokenExpired()) {
                             token = refreshAccessToken(tokenManager);
                         }
                         if (token != null && !token.isEmpty() && !isPublicRequest(request)) {
-                            android.util.Log.d("RetrofitClient", "Attaching token: " + token.substring(0, Math.min(token.length(), 10)) + "...");
                             request = request.newBuilder()
                                     .addHeader("Authorization", "Bearer " + token)
                                     .build();
-                        } else {
-                            android.util.Log.w("RetrofitClient", "No token found in TokenManager!");
                         }
                         return chain.proceed(request);
+                    })
+                    .addNetworkInterceptor(chain -> {
+                        okhttp3.Response response = chain.proceed(chain.request());
+                        if (isCacheablePublicGet(chain.request())) {
+                            return response.newBuilder()
+                                    .header("Cache-Control", "public, max-age=120, stale-if-error=86400")
+                                    .build();
+                        }
+                        return response;
                     })
                     .authenticator((route, response) -> {
                         if (response.request().header("Authorization") == null || responseCount(response) >= 2) {
@@ -63,8 +83,9 @@ public class RetrofitClient {
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+            apiService = retrofit.create(ApiService.class);
         }
-        return retrofit.create(ApiService.class);
+        return apiService;
     }
 
     private static boolean isPublicGetRequest(okhttp3.Request request) {
@@ -84,6 +105,16 @@ public class RetrofitClient {
                 || path.endsWith("/api/auth/login/")
                 || path.endsWith("/api/auth/register/")
                 || path.endsWith("/api/auth/refresh/");
+    }
+
+    private static boolean isCacheablePublicGet(okhttp3.Request request) {
+        if (!"GET".equalsIgnoreCase(request.method())) {
+            return false;
+        }
+        String path = request.url().encodedPath();
+        return path.endsWith("/api/stations/")
+                || path.endsWith("/api/vehicles/")
+                || path.endsWith("/api/alerts/");
     }
 
     private static synchronized String refreshAccessToken(TokenManager tokenManager) {

@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_search_surface"
             android:padding="16dp"
-            android:text="Tap to select location..."
+            android:text="@string/select_location_prompt"
             android:textColor="#8FA4B5"
             android:textSize="14sp" />
 

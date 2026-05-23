@@ -13,12 +13,16 @@ class ChargingStationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_averageRating(self, obj):
+        if hasattr(obj, "average_rating") and obj.average_rating is not None:
+            return float(obj.average_rating)
         ratings = obj.ratings.all()
         if not ratings:
             return 0.0
         return sum(r.stars for r in ratings) / len(ratings)
 
     def get_ratingCount(self, obj):
+        if hasattr(obj, "rating_count"):
+            return obj.rating_count
         return obj.ratings.count()
 
     def get_userRating(self, obj):

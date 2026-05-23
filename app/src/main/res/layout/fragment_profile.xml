@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="0 Points"
+                android:text="@string/zero_points"
                 android:textColor="@color/zid_text_secondary"
                 android:textSize="16sp"
                 android:gravity="center" />
@@ -135,7 +135,7 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="@drawable/bg_action_chip_dark"
-                    android:contentDescription="Change EV"
+                    android:contentDescription="@string/change_ev"
                     android:padding="8dp"
                     android:src="@android:drawable/ic_menu_edit"
                     app:tint="@color/zid_teal" />

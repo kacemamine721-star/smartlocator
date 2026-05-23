@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                     float dcPower = vehicle.dc_max_power_kw != null ? vehicle.dc_max_power_kw : 0f;
                     int kmPerHourDc = vehicle.km_per_hour_dc != null ? vehicle.km_per_hour_dc : 0;
                     tokenManager.saveVehicleSpecs(vehicle.brand + " " + vehicle.model_name, capacity, range,
-                            dcPower, kmPerHourDc, connectors);
+                            dcPower, kmPerHourDc, connectors, vehicle.image);
                     
                     // User already has a vehicle, go straight to MainActivity
                     intent = new Intent(LoginActivity.this, MainActivity.class);

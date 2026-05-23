@@ -155,8 +155,8 @@ Debug-only routing fallback is disabled in release builds because it is guarded 
 ### Routing
 
 - On a real device, grant location permission.
-- Tap a station.
-- Tap `I'm Charging Here`.
+- Tap a station and open its details.
+- Tap `Go Charge There`.
 - Confirm the route polyline follows roads.
 - Confirm ETA and distance appear.
 - Confirm a route-only history session is created.

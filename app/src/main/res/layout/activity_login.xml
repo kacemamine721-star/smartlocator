@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ACCOUNT"
+                android:text="@string/account_label"
                 android:textColor="@color/zid_text_secondary"
                 android:textSize="11sp"
                 android:textStyle="bold" />
@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:hint="Username"
+                android:hint="@string/username"
                 app:boxBackgroundColor="@color/zid_surface_2"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:hint="Password"
+                android:hint="@string/password"
                 app:boxBackgroundColor="@color/zid_surface_2"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"

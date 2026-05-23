@@ -61,7 +61,7 @@
             android:background="?selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off"
             app:tint="@color/heatmap_yellow"
-            android:contentDescription="Rate station" />
+            android:contentDescription="@string/rate_station_action" />
 
     </LinearLayout>
 

@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="🎉 Level Up!"
+        android:text="@string/level_up_title"
         android:textColor="@color/zid_gold"
         android:textSize="26sp"
         android:textStyle="bold" />
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="You are now a Master Navigator!"
+        android:text="@string/level_up_default"
         android:textColor="@color/zid_text_primary"
         android:textSize="16sp"
         android:gravity="center" />
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
-        android:text="Awesome!"
+        android:text="@string/awesome"
         android:textColor="@color/zid_black"
         android:textStyle="bold"
         app:backgroundTint="@color/zid_teal"

@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trip Planner"
+            android:text="@string/trip_planner"
             android:textColor="@color/zid_text_primary"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="From"
+                android:text="@string/from"
                 android:textColor="@color/zid_text_secondary"
                 android:textStyle="bold" />
 
@@ -55,14 +55,14 @@
                 android:gravity="center_vertical"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:text="Your current location"
+                android:text="@string/current_location"
                 android:textColor="@color/zid_text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="To"
+                android:text="@string/to"
                 android:textColor="@color/zid_text_secondary"
                 android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_search_surface"
-                android:hint="Sousse, Sfax, Djerba..."
+                android:hint="@string/destination_hint"
                 android:inputType="textCapWords"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
@@ -84,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="Battery: 65%"
+                android:text="@string/battery_percent"
                 android:textColor="@color/zid_teal"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -102,7 +102,7 @@
                 android:layout_height="58dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_cta_gradient"
-                android:text="Plan Route"
+                android:text="@string/plan_route"
                 android:textAllCaps="false"
                 android:textColor="@color/zid_black"
                 android:textSize="18sp"
@@ -122,7 +122,7 @@
                 android:id="@+id/trip_result_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ready to plan"
+                android:text="@string/ready_to_plan"
                 android:textColor="@color/zid_text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -132,7 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Enter a destination and current battery level. ZidCharge will estimate reachability using your EV profile and Tunisia charging data."
+                android:text="@string/trip_intro"
                 android:textColor="@color/zid_text_secondary"
                 android:textSize="15sp" />
 
@@ -155,7 +155,7 @@
                 android:layout_height="54dp"
                 android:layout_marginTop="14dp"
                 android:background="@drawable/bg_outline_teal"
-                android:text="Open stop on map"
+                android:text="@string/open_stop_on_map"
                 android:textAllCaps="false"
                 android:textColor="@color/zid_teal"
                 android:textStyle="bold"

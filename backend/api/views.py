@@ -4,6 +4,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from django.db.models import Avg, Count
 import requests
 
 from .models import ChargingStation, ContributedStation, Favorite, HistorySession, StationRating, CommunityAlert, EVVehicle, CheckIn
@@ -29,7 +30,10 @@ class ChargingStationViewSet(viewsets.ModelViewSet):
         from django.utils import timezone
         ChargingStation.objects.filter(availability="Busy", busy_until__lt=timezone.now()).update(availability="Available")
         
-        queryset = ChargingStation.objects.all()
+        queryset = ChargingStation.objects.annotate(
+            average_rating=Avg("ratings__stars"),
+            rating_count=Count("ratings"),
+        )
         city = self.request.query_params.get('city')
         if city is not None:
             queryset = queryset.filter(city__iexact=city)

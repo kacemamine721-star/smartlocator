@@ -24,6 +24,7 @@ public class TokenManager {
     private static final String KEY_DC_MAX_POWER_KW = "dc_max_power_kw";
     private static final String KEY_KM_PER_HOUR_DC = "km_per_hour_dc";
     private static final String KEY_CURRENT_SOC = "current_soc";
+    private static final String KEY_VEHICLE_IMAGE = "vehicle_image";
 
     private final SharedPreferences prefs;
 
@@ -112,6 +113,11 @@ public class TokenManager {
 
     public void saveVehicleSpecs(String label, float batteryCapacityKwh, int rangeWltpKm,
                                  float dcMaxPowerKw, int kmPerHourDc, String connectors) {
+        saveVehicleSpecs(label, batteryCapacityKwh, rangeWltpKm, dcMaxPowerKw, kmPerHourDc, connectors, "");
+    }
+
+    public void saveVehicleSpecs(String label, float batteryCapacityKwh, int rangeWltpKm,
+                                 float dcMaxPowerKw, int kmPerHourDc, String connectors, String imageUrl) {
         prefs.edit()
                 .putString(KEY_VEHICLE_LABEL, label)
                 .putFloat(KEY_BATTERY_CAPACITY, batteryCapacityKwh)
@@ -119,6 +125,7 @@ public class TokenManager {
                 .putFloat(KEY_DC_MAX_POWER_KW, dcMaxPowerKw)
                 .putInt(KEY_KM_PER_HOUR_DC, kmPerHourDc)
                 .putString(KEY_USER_CONNECTORS, connectors)
+                .putString(KEY_VEHICLE_IMAGE, imageUrl == null ? "" : imageUrl)
                 .apply();
     }
 
@@ -136,6 +143,10 @@ public class TokenManager {
 
     public int getKmPerHourDc() {
         return prefs.getInt(KEY_KM_PER_HOUR_DC, 0);
+    }
+
+    public String getVehicleImage() {
+        return prefs.getString(KEY_VEHICLE_IMAGE, "");
     }
 
     public void saveCurrentSoc(int soc) {

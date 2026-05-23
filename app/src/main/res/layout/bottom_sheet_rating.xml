@@ -11,7 +11,7 @@
         android:id="@+id/rating_sheet_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Rate Station"
+        android:text="@string/rate_station"
         android:textColor="@color/white"
         android:textSize="22sp"
         android:textStyle="bold" />
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Station Name"
+        android:text="@string/station_name"
         android:textColor="#5C7A92"
         android:textSize="16sp" />
 
@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:hint="Optional comment">
+        android:hint="@string/optional_comment">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/rating_comment_input"
@@ -95,7 +95,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
-        android:text="Submit Rating"
+        android:text="@string/submit_rating"
         android:textColor="@color/white"
         app:backgroundTint="@color/blue_500"
         app:cornerRadius="12dp" />

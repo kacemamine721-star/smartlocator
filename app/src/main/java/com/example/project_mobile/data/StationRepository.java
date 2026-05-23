@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import retrofit2.Response;
 
 /**
@@ -40,6 +41,9 @@ import retrofit2.Response;
 public class StationRepository {
 
     private static final String TAG = "StationRepository";
+    private static final long STATION_SYNC_INTERVAL_MS = 2 * 60 * 1000L;
+    private static final AtomicBoolean SYNC_IN_FLIGHT = new AtomicBoolean(false);
+    private static volatile long lastStationSyncAt = 0L;
 
     private final StationDao stationDao;
     private final FavoriteDao favoriteDao;
@@ -78,6 +82,15 @@ public class StationRepository {
      * Fetches stations from the Django backend and updates the local database.
      */
     public void syncWithBackend() {
+        long now = System.currentTimeMillis();
+        if (now - lastStationSyncAt < STATION_SYNC_INTERVAL_MS) {
+            Log.d(TAG, "Skipping station sync; recent data is already cached.");
+            return;
+        }
+        if (!SYNC_IN_FLIGHT.compareAndSet(false, true)) {
+            Log.d(TAG, "Skipping station sync; another screen is already syncing.");
+            return;
+        }
         executor.execute(() -> {
             try {
                 Log.d(TAG, "Syncing with backend...");
@@ -122,12 +135,15 @@ public class StationRepository {
                         entities.add(e);
                     }
                     stationDao.insertAll(entities);
+                    lastStationSyncAt = System.currentTimeMillis();
                     Log.d(TAG, "Successfully synced " + entities.size() + " stations from backend.");
                 } else {
                     Log.e(TAG, "Backend sync failed: " + response.code());
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error syncing with backend: " + e.getMessage());
+            } finally {
+                SYNC_IN_FLIGHT.set(false);
             }
         });
     }
@@ -266,16 +282,7 @@ public class StationRepository {
     public void saveSession(int stationId, String stationName, String city,
             boolean routeOnly, float kwh, int durationMin) {
         executor.execute(() -> {
-            HistoryEntity h = new HistoryEntity();
-            h.stationId = stationId;
-            h.stationName = stationName;
-            h.city = city;
-            h.date = System.currentTimeMillis();
-            h.routeOnly = routeOnly;
-            h.kwhCharged = kwh;
-            h.durationMin = durationMin;
-            h.userId = tokenManager.getUserId();
-            historyDao.insert(h);
+            insertLocalHistorySession(stationId, stationName, city, routeOnly, kwh, durationMin);
             if (tokenManager.hasToken() && stationId > 0) {
                 RetrofitClient.getApiService(app)
                         .saveHistorySession(new com.example.project_mobile.data.remote.HistorySessionRequest(
@@ -298,6 +305,14 @@ public class StationRepository {
         });
     }
 
+    public void saveLocalSession(int stationId, String stationName, String city,
+            boolean routeOnly, float kwh, int durationMin) {
+        executor.execute(() -> {
+            insertLocalHistorySession(stationId, stationName, city, routeOnly, kwh, durationMin);
+            Log.d(TAG, "Local session saved for station " + stationId);
+        });
+    }
+
     public void submitRating(int stationId, int stars, String comment, Callback callback) {
         if (!tokenManager.hasToken()) {
             callback.onError("Not logged in");
@@ -307,6 +322,7 @@ public class StationRepository {
         ApiService api = RetrofitClient.getApiService(app);
         com.example.project_mobile.data.remote.RatingRequest req = new com.example.project_mobile.data.remote.RatingRequest(stationId, stars, comment);
         
+        executor.execute(() -> applyOptimisticRating(stationId, stars));
         api.submitRating(req).enqueue(new retrofit2.Callback<com.example.project_mobile.data.remote.RatingResponse>() {
             @Override
             public void onResponse(retrofit2.Call<com.example.project_mobile.data.remote.RatingResponse> call, retrofit2.Response<com.example.project_mobile.data.remote.RatingResponse> response) {
@@ -436,6 +452,36 @@ public class StationRepository {
 
     private String safeText(String value, String fallback) {
         return value == null ? fallback : value;
+    }
+
+    private void insertLocalHistorySession(int stationId, String stationName, String city,
+            boolean routeOnly, float kwh, int durationMin) {
+        HistoryEntity h = new HistoryEntity();
+        h.stationId = stationId;
+        h.stationName = stationName;
+        h.city = city;
+        h.date = System.currentTimeMillis();
+        h.routeOnly = routeOnly;
+        h.kwhCharged = kwh;
+        h.durationMin = durationMin;
+        h.userId = tokenManager.getUserId();
+        historyDao.insert(h);
+    }
+
+    private void applyOptimisticRating(int stationId, int stars) {
+        StationEntity station = stationDao.getById(stationId);
+        if (station == null) {
+            return;
+        }
+        int ratingCount = station.ratingCount;
+        float averageRating = station.averageRating;
+        if (station.userRating != null && station.userRating > 0 && ratingCount > 0) {
+            averageRating = ((averageRating * ratingCount) - station.userRating + stars) / ratingCount;
+        } else {
+            ratingCount += 1;
+            averageRating = ((averageRating * station.ratingCount) + stars) / Math.max(1, ratingCount);
+        }
+        stationDao.updateRating(stationId, averageRating, ratingCount, stars);
     }
 
     private void postSuccess(Callback cb) {
