@@ -1,18 +1,18 @@
 services:
   - type: web
-    name: smartlocator-api
+    name: smartlocator
     env: python
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt && python manage.py migrate --settings=core.settings.production && python manage.py import_geojson --settings=core.settings.production && python manage.py import_ev_json --settings=core.settings.production && python manage.py collectstatic --settings=core.settings.production --noinput
-    startCommand: gunicorn core.wsgi:application
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: core.settings.production
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: ALLOWED_HOSTS
-        value: smartlocator-api.onrender.com,.onrender.com
+        value: smartlocator.onrender.com,localhost,127.0.0.1
       - key: SECRET_KEY
         sync: false
       - key: DATABASE_URL
