@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: smartlocator-api
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --settings=core.settings.production --noinput
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: core.settings.production
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ALLOWED_HOSTS
+        value: smartlocator-api.onrender.com,.onrender.com
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GRAPHHOPPER_API_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: R2_ACCESS_KEY
+        sync: false
+      - key: R2_SECRET_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      - key: R2_ENDPOINT_URL
+        sync: false

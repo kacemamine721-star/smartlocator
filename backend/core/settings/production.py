@@ -13,6 +13,13 @@ ALLOWED_HOSTS = env.list(
     default=["smartlocator-api.onrender.com", ".onrender.com", "localhost", "127.0.0.1"],
 )
 
+MIDDLEWARE = MIDDLEWARE.copy()
+if "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    )
+
 # Render Database URL
 DATABASES = {'default': dj_database_url.parse(env('DATABASE_URL'))}
 # Use standard PostgreSQL since models use FloatField instead of PointField.

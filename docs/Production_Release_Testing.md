@@ -79,6 +79,31 @@ Recommended Render release command, if using Render release phase:
 python manage.py migrate --settings=core.settings.production && python manage.py import_geojson --settings=core.settings.production && python manage.py import_ev_json --settings=core.settings.production
 ```
 
+The repository also contains:
+
+- `backend/Procfile`
+- `backend/render.yaml`
+
+You can either configure Render from the dashboard or let Render read `render.yaml`.
+
+### Local `collectstatic` Error Fix
+
+If this fails locally:
+
+```text
+No module named 'whitenoise'
+```
+
+Install the backend requirements in the same Python environment where you run `manage.py`:
+
+```powershell
+cd backend
+python -m pip install -r requirements.txt
+python manage.py collectstatic --settings=core.settings.production --noinput
+```
+
+Render will run `pip install -r requirements.txt` during the build, so this error only appears locally when dependencies are missing.
+
 ## 2. Android Release APK Build
 
 In Android Studio:
