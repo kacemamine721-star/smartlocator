@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --settings=core.settings.production --noinput
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --settings=core.settings.production && python manage.py import_geojson --settings=core.settings.production && python manage.py import_ev_json --settings=core.settings.production && python manage.py collectstatic --settings=core.settings.production --noinput
     startCommand: gunicorn core.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
