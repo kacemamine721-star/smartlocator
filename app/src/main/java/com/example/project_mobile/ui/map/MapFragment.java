@@ -30,7 +30,11 @@ import com.example.project_mobile.ui.common.EvImageLoader;
 import com.example.project_mobile.ui.alerts.AlertsActivity;
 import com.example.project_mobile.ui.details.StationDetailsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.maplibre.android.MapLibre;
@@ -77,8 +81,10 @@ public class MapFragment extends Fragment {
     private boolean alertsVisible = true;
     private LatLng userLocation;
     private boolean usingDebugTestLocation = false;
+    private boolean isFollowingUser = true;
     private org.maplibre.android.annotations.Marker userLocationMarker;
     private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
     private ActivityResultLauncher<String> fineLocationPermissionLauncher;
     private ChargingStation pendingRouteStation;
     private String pendingRouteStationId;
@@ -124,6 +130,18 @@ public class MapFragment extends Fragment {
         userConnectors = tokenManager.getUserConnectors();
         currentSoc = tokenManager.getCurrentSoc();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                for (android.location.Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        applyUserLocation(location);
+                    }
+                }
+            }
+        };
+
         refreshUserLocation(false);
 
         repo.getAllStations().observe(getViewLifecycleOwner(), newStations -> {
@@ -155,6 +173,12 @@ public class MapFragment extends Fragment {
         mapView.getMapAsync(map -> {
             mapLibreMap = map;
             mapLibreMap.setStyle(new Style.Builder().fromUri("asset://osm_raster_style.json"), style -> configureMap());
+
+            mapLibreMap.addOnCameraMoveStartedListener(reason -> {
+                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) {
+                    isFollowingUser = false;
+                }
+            });
         });
 
         View bottomSheet = view.findViewById(R.id.station_preview_sheet);
@@ -166,6 +190,7 @@ public class MapFragment extends Fragment {
         });
 
         view.findViewById(R.id.recenter_button).setOnClickListener(v -> {
+            isFollowingUser = true;
             refreshUserLocation(true);
             if (userLocation != null && mapLibreMap != null) {
                 mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 13.5));
@@ -863,10 +888,39 @@ public class MapFragment extends Fragment {
         userLocation = new LatLng(location.getLatitude(), location.getLongitude());
         usingDebugTestLocation = false;
         updateUserLocationMarker();
+
+        if (isFollowingUser && mapLibreMap != null) {
+            mapLibreMap.animateCamera(CameraUpdateFactory.newLatLng(userLocation));
+        }
+
         if (pendingRouteStation != null) {
             ChargingStation station = pendingRouteStation;
             pendingRouteStation = null;
             requestRouteToStation(station);
+        }
+    }
+
+    private void startLocationUpdates() {
+        if (fusedLocationClient == null || locationCallback == null || getContext() == null)
+            return;
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(2000)
+                .build();
+
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
+    }
+
+    private void stopLocationUpdates() {
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
 
@@ -1154,10 +1208,12 @@ public class MapFragment extends Fragment {
         if (mapView != null) {
             mapView.onResume();
         }
+        startLocationUpdates();
     }
 
     @Override
     public void onPause() {
+        stopLocationUpdates();
         if (mapView != null) {
             mapView.onPause();
         }
